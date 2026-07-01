@@ -1,0 +1,347 @@
+[
+  {
+    "id": "vocab-23-def",
+    "topic": "Vocabulary: BroadcastReceiver",
+    "difficulty": "easy",
+    "question": "What is a \"BroadcastReceiver\" in Android?",
+    "choices": [
+      "A single screen in an Android app",
+      "A component that listens for and reacts to system-wide or app-wide announcements, called broadcasts",
+      "An object that gives code access to app-wide and system-level resources",
+      "A tool for scheduling work that should reliably happen eventually"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A BroadcastReceiver is an Android component that listens for and reacts to broadcasts — messages that can be heard by many independent parts of the system at once, rather than being addressed to just one specific destination.",
+      "lineByLine": [
+        "A BroadcastReceiver declares which specific broadcast it cares about, like a network connectivity change.",
+        "Broadcasts can be sent by the Android operating system itself, or by an app's own code.",
+        "Because many receivers can listen for the same broadcast independently, this is fundamentally different from a private, one-to-one Intent request.",
+        "A BroadcastReceiver's onReceive function is meant to react briefly, often delegating any longer work to a Service."
+      ],
+      "tip": "Real-world analogy: a BroadcastReceiver is like a classroom listening to the school's PA system — ONE announcement reaches every listening room at once, and each decides independently how to react. In an app, a BroadcastReceiver might react to \"the device just finished booting\" the same way a classroom reacts to hearing a principal's announcement."
+    }
+  },
+  {
+    "id": "vocab-24-word",
+    "topic": "Vocabulary: Context",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"An object that gives code access to app-wide and system-level resources and capabilities, like starting other components\"?",
+    "choices": [
+      "Intent",
+      "Context",
+      "Resource",
+      "Package"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Context is an object that grants code access to important app-wide and system-level capabilities — things like reading resources, starting other components, and accessing system services. Activities are one common example of something that is a Context.",
+      "lineByLine": [
+        "\"Gives code access to app-wide and system-level resources\" — a Context can retrieve strings, colors, and other resources declared elsewhere.",
+        "\"Starting other components\" — you typically need a Context to launch a new Activity or Service.",
+        "An Activity IS-A Context (through inheritance), which is why Activities can freely do all these Context-related things.",
+        "Plain classes (not Activities) that need to do Context-dependent work usually need a Context explicitly passed in to them."
+      ],
+      "tip": "Real-world analogy: a Context is like a staff ID badge that unlocks certain doors and privileges around a school building. An Activity naturally has this badge (since it IS a kind of Context), letting it access resources and start other components. A plain helper class without its own badge would need someone to lend it one (pass in a Context) before it could do the same things."
+    }
+  },
+  {
+    "id": "vocab-24-def",
+    "topic": "Vocabulary: Context",
+    "difficulty": "easy",
+    "question": "What is a \"Context\" in Android?",
+    "choices": [
+      "A request object used to start an Activity or Service",
+      "An object that gives code access to app-wide and system-level resources and capabilities, like starting other components",
+      "A component that can perform work in the background",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Context is an object that grants access to important app-wide and system-level capabilities, like reading resources, accessing system services, and starting other components such as Activities or Services.",
+      "lineByLine": [
+        "Activities inherit from Context, which is why they can freely access resources and start other components.",
+        "Plain, ordinary classes that aren't Activities usually need a Context explicitly given to them if they need to do Context-related work.",
+        "Calling `getSystemService(...)` to retrieve a shared system tool (like NotificationManager) requires a Context.",
+        "Reading a resource, like a string or color declared in XML, also relies on having access to a Context."
+      ],
+      "tip": "Real-world analogy: a Context is like a staff ID badge that unlocks certain doors and privileges in a building. An Activity has this badge built in (since it inherits from Context), letting it access resources and start other components directly. Other classes without their own badge need one lent to them (a Context passed in) before they can do the same things."
+    }
+  },
+  {
+    "id": "vocab-25-word",
+    "topic": "Vocabulary: Intent",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A request object used to start an Activity or Service, or to deliver a broadcast, either naming an exact target or describing a need\"?",
+    "choices": [
+      "Context",
+      "Intent",
+      "Package",
+      "Permission"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Intent is a request object — a messenger — used to ask the Android system to do something, like open a specific screen, start a background helper, or send an announcement. It can either name an exact destination or describe a general need.",
+      "lineByLine": [
+        "\"Request object used to start an Activity or Service\" — an Intent is how one component asks the system to launch another.",
+        "\"Deliver a broadcast\" — Intents are also the underlying mechanism used to send broadcasts to BroadcastReceivers.",
+        "\"Naming an exact target\" — an explicit Intent names one specific screen or Service by name, with no ambiguity.",
+        "\"Describing a need\" — an implicit Intent describes what should happen (like \"share this text\"), letting the operating system figure out who can help."
+      ],
+      "tip": "Real-world analogy: an Intent is like a hall pass. A private, named hall pass (an explicit Intent) sends you to one exact classroom. A vague hall pass that just says \"I need someone who can help with printing\" (an implicit Intent) lets the front office figure out where to send you. In Android, `Intent(this, SettingsActivity::class.java)` is an explicit Intent naming an exact target screen."
+    }
+  },
+  {
+    "id": "vocab-25-def",
+    "topic": "Vocabulary: Intent",
+    "difficulty": "easy",
+    "question": "What is an \"Intent\" in Android?",
+    "choices": [
+      "A single path of execution that can run code",
+      "A request object used to start an Activity or Service, or to deliver a broadcast, either naming an exact target or describing a need",
+      "A collection of pre-written code you can add to a project",
+      "The environment where compiled code actually runs on a device"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Intent is a request object used to ask the Android system to start something — an Activity, a Service, or to deliver a broadcast. It can either name an exact target directly (explicit) or describe what's needed and let the system figure out who can help (implicit).",
+      "lineByLine": [
+        "An explicit Intent names a specific class directly, like `Intent(this, SettingsActivity::class.java)` — completely unambiguous.",
+        "An implicit Intent describes an action and some data, like \"share this text,\" without naming a specific app or screen.",
+        "The Android OS resolves an implicit Intent by checking every installed app's declared intent-filters for a match.",
+        "Intents can also carry additional data alongside their addressing, called extras, so the target has information to work with once launched."
+      ],
+      "tip": "Real-world analogy: an Intent is like a hall pass. A private, named hall pass (explicit Intent) sends you to exactly one classroom. A vague hall pass just describing a need (implicit Intent) lets the front office decide who can help. In code, `Intent(this, SettingsActivity::class.java)` names an exact destination, just like a private hall pass would."
+    }
+  },
+  {
+    "id": "vocab-26-word",
+    "topic": "Vocabulary: PendingIntent",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"An Intent wrapped up so that a different piece of code (like the notification system) can trigger it later, on the app's behalf\"?",
+    "choices": [
+      "Intent",
+      "PendingIntent",
+      "Context",
+      "Callback"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A PendingIntent is an Intent that's been wrapped and handed off to a different system (most commonly the notification system), so THAT system can trigger the Intent later, when something specific happens — like the user tapping a notification.",
+      "lineByLine": [
+        "\"An Intent wrapped up\" — a PendingIntent doesn't replace a regular Intent, it packages one for delayed use.",
+        "\"A different piece of code\" — this is usually a system outside your own app's code, like the notification system.",
+        "\"Trigger it later, on the app's behalf\" — the notification system doesn't need to know what's inside; it just fires the wrapped Intent when the user taps.",
+        "This is exactly how tapping a notification opens a specific screen — the notification was holding a PendingIntent the whole time."
+      ],
+      "tip": "Real-world analogy: a PendingIntent is like handing a sealed envelope (containing a hall pass) to the school's front desk, saying \"please deliver this exactly when the recipient checks in.\" The front desk doesn't need to know what the hall pass says — it just delivers it at the right moment. In an app, `PendingIntent.getActivity(context, 0, intent, FLAG_IMMUTABLE)` wraps up an ordinary Intent for a notification to fire later, when tapped."
+    }
+  },
+  {
+    "id": "vocab-26-def",
+    "topic": "Vocabulary: PendingIntent",
+    "difficulty": "easy",
+    "question": "What is a \"PendingIntent\"?",
+    "choices": [
+      "A request object used to start an Activity or Service directly, right now",
+      "An Intent wrapped up so that a different piece of code (like the notification system) can trigger it later, on the app's behalf",
+      "A single screen in an Android app",
+      "A value that, when it changes, can automatically cause dependent UI to update"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A PendingIntent wraps an ordinary Intent, along with permission for a different system (typically the notification system) to fire that Intent later, at an appropriate moment, on the app's behalf.",
+      "lineByLine": [
+        "A PendingIntent doesn't fire immediately — it's held onto and triggered later by whatever system it was handed to.",
+        "The most common use is attaching one to a notification, so tapping the notification fires the wrapped Intent.",
+        "The system holding the PendingIntent (like the notification system) doesn't need to understand what's inside it — it just triggers it at the right moment.",
+        "PendingIntent.getActivity(...) and PendingIntent.getBroadcast(...) are two common ways to create one, targeting either an Activity or a BroadcastReceiver."
+      ],
+      "tip": "Real-world analogy: a PendingIntent is like handing a sealed envelope to the school's front desk with instructions: \"deliver this exactly when the recipient checks in.\" The desk doesn't need to know the envelope's contents. In an app, a notification holding a PendingIntent works the same way — tapping it triggers the wrapped Intent, opening a specific screen."
+    }
+  },
+  {
+    "id": "vocab-27-word",
+    "topic": "Vocabulary: View",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A traditional building block of Android UI, representing one on-screen element like a button or a piece of text\"?",
+    "choices": [
+      "View",
+      "Composable",
+      "Layout",
+      "Activity"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A View is the traditional (older-style) building block for Android user interfaces — one View typically represents one visible thing on screen, like a single button or a single line of text.",
+      "lineByLine": [
+        "\"Traditional building block\" — Views were Android's original UI system, before Jetpack Compose existed.",
+        "\"One on-screen element\" — a Button is a View, a TextView (for displaying text) is a View, and so on.",
+        "Views are often arranged using XML layout files, describing how multiple Views fit together on one screen.",
+        "Modern Android development increasingly uses Composables instead of Views, though many existing apps still use Views extensively."
+      ],
+      "tip": "Real-world analogy: a View is like one specific piece of furniture in a classroom — a single desk, or the whiteboard. Multiple Views (pieces of furniture) are arranged together to build a complete classroom (screen). In older Android code, you'd see things like `<Button android:id=\"@+id/submitButton\" />` inside an XML layout file, defining one specific View."
+    }
+  },
+  {
+    "id": "vocab-27-def",
+    "topic": "Vocabulary: View",
+    "difficulty": "easy",
+    "question": "What is a \"View\" in Android?",
+    "choices": [
+      "A function marked to describe a piece of UI in Jetpack Compose",
+      "A traditional building block of Android UI, representing one on-screen element like a button or a piece of text",
+      "A single screen in an Android app",
+      "The arrangement describing how UI elements are positioned relative to each other"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A View is Android's original, traditional building block for UI — each View typically represents one visible element on screen, like a single button or a piece of displayed text.",
+      "lineByLine": [
+        "Views predate Jetpack Compose and were the standard way to build Android UI for many years.",
+        "Common Views include Button, TextView (for text), and ImageView (for pictures).",
+        "Views are traditionally arranged using XML layout files that describe their positions and sizes.",
+        "Newer Android apps commonly use Composables instead of, or alongside, traditional Views."
+      ],
+      "tip": "Real-world analogy: a View is like one piece of furniture in a classroom — a single desk, or the whiteboard on the wall. Several Views combine to build a complete screen. In older-style Android code, you'd see something like `<TextView android:text=\"Hello\" />` inside an XML layout, defining one specific View."
+    }
+  },
+  {
+    "id": "vocab-28-word",
+    "topic": "Vocabulary: Composable",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A function marked to describe a piece of UI in Jetpack Compose, Android's modern UI toolkit\"?",
+    "choices": [
+      "View",
+      "Composable",
+      "Layout",
+      "Resource"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Composable is a Kotlin function, marked with a special @Composable annotation, that describes a piece of UI. Multiple Composables are combined together to build a complete screen, which is the foundation of Jetpack Compose, Android's modern approach to building UI.",
+      "lineByLine": [
+        "\"Function marked to describe a piece of UI\" — the `@Composable` annotation is what lets a regular Kotlin function participate in describing UI.",
+        "\"Jetpack Compose\" — this is the name of Android's modern UI toolkit, which uses Composables instead of the older View system.",
+        "Composables can call other Composables, nesting smaller pieces of UI together to build a complete screen.",
+        "An Activity's `setContent { }` is where the hand-off from the Activity to a tree of Composables happens."
+      ],
+      "tip": "Real-world analogy: if a View is like one specific piece of furniture, a Composable is more like a description of how a small section of a room should look, which can itself be built from smaller descriptions. A classroom's \"reading corner\" Composable might be built from a smaller \"rug\" Composable and a smaller \"bookshelf\" Composable. In code, `@Composable fun WeatherHeader() { Text(\"Today's Weather\") }` is a simple Composable."
+    }
+  },
+  {
+    "id": "vocab-28-def",
+    "topic": "Vocabulary: Composable",
+    "difficulty": "easy",
+    "question": "What is a \"Composable\" in Android?",
+    "choices": [
+      "A traditional building block of Android UI, representing one on-screen element",
+      "A function marked to describe a piece of UI in Jetpack Compose, Android's modern UI toolkit",
+      "A single screen in an Android app",
+      "A file describing an app's structure and rules"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Composable is a Kotlin function marked with @Composable, used to describe a piece of UI within Jetpack Compose, Android's modern UI toolkit. Composables are combined together, nested inside one another, to build up a complete screen.",
+      "lineByLine": [
+        "The @Composable annotation is what allows a function to describe UI and call other Composables.",
+        "A larger screen is typically built from many smaller Composables, each responsible for one piece.",
+        "Composables can accept parameters, letting the same piece of UI be reused with different data.",
+        "An Activity's `setContent { }` call is the bridge point where Composables are actually displayed on screen."
+      ],
+      "tip": "Real-world analogy: a Composable is like a description of a section of a room, which can itself be built from smaller sections. A \"reading corner\" section might be built from a \"rug\" section and a \"bookshelf\" section. In code, `@Composable fun WeatherHeader() { Text(\"Today's Weather\") }` describes a small, reusable piece of UI."
+    }
+  },
+  {
+    "id": "vocab-29-word",
+    "topic": "Vocabulary: Layout",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The arrangement describing how UI elements are positioned relative to each other on a screen\"?",
+    "choices": [
+      "View",
+      "Composable",
+      "Layout",
+      "State"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "A layout describes HOW multiple UI elements are positioned relative to one another — side by side, stacked vertically, or overlapping — rather than being a UI element itself.",
+      "lineByLine": [
+        "\"Arrangement\" — a layout is about positioning and structure, not about the content itself.",
+        "\"How UI elements are positioned relative to each other\" — a layout decides whether things sit side-by-side, stacked, or overlapping.",
+        "In Compose, container Composables like Row, Column, and Box serve this exact arranging purpose.",
+        "In the older View system, XML layout files served this same purpose, describing how multiple Views should be positioned."
+      ],
+      "tip": "Real-world analogy: a layout is like the floor plan of a classroom, deciding where the desks, whiteboard, and reading corner each go relative to one another — separate from what those pieces of furniture actually look like. In Compose, `Row { Text(\"Monday\"); Text(\"72°F\") }` is a layout decision: it arranges the two Text elements side by side, horizontally."
+    }
+  },
+  {
+    "id": "vocab-29-def",
+    "topic": "Vocabulary: Layout",
+    "difficulty": "easy",
+    "question": "What does \"Layout\" mean in the context of Android UI?",
+    "choices": [
+      "A function marked to describe a piece of UI in Jetpack Compose",
+      "The arrangement describing how UI elements are positioned relative to each other on a screen",
+      "A single path of execution that can run code",
+      "A value that, when it changes, can automatically cause dependent UI to update"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Layout refers to the arrangement of UI elements — how they're positioned relative to one another, like side-by-side, stacked, or overlapping — as opposed to what those elements actually contain or look like individually.",
+      "lineByLine": [
+        "Layout is about positioning and structure, distinct from the actual content being arranged.",
+        "In Jetpack Compose, container Composables like Row (horizontal), Column (vertical), and Box (overlapping) handle this arranging job.",
+        "In the older View system, XML layout files described this same kind of arrangement for Views.",
+        "The same content (like two pieces of text) can look very different depending purely on which layout arranges them."
+      ],
+      "tip": "Real-world analogy: a layout is like a classroom's floor plan — it decides where the desks, whiteboard, and reading corner go relative to each other, separate from what those pieces of furniture actually look like. In Compose, wrapping two Text elements in a `Row { }` arranges them side by side; wrapping the same two elements in a `Column { }` instead stacks them vertically."
+    }
+  },
+  {
+    "id": "vocab-30-word",
+    "topic": "Vocabulary: State",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A value that, when it changes, can automatically cause the UI depending on it to update\"?",
+    "choices": [
+      "Layout",
+      "State",
+      "Resource",
+      "Package"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "State is a value Compose is specifically tracking — when that value changes, any UI depending on it can automatically update to reflect the new value, without you manually telling each piece of UI to refresh.",
+      "lineByLine": [
+        "\"A value\" — state could be anything: a number, a piece of text, a true/false flag, or more complex data.",
+        "\"When it changes\" — the key part is that Compose is watching this value specifically for changes.",
+        "\"Automatically cause the UI depending on it to update\" — you don't manually refresh the screen; Compose does it for you, in a process called recomposition.",
+        "Tools like `remember` and `mutableStateOf` are how a piece of data gets marked as state that Compose should track this way."
+      ],
+      "tip": "Real-world analogy: state is like a scoreboard at a game — the moment the score changes, everyone watching automatically sees the new number, without needing to be told to look again. In an app, a temperature value held as state means the on-screen Text automatically shows the updated number the instant that value changes, with no manual refresh code needed."
+    }
+  },
+  {
+    "id": "vocab-30-def",
+    "topic": "Vocabulary: State",
+    "difficulty": "easy",
+    "question": "What does \"State\" mean in the context of Jetpack Compose?",
+    "choices": [
+      "The arrangement describing how UI elements are positioned relative to each other",
+      "A value that, when it changes, can automatically cause the UI depending on it to update",
+      "A single screen in an Android app",
+      "A collection of pre-written code you can add to a project"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "State refers to a value that Compose is specifically tracking, such that when the value changes, any UI depending on it can automatically update — without the developer manually refreshing anything.",
+      "lineByLine": [
+        "State can hold any kind of value — numbers, text, booleans, or more complex data.",
+        "Tools like `remember` and `mutableStateOf` mark a value as state that Compose should watch for changes.",
+        "When state changes, Compose automatically re-runs (recomposes) just the parts of the UI that actually depend on it.",
+        "This automatic-update relationship is central to how Compose keeps the screen in sync with the app's underlying data."
+      ],
+      "tip": "Real-world analogy: state is like a scoreboard at a game — the moment the score updates, everyone watching sees the new number automatically, without being told to check again. In Compose, a temperature held as state means the displayed number updates by itself the instant the underlying value changes."
+    }
+  }
+]

@@ -1,0 +1,347 @@
+[
+  {
+    "id": "vocab-31-word",
+    "topic": "Vocabulary: Recomposition",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The process where Compose automatically re-runs and redraws only the parts of the UI that depend on State that just changed\"?",
+    "choices": [
+      "Recomposition",
+      "Layout",
+      "Lifecycle",
+      "State"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "Recomposition is the actual mechanism behind Compose's automatic UI updates. When a piece of State changes, Compose figures out exactly which Composables depend on it and re-runs (recomposes) just those pieces — not the entire screen.",
+      "lineByLine": [
+        "\"Automatically re-runs and redraws\" — Compose handles this without you writing manual refresh code.",
+        "\"Only the parts of the UI that depend on State that just changed\" — recomposition is smart about scope; unrelated Composables aren't re-run unnecessarily.",
+        "This is the engine behind the earlier idea of State — State is the trigger, and recomposition is the actual response to that trigger.",
+        "Recomposition can happen very frequently and efficiently, since it typically only touches small, specific pieces of the UI."
+      ],
+      "tip": "Real-world analogy: recomposition is like a scoreboard operator who only updates the specific numbers that changed, rather than repainting the entire scoreboard from scratch every time. In an app, if only a temperature value changes, Compose recomposes just the Text showing that number — not the whole screen around it."
+    }
+  },
+  {
+    "id": "vocab-31-def",
+    "topic": "Vocabulary: Recomposition",
+    "difficulty": "easy",
+    "question": "What is \"Recomposition\" in Jetpack Compose?",
+    "choices": [
+      "The set of states a component moves through over time",
+      "The process where Compose automatically re-runs and redraws only the parts of the UI that depend on State that just changed",
+      "A holder for UI-related data that survives configuration changes",
+      "Structured, organized storage for data that can be saved and queried later"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Recomposition is Compose's process of automatically re-running specific Composable functions when the State they depend on changes, updating just those parts of the UI rather than the entire screen.",
+      "lineByLine": [
+        "Recomposition is triggered whenever a piece of tracked State actually changes value.",
+        "Only Composables that actually read that specific piece of State are re-run — unrelated parts of the screen are left alone.",
+        "This selective re-running is what makes Compose efficient, even with frequent small updates.",
+        "Recomposition is the direct mechanism that fulfills the promise behind State: 'when this value changes, dependent UI updates automatically.'"
+      ],
+      "tip": "Real-world analogy: recomposition is like a scoreboard operator updating only the numbers that changed, rather than repainting the whole board from scratch. In an app, changing just a temperature value triggers recomposition of only the Text displaying that number, leaving the rest of the screen untouched."
+    }
+  },
+  {
+    "id": "vocab-32-word",
+    "topic": "Vocabulary: ViewModel",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A holder for UI-related data that survives configuration changes like screen rotation, keeping data separate from any one screen instance\"?",
+    "choices": [
+      "Activity",
+      "ViewModel",
+      "Database",
+      "Context"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A ViewModel is a special holder for UI-related data, deliberately kept separate from any one specific Activity instance, so it can survive events (like screen rotation) that would otherwise destroy and recreate the Activity holding that data.",
+      "lineByLine": [
+        "\"Holder for UI-related data\" — a ViewModel typically holds things like a list of items to display, or the current state of a form.",
+        "\"Survives configuration changes like screen rotation\" — normally, rotating a phone destroys and recreates the Activity, wiping out any data it was holding directly. A ViewModel is specially retained across that exact event.",
+        "\"Keeping data separate from any one screen instance\" — this is exactly why the data survives: it was never actually owned by the destroyed Activity instance in the first place.",
+        "When a new Activity instance is created after rotation, it simply reconnects to the SAME ViewModel, recovering the data automatically."
+      ],
+      "tip": "Real-world analogy: a ViewModel is like a filing cabinet kept in the hallway outside a classroom, rather than inside it. If a fire drill causes the classroom itself to be completely reset (a fire drill = rotation), the filing cabinet in the hallway is untouched, and the class can pick right back up using the same files once they return. In an app, `WeatherViewModel` might hold the current forecast data, surviving rotation even though the Activity itself gets destroyed and recreated."
+    }
+  },
+  {
+    "id": "vocab-32-def",
+    "topic": "Vocabulary: ViewModel",
+    "difficulty": "easy",
+    "question": "What is a \"ViewModel\" in Android?",
+    "choices": [
+      "A single screen in an Android app",
+      "A holder for UI-related data that survives configuration changes like screen rotation, keeping data separate from any one screen instance",
+      "A message the operating system displays outside the app itself",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A ViewModel holds UI-related data separately from any one specific Activity instance, so that data can survive events like screen rotation, which would otherwise destroy the Activity and any data it was holding directly.",
+      "lineByLine": [
+        "Rotation destroys the current Activity instance and creates a brand new one — but a ViewModel tied to that screen is deliberately kept alive by the OS through that exact event.",
+        "The new Activity instance, once created, simply reconnects to the SAME ViewModel, recovering whatever data it was holding.",
+        "This solves a real problem: without a ViewModel, information like a fetched list of items would be lost every time the phone rotates.",
+        "A ViewModel does NOT survive a full app close and reopening later — that requires genuine persistence tools instead, like a database."
+      ],
+      "tip": "Real-world analogy: a ViewModel is like a filing cabinet kept in the hallway rather than inside the classroom itself. If a fire drill (rotation) resets the classroom completely, the hallway filing cabinet is untouched, and class can continue using the same files once everyone returns. In an app, `WeatherViewModel` might hold forecast data that survives rotation, even though the Activity itself gets destroyed and recreated."
+    }
+  },
+  {
+    "id": "vocab-33-word",
+    "topic": "Vocabulary: Database",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"Structured, organized storage for data that can be saved, queried, and retrieved later, even after an app closes\"?",
+    "choices": [
+      "ViewModel",
+      "Database",
+      "Resource",
+      "State"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A database is a tool for genuinely saving structured data — like many records with several fields each — so it can be searched, sorted, and retrieved later, even long after the app has been completely closed and reopened.",
+      "lineByLine": [
+        "\"Structured, organized storage\" — a database typically organizes data into tables, with defined fields for each record, like a forecast's city, date, and temperature.",
+        "\"Can be saved, queried, and retrieved later\" — unlike a ViewModel (which only survives rotation), a database genuinely persists data to disk.",
+        "\"Even after an app closes\" — this is the key distinction from temporary, in-memory data — a database survives a full app close and reopening, even weeks later.",
+        "In Android, Room is a common library used to work with a structured, on-device database."
+      ],
+      "tip": "Real-world analogy: a database is like a well-organized filing cabinet in a permanent records office, as opposed to a sticky note on your desk. The sticky note (in-memory data) is gone the moment you clean your desk; the filing cabinet (database) keeps everything safely organized, ready to look up again months later. In an app, hundreds of historical forecast records are exactly the kind of structured data suited to a database."
+    }
+  },
+  {
+    "id": "vocab-33-def",
+    "topic": "Vocabulary: Database",
+    "difficulty": "easy",
+    "question": "What is a \"Database\" in the context of an app?",
+    "choices": [
+      "A holder for UI-related data that survives configuration changes",
+      "Structured, organized storage for data that can be saved, queried, and retrieved later, even after an app closes",
+      "A function marked to describe a piece of UI in Jetpack Compose",
+      "A running instance of an app on the device"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A database is a genuinely persistent storage tool for structured data — often many records, each with several related fields — that can be saved, searched, and retrieved even long after the app has been fully closed and reopened.",
+      "lineByLine": [
+        "Data in a database is organized into tables, with each record having defined fields, like a forecast's city, date, and temperature.",
+        "A database is queryable — you can ask for specific subsets of data, like \"all forecasts for Seattle,\" rather than only reading everything at once.",
+        "Unlike a ViewModel, which only survives configuration changes, a database survives a full app close, and even a device restart.",
+        "In Android, Room is a commonly used library that provides a structured, on-device database."
+      ],
+      "tip": "Real-world analogy: a database is like a well-organized filing cabinet in a permanent records office, unlike a sticky note that gets thrown away when your desk is cleaned. In an app, hundreds of historical weather records — needing to be searched and sorted later — are exactly the kind of data suited to a database rather than simple, temporary storage."
+    }
+  },
+  {
+    "id": "vocab-34-word",
+    "topic": "Vocabulary: Flow / StateFlow",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A stream of values over time that code can continuously observe, automatically reacting whenever a new value is emitted\"?",
+    "choices": [
+      "Database",
+      "Flow / StateFlow",
+      "Resource",
+      "Callback"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Flow is a stream of values that can change over time, which other code can continuously watch. Rather than asking once \"what's the current value?\", observing a Flow means being automatically notified every time a new value comes through.",
+      "lineByLine": [
+        "\"Stream of values over time\" — unlike a single one-time answer, a Flow can produce many values, one after another, as things change.",
+        "\"Continuously observe\" — code that's watching a Flow doesn't need to keep re-asking; it's notified automatically.",
+        "\"Automatically reacting whenever a new value is emitted\" — this is what makes a Flow useful for keeping a UI in sync with changing data, like a database table.",
+        "A StateFlow is a specific kind of Flow that always holds a current value, even before anything starts observing it."
+      ],
+      "tip": "Real-world analogy: a Flow is like a subscription to a newsletter, rather than looking up a single fact once. Instead of checking a website repeatedly for updates, you subscribe once, and new issues (values) arrive automatically whenever there's something new. In an app, `dao.observeAllForecasts(): Flow<List<ForecastRecord>>` gives an ongoing stream that automatically emits a new list whenever the underlying database table changes."
+    }
+  },
+  {
+    "id": "vocab-34-def",
+    "topic": "Vocabulary: Flow / StateFlow",
+    "difficulty": "easy",
+    "question": "What is a \"Flow\" (or \"StateFlow\")?",
+    "choices": [
+      "Structured, organized storage for data that can be saved and queried later",
+      "A stream of values over time that code can continuously observe, automatically reacting whenever a new value is emitted",
+      "A single screen in an Android app",
+      "The set of states a component moves through over time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Flow represents an ongoing stream of values over time, rather than a single, one-time answer. Code observing a Flow is automatically notified whenever a new value comes through, without needing to repeatedly ask.",
+      "lineByLine": [
+        "A Flow can emit many values over its lifetime, one after another, as the underlying data changes.",
+        "Observing a Flow means subscribing to it, rather than fetching a value just once.",
+        "This is commonly used to keep a UI automatically in sync with a changing database table — a new emission triggers a UI update.",
+        "A StateFlow is a specialized kind of Flow that always has a current value available, even before any observer starts watching it."
+      ],
+      "tip": "Real-world analogy: a Flow is like subscribing to a newsletter rather than checking a website once for updates. New issues (values) arrive automatically whenever there's something new, without you needing to keep checking. In an app, a Flow from a database automatically emits a fresh list every time the underlying data changes, keeping the UI continuously up to date."
+    }
+  },
+  {
+    "id": "vocab-35-word",
+    "topic": "Vocabulary: Lifecycle",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The set of states a component like an Activity moves through over time, controlled by the operating system rather than app code directly\"?",
+    "choices": [
+      "Lifecycle",
+      "Runtime",
+      "Process",
+      "State"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A Lifecycle is the sequence of states a component (most commonly an Activity) moves through — like being created, becoming visible, being paused, and eventually being destroyed. Crucially, the operating system decides when these transitions happen, not the app's own code.",
+      "lineByLine": [
+        "\"Set of states\" — an Activity might be created, started, resumed, paused, stopped, or destroyed, among others.",
+        "\"Moves through over time\" — an Activity doesn't just have one fixed status; it transitions between states based on what's happening around it.",
+        "\"Controlled by the operating system\" — the app doesn't decide when to pause or stop; the OS calls specific functions (like onPause) at the appropriate moments.",
+        "Rotation is a dramatic example of a lifecycle event — it destroys the current Activity instance entirely and creates a brand new one."
+      ],
+      "tip": "Real-world analogy: a Lifecycle is like a classroom's daily schedule — in session, at recess, locked up for the night — except the SCHOOL (not the classroom itself) decides when each transition happens. In an app, `onCreate`, `onPause`, and `onDestroy` are all specific Lifecycle callback functions the Android OS calls on an Activity at the appropriate moments."
+    }
+  },
+  {
+    "id": "vocab-35-def",
+    "topic": "Vocabulary: Lifecycle",
+    "difficulty": "easy",
+    "question": "What does \"Lifecycle\" mean in Android?",
+    "choices": [
+      "A running instance of an app on the device",
+      "The set of states a component like an Activity moves through over time, controlled by the operating system rather than app code directly",
+      "A message the operating system displays outside the app itself",
+      "A tool for scheduling work that should reliably happen eventually"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Lifecycle refers to the sequence of states a component (typically an Activity) transitions through over time — created, visible, paused, stopped, destroyed — with the operating system, not the app's own code, deciding when each transition happens.",
+      "lineByLine": [
+        "Common Lifecycle states include being created, becoming visible and interactive, losing focus, becoming fully hidden, and finally being destroyed.",
+        "The app doesn't call these transitions itself — the OS calls specific functions (like `onPause()` or `onStop()`) on the Activity at the right moments.",
+        "Rotation is one dramatic Lifecycle event: it fully destroys the current Activity instance and creates a brand new one.",
+        "Understanding an Activity's current Lifecycle state helps explain many behaviors, like why data can be lost on rotation unless it's specifically protected against that."
+      ],
+      "tip": "Real-world analogy: a Lifecycle is like a classroom's daily schedule — in session, recess, locked up for the night — except the SCHOOL (not the classroom) decides when each transition happens. In Android, `onCreate`, `onPause`, and `onDestroy` are specific Lifecycle functions the OS calls on an Activity at appropriate times, not ones the app calls itself."
+    }
+  },
+  {
+    "id": "vocab-36-word",
+    "topic": "Vocabulary: Permission",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"Formal approval an app must request before performing a sensitive action, like using the camera or finding a location\"?",
+    "choices": [
+      "Permission",
+      "Manifest",
+      "Context",
+      "Notification"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A Permission is formal approval an app must get before doing something sensitive — like accessing the camera, finding the user's location, or reading contacts. Simply declaring intent to do this in the Manifest isn't enough; for sensitive actions, the actual person using the phone must approve it too.",
+      "lineByLine": [
+        "\"Formal approval\" — approval isn't automatic; it must be explicitly requested and granted.",
+        "\"Before performing a sensitive action\" — Permissions specifically apply to actions with real privacy or safety implications.",
+        "\"Using the camera or finding a location\" — these are classic examples of 'dangerous' permissions requiring explicit user approval, beyond just being declared in the Manifest.",
+        "Some Permissions (called 'normal') only need to be declared in the Manifest; others (called 'dangerous') additionally require the user's explicit approval at runtime."
+      ],
+      "tip": "Real-world analogy: a Permission is like a signed permission slip required before a sensitive field trip — simply wanting to go isn't enough; a parent or guardian must actually approve it first. In an app, requesting the camera permission means the app must ask, and the actual user must tap \"Allow,\" before the camera can be used."
+    }
+  },
+  {
+    "id": "vocab-36-def",
+    "topic": "Vocabulary: Permission",
+    "difficulty": "easy",
+    "question": "What is a \"Permission\" in Android?",
+    "choices": [
+      "A running instance of an app on the device",
+      "Formal approval an app must request before performing a sensitive action, like using the camera or finding a location",
+      "The ordered history of screens a user has visited",
+      "A message the operating system displays outside the app itself"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Permission is formal approval an app must obtain before performing a sensitive action, such as using the camera, accessing location, or reading contacts. Some permissions only need a Manifest declaration; more sensitive ones also require the user's explicit approval while the app is running.",
+      "lineByLine": [
+        "\"Normal\" permissions (like internet access) only require a simple Manifest declaration to be granted.",
+        "\"Dangerous\" permissions (like camera or location) require BOTH a Manifest declaration AND an explicit runtime approval from the actual phone user.",
+        "If a dangerous permission is denied, the app must handle that gracefully rather than assuming access will always be granted.",
+        "A user can revoke a previously granted permission at any time through the device's Settings, so apps should always check current status before relying on it."
+      ],
+      "tip": "Real-world analogy: a Permission is like a signed permission slip needed for a sensitive field trip — simply wanting to go isn't enough; someone with actual authority (a parent) must approve it. In an app, requesting camera access means asking the user directly, and respecting whatever they decide."
+    }
+  },
+  {
+    "id": "vocab-37-word",
+    "topic": "Vocabulary: Process",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A running instance of an app on the device, which the operating system can start, pause, or shut down as needed\"?",
+    "choices": [
+      "Runtime",
+      "Process",
+      "Thread",
+      "Lifecycle"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Process is the actual running instance of your entire app on the device. The operating system can start it, and — importantly — can also kill it entirely if it needs the memory for something else, especially if your app isn't currently visible or active.",
+      "lineByLine": [
+        "\"Running instance of an app\" — when you open an app, the OS starts a Process for it to run inside.",
+        "\"The operating system can start, pause, or shut down as needed\" — this is entirely the OS's decision, based on things like available memory.",
+        "If an app's screen is stopped and not visible, its entire Process becomes a candidate for the OS to kill, freeing up memory for whatever the user is currently using.",
+        "Information held only in memory (not genuinely saved/persisted) is lost completely if the Process is killed."
+      ],
+      "tip": "Real-world analogy: a Process is like a single, complete performance of a play — if the theater needs the stage for something more urgent, it can end the current performance early, and if you want to watch again, a whole new performance has to start from the beginning. In an app, information only held in memory (not saved) is lost forever if the OS kills the Process running the app, exactly like a performance that gets cut short."
+    }
+  },
+  {
+    "id": "vocab-37-def",
+    "topic": "Vocabulary: Process",
+    "difficulty": "easy",
+    "question": "What is a \"Process\" in the context of an Android app?",
+    "choices": [
+      "The environment where compiled code actually executes on a real device",
+      "A running instance of an app on the device, which the operating system can start, pause, or shut down as needed",
+      "A single path of execution that can run code",
+      "A tool that decides which thread a coroutine's work should run on"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Process is the actual running instance of an app, managed entirely by the operating system. The OS can start it when the app is opened, and can also kill it entirely — especially if the app is in the background and the device needs memory for something else.",
+      "lineByLine": [
+        "Opening an app starts a Process; the app's code actually executes within that Process.",
+        "The OS can kill a Process it decides isn't currently important, especially one whose screens are all stopped and invisible.",
+        "Information held only in memory (not genuinely saved to disk) is lost completely if the Process is killed.",
+        "Reopening the app after its Process was killed effectively starts a brand new Process from scratch."
+      ],
+      "tip": "Real-world analogy: a Process is like one complete performance of a play — if the theater needs the stage urgently, the performance can be cut short, and watching it again means starting a whole new performance from the beginning. In an app, unsaved in-memory data is lost forever if the OS kills the Process, just like an interrupted performance can't simply resume where it left off."
+    }
+  },
+  {
+    "id": "vocab-38-word",
+    "topic": "Vocabulary: Notification",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A message the operating system displays outside the app itself, often used to inform the user about something happening in the background\"?",
+    "choices": [
+      "Intent",
+      "Notification",
+      "Permission",
+      "Callback"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Notification is a message shown by the operating system, outside the app's own screen — appearing in the notification shade or as a banner — commonly used to tell the user about something happening in the background, or to prompt them back into the app.",
+      "lineByLine": [
+        "\"Message the operating system displays outside the app itself\" — a Notification appears even if the app's own screen isn't currently open.",
+        "\"Inform the user about something happening in the background\" — this is especially common for Services doing ongoing work, like a download or sync.",
+        "Notifications must belong to a declared Notification Channel on modern Android before they can be shown at all.",
+        "Tapping a Notification commonly triggers a PendingIntent, opening a specific screen in the app."
+      ],
+      "tip": "Real-world analogy: a Notification is like a note slipped under your door, letting you know something happened even while you weren't in the room. In an app, a foreground Service doing a long sync might show a Notification like \"Syncing weather data... 45%\" so the user knows work is happening, even without the app's screen open."
+    }
+  }
+]

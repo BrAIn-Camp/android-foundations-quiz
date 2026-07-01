@@ -6,11 +6,12 @@ import HomePage from './components/HomePage';
 import PathSelector from './components/PathSelector';
 import ChapterSelector from './components/ChapterSelector';
 import DifficultySelector from './components/DifficultySelector';
+import VocabularySectionSelector from './components/VocabularySectionSelector';
 import QuestionCard from './components/QuestionCard';
 import ProgressBar from './components/ProgressBar';
 import SessionSummary from './components/SessionSummary';
 
-type AppView = 'home' | 'path' | 'chapters' | 'difficulty' | 'quiz' | 'summary';
+type AppView = 'home' | 'path' | 'chapters' | 'difficulty' | 'vocabSections' | 'quiz' | 'summary';
 
 export default function App() {
   const [view, setView] = useState<AppView>('home');
@@ -18,14 +19,14 @@ export default function App() {
     progress,
     recordSession,
     recordDifficultySession,
-    recordVocabularySession,
+    recordVocabularySectionSession,
     isDifficultyUnlocked,
   } = useProgress();
   const {
     quizState,
     startChapterQuiz,
     startDifficultyQuiz,
-    startVocabularyQuiz,
+    startVocabularySectionQuiz,
     selectAnswer,
     nextQuestion,
     endQuiz,
@@ -42,8 +43,8 @@ export default function App() {
     setView('quiz');
   }
 
-  function handleSelectVocabulary() {
-    startVocabularyQuiz();
+  function handleSelectVocabularySection(sectionId: string) {
+    startVocabularySectionQuiz(sectionId);
     setView('quiz');
   }
 
@@ -55,8 +56,8 @@ export default function App() {
         recordSession(quizState.chapterId, score, quizState.questions.length);
       } else if (quizState.mode === 'difficulty' && quizState.difficulty) {
         recordDifficultySession(quizState.difficulty, score, quizState.questions.length);
-      } else if (quizState.mode === 'vocabulary') {
-        recordVocabularySession(score, quizState.questions.length);
+      } else if (quizState.mode === 'vocabulary' && quizState.vocabSectionId) {
+        recordVocabularySectionSession(quizState.vocabSectionId, score, quizState.questions.length);
       }
       setView('summary');
     } else {
@@ -74,9 +75,10 @@ export default function App() {
       const d = quizState.difficulty;
       endQuiz();
       startDifficultyQuiz(d);
-    } else if (quizState.mode === 'vocabulary') {
+    } else if (quizState.mode === 'vocabulary' && quizState.vocabSectionId) {
+      const sectionId = quizState.vocabSectionId;
       endQuiz();
-      startVocabularyQuiz();
+      startVocabularySectionQuiz(sectionId);
     }
     setView('quiz');
   }
@@ -88,6 +90,8 @@ export default function App() {
       setView('chapters');
     } else if (finishedMode === 'difficulty') {
       setView('difficulty');
+    } else if (finishedMode === 'vocabulary') {
+      setView('vocabSections');
     } else {
       setView('path');
     }
@@ -136,7 +140,7 @@ export default function App() {
 
         {view === 'path' && (
           <PathSelector
-            onSelectVocabulary={handleSelectVocabulary}
+            onSelectVocabulary={() => setView('vocabSections')}
             onSelectChapters={() => setView('chapters')}
             onSelectDifficulty={() => setView('difficulty')}
             onBack={() => setView('home')}
@@ -156,6 +160,14 @@ export default function App() {
             progress={progress}
             isUnlocked={isDifficultyUnlocked}
             onSelect={handleSelectDifficulty}
+            onBack={() => setView('path')}
+          />
+        )}
+
+        {view === 'vocabSections' && (
+          <VocabularySectionSelector
+            progress={progress}
+            onSelect={handleSelectVocabularySection}
             onBack={() => setView('path')}
           />
         )}
@@ -185,6 +197,7 @@ export default function App() {
             mode={quizState.mode}
             chapterId={quizState.chapterId}
             difficulty={quizState.difficulty}
+            vocabSectionId={quizState.vocabSectionId}
             questions={quizState.questions}
             answers={quizState.answers}
             onRetry={handleRetry}

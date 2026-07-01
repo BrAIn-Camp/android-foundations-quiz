@@ -1,0 +1,347 @@
+[
+  {
+    "id": "vocab-01-word",
+    "topic": "Vocabulary: Function",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A named, reusable block of code that performs a specific task, optionally taking inputs and returning a result\"?",
+    "choices": [
+      "Class",
+      "Function",
+      "Variable",
+      "Library"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A function is one of the most basic building blocks in any programming language. It's a named chunk of instructions you can run whenever you need that specific task done, instead of retyping the same steps over and over.",
+      "lineByLine": [
+        "\"Named\" — you give it a label, like `calculateTotal` or `fetchWeather`, so you can refer to it later.",
+        "\"Reusable\" — once written, you can call it as many times as you want from different places.",
+        "\"Optionally taking inputs\" — a function can accept values (called parameters) to work with, like a recipe taking ingredients.",
+        "\"Returning a result\" — many functions hand back a value when they're done, like a vending machine giving you a snack after you press a button."
+      ],
+      "tip": "Real-world analogy: a function is like a recipe card. It has a name (\"Make Pancakes\"), it might take ingredients (inputs), and it produces a result (pancakes). In an Android app, `fun calculateAverage(temps: List<Int>): Int` is a function — you give it a list of temperatures, and it hands back one average number."
+    }
+  },
+  {
+    "id": "vocab-01-def",
+    "topic": "Vocabulary: Function",
+    "difficulty": "easy",
+    "question": "What is a \"Function\"?",
+    "choices": [
+      "A blueprint used to create objects",
+      "A named, reusable block of code that performs a specific task, optionally taking inputs and returning a result",
+      "A file that lists everything an app is allowed to do",
+      "The final installable file for an Android app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A function is a named, reusable block of code that performs a specific task. It can take inputs (called parameters) and can return a result when it's done.",
+      "lineByLine": [
+        "Functions let you write a piece of logic ONE time and reuse it anywhere it's needed, instead of copy-pasting the same code repeatedly.",
+        "A function's name should describe what it does, like `sendEmail` or `formatDate`.",
+        "Some functions take inputs (parameters) to customize what they do, and some return a result back to whoever called them.",
+        "Functions are the basic unit of \"doing something\" in almost every programming language, including Kotlin."
+      ],
+      "tip": "Real-world analogy: think of a function like a recipe card — it has a name, it might need ingredients (inputs), and it produces something when followed (a result). In an app, a function like `fun login(username: String, password: String): Boolean` takes two inputs and returns true or false depending on whether the login worked."
+    }
+  },
+  {
+    "id": "vocab-02-word",
+    "topic": "Vocabulary: Class",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A blueprint that defines the properties and behaviors of a type of object; you create actual objects from it\"?",
+    "choices": [
+      "Class",
+      "Function",
+      "Package",
+      "Resource"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A class is a blueprint — it describes what a type of thing should look like and what it can do, but it isn't a real, usable thing by itself. You use a class to create actual objects, each with their own data.",
+      "lineByLine": [
+        "\"Blueprint\" — a class describes the shape of something, like what properties (data) and functions (behavior) it has.",
+        "\"Properties\" — the pieces of data a class defines, like a `User` class having a `name` and an `age`.",
+        "\"Behaviors\" — the functions a class defines, like a `User` class having a `sendMessage()` function.",
+        "\"You create actual objects from it\" — the class itself is just the plan; each real, usable version made from that plan is called an object."
+      ],
+      "tip": "Real-world analogy: a class is like a blueprint for a house. The blueprint itself isn't a house you can live in — it's just the plan. You can build many actual houses (objects) from the same blueprint (class), and each house can have its own paint color (its own data), even though they all follow the same basic design."
+    }
+  },
+  {
+    "id": "vocab-02-def",
+    "topic": "Vocabulary: Class",
+    "difficulty": "easy",
+    "question": "What is a \"Class\"?",
+    "choices": [
+      "A special value meaning no value at all",
+      "A blueprint that defines the properties and behaviors of a type of object; you create actual objects from it",
+      "A named container that holds a value which can change",
+      "A defined set of tools that lets two pieces of software talk to each other"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A class is a blueprint describing what a type of thing should look like (its properties) and what it can do (its behaviors/functions). It's not a real, usable thing on its own — you use the class to create actual objects.",
+      "lineByLine": [
+        "Classes group related data and functions together into one named blueprint, like `Dog` or `WeatherForecast`.",
+        "Properties are the pieces of data the class holds, like a `Dog` class having a `name` and a `breed`.",
+        "Functions defined inside a class describe its behaviors, like a `Dog` class having a `bark()` function.",
+        "You never use the class directly — you create individual objects from it, each with their own specific data."
+      ],
+      "tip": "Real-world analogy: a class is like a cookie cutter. The cutter itself isn't a cookie — it's the shape used to make many actual cookies (objects) from dough. In Kotlin, `class User(val name: String, val age: Int)` is a blueprint; `User(\"Alice\", 30)` creates one actual object following that blueprint."
+    }
+  },
+  {
+    "id": "vocab-03-word",
+    "topic": "Vocabulary: Object",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A specific instance created from a class, holding its own data based on that class's blueprint\"?",
+    "choices": [
+      "Class",
+      "Object",
+      "Variable",
+      "Function"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An object is a real, usable thing created from a class's blueprint. While the class describes what's possible, the object is an actual, specific version with its own real data.",
+      "lineByLine": [
+        "\"Specific instance\" — one actual, real example created from a class, as opposed to the abstract blueprint itself.",
+        "\"Created from a class\" — you always need a class first; the object is built following that class's design.",
+        "\"Holding its own data\" — even though many objects can come from the same class, each one can have different actual values.",
+        "This is why you might create many objects from one class — like many `User` objects, each with a different name and age."
+      ],
+      "tip": "Real-world analogy: if a class is a cookie cutter, an object is one actual cookie made using it. Every cookie shares the same shape (the class's design), but each one is a separate, real cookie you can actually eat. In code, `val myDog = Dog(\"Rex\", \"Labrador\")` creates one object — a real, specific dog — following the blueprint of the `Dog` class."
+    }
+  },
+  {
+    "id": "vocab-03-def",
+    "topic": "Vocabulary: Object",
+    "difficulty": "easy",
+    "question": "What is an \"Object\"?",
+    "choices": [
+      "A file describing an app's structure and rules",
+      "A specific instance created from a class, holding its own data based on that class's blueprint",
+      "A collection of pre-written code you can reuse",
+      "The environment where compiled code actually runs on a device"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An object is a real, specific instance created from a class. The class is the blueprint; the object is an actual usable thing built following that blueprint, with its own real values filled in.",
+      "lineByLine": [
+        "Every object comes from exactly one class — the class defines what properties and functions the object will have.",
+        "Multiple objects can be created from the same class, each with its own independent data.",
+        "Changing one object's data doesn't affect any other object created from the same class.",
+        "\"Creating an object\" is often called instantiating a class — making one specific instance of it."
+      ],
+      "tip": "Real-world analogy: if a class is a cookie cutter, an object is one actual cookie. You can make many cookies (objects) from one cutter (class), and each cookie is separate — frosting one doesn't frost the others. In an app, `val forecast = Weather(city = \"Seattle\", temp = 62)` creates one real object holding specific data, following the `Weather` class's blueprint."
+    }
+  },
+  {
+    "id": "vocab-04-word",
+    "topic": "Vocabulary: Variable",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A named container that holds a value, which can be read or (if mutable) changed later\"?",
+    "choices": [
+      "Variable",
+      "Object",
+      "Null",
+      "Function"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A variable is a named spot in the program's memory that holds a value. You give it a name so you can refer to that value later, and depending on how it's declared, that value might be allowed to change over time.",
+      "lineByLine": [
+        "\"Named container\" — a variable has a label (like `age` or `userName`) so the program (and you) can refer to it.",
+        "\"Holds a value\" — the variable stores something, like a number, a piece of text, or an object.",
+        "\"Can be read\" — you can look at what value the variable currently holds.",
+        "\"If mutable, changed later\" — some variables can be reassigned to a new value; others are locked once set."
+      ],
+      "tip": "Real-world analogy: a variable is like a labeled jar on a shelf. The label is the variable's name, and whatever is inside the jar is its current value. Some jars (like Kotlin's `val`) are sealed once filled — you can look inside, but never swap the contents. Other jars (like Kotlin's `var`) can be emptied and refilled with something new later."
+    }
+  },
+  {
+    "id": "vocab-04-def",
+    "topic": "Vocabulary: Variable",
+    "difficulty": "easy",
+    "question": "What is a \"Variable\"?",
+    "choices": [
+      "A named container that holds a value, which can be read or (if mutable) changed later",
+      "A special value meaning no value at all",
+      "The final installable file for an Android app",
+      "A tool for finding and fixing problems in running code"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A variable is a named container for a value. Its name lets your code refer back to that value later, and depending on how the variable is declared, it may or may not be allowed to change after it's first set.",
+      "lineByLine": [
+        "Every variable has a name, chosen by the programmer, that describes what it's holding.",
+        "The value inside a variable could be many kinds of things: a number, a piece of text, true/false, or even a whole object.",
+        "In Kotlin, a `val` variable is fixed once assigned — you can't reassign it. A `var` variable CAN be reassigned to a different value later.",
+        "Variables are how a program keeps track of information as it runs."
+      ],
+      "tip": "Real-world analogy: a variable is like a labeled jar. \"score\" might be the label, and the number inside is the current value. A sealed jar (val) can be looked at but never refilled. An open jar (var) can be emptied and refilled anytime. In an app, `var tapCount = 0` is a variable that starts at 0 and can be updated as the user taps a button."
+    }
+  },
+  {
+    "id": "vocab-05-word",
+    "topic": "Vocabulary: Null",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A special value meaning 'no value at all' — the absence of any real data\"?",
+    "choices": [
+      "Variable",
+      "Object",
+      "Null",
+      "Class"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "Null represents the complete absence of a value. It's not zero, it's not an empty piece of text — it means there's genuinely nothing there at all, which is an important, common situation to plan for in code.",
+      "lineByLine": [
+        "Null is different from a value like 0 or an empty string — those are still real, existing values. Null means there's no value whatsoever.",
+        "A variable can sometimes be null if it's declared as \"nullable\" — meaning the programmer expects it might not have a real value yet.",
+        "Trying to use a null value as if it were real (like calling a function on it) can cause errors, so code often has to check for null first.",
+        "Handling null carefully is a big part of writing reliable code, especially in Kotlin, which has strong built-in tools for this."
+      ],
+      "tip": "Real-world analogy: null is like an empty mailbox with no letter inside — not a letter that says \"nothing,\" but a complete absence of any letter at all. In an app, `val city: String? = null` means the city variable is allowed to have no value yet, which the app must check for before trying to use it."
+    }
+  },
+  {
+    "id": "vocab-05-def",
+    "topic": "Vocabulary: Null",
+    "difficulty": "easy",
+    "question": "What does \"Null\" mean?",
+    "choices": [
+      "A blueprint used to create objects",
+      "A named container that holds a value",
+      "A special value meaning 'no value at all' — the absence of any real data",
+      "A collection of pre-written code you can reuse"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "Null means the complete absence of a value — not zero, not an empty piece of text, but genuinely nothing at all. It's a normal, expected situation in code that has to be planned for carefully.",
+      "lineByLine": [
+        "A variable holding null isn't holding \"an empty version\" of something — it's holding nothing whatsoever.",
+        "Some variables are allowed to be null (called \"nullable\"), and some are never allowed to be null.",
+        "Code that assumes a value is never null, when it actually can be, is one of the most common sources of crashes in software.",
+        "Kotlin has special tools (like `?.` and `?:`) specifically designed to safely handle values that might be null."
+      ],
+      "tip": "Real-world analogy: null is like an empty parking spot — there's a spot (the variable exists), but there's no car in it (no actual value). In an app, if a user hasn't set a profile picture yet, `val profilePhoto: String? = null` correctly represents that there simply isn't one yet, rather than pretending there's a blank picture."
+    }
+  },
+  {
+    "id": "vocab-06-word",
+    "topic": "Vocabulary: API",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A defined set of tools and rules that lets one piece of software talk to another, without needing to know its internal details\"?",
+    "choices": [
+      "Library",
+      "API",
+      "Framework",
+      "SDK"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An API (Application Programming Interface) is like an agreed-upon menu of requests one piece of software can make to another. You don't need to know how the other side works internally — you just need to know what you can ask for and what you'll get back.",
+      "lineByLine": [
+        "\"Defined set of tools and rules\" — an API specifies exactly what requests are allowed and what format they need to be in.",
+        "\"Lets one piece of software talk to another\" — this could be your app talking to a weather service, or one part of your own code talking to another part.",
+        "\"Without needing to know its internal details\" — you don't need to understand HOW the weather service calculates temperature, just how to ask for it and read the answer.",
+        "APIs exist at many levels: a weather company's API, Android's own system APIs, or even a simple API made of a few functions inside your own app."
+      ],
+      "tip": "Real-world analogy: an API is like a restaurant menu. You don't need to know how the kitchen works — you just need to know what you can order (the menu items) and what you'll get back (the dish). In an app, calling a weather API means sending a request like \"give me today's forecast for Seattle\" and getting structured data back, without knowing how that service gathers its weather data."
+    }
+  },
+  {
+    "id": "vocab-06-def",
+    "topic": "Vocabulary: API",
+    "difficulty": "easy",
+    "question": "What is an \"API\"?",
+    "choices": [
+      "A pre-written collection of code you can add to your project",
+      "A defined set of tools and rules that lets one piece of software talk to another, without needing to know its internal details",
+      "The final installable file for an Android app",
+      "A tool for finding and fixing problems in running code"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An API (Application Programming Interface) is an agreed-upon set of requests one piece of software can make to another, along with the rules for how to ask and what you'll get back — all without needing to understand the other side's internal workings.",
+      "lineByLine": [
+        "APIs define exactly which requests are allowed, what information they need, and what format the response will be in.",
+        "The word \"interface\" is key — it's the boundary between two systems, hiding the complicated internal details on either side.",
+        "Apps commonly use APIs to fetch data from the internet, like weather, news, or maps information.",
+        "Android itself provides many APIs your app can use, like ones for accessing the camera, location, or notifications."
+      ],
+      "tip": "Real-world analogy: an API is like a restaurant menu — you order by name, without knowing the kitchen's recipes. In an app, `WeatherApi.fetchLatestForecasts()` is a call to an API — you ask for the latest forecasts, and you get structured data back, without knowing how that weather service actually calculates its predictions."
+    }
+  },
+  {
+    "id": "vocab-07-word",
+    "topic": "Vocabulary: Library",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A pre-written collection of code you can add to your project to reuse functionality, without writing it yourself\"?",
+    "choices": [
+      "Framework",
+      "API",
+      "Library",
+      "Module"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "A library is a bundle of already-written code that solves a specific problem, which you can add to your own project and use directly, saving you from writing that same functionality from scratch.",
+      "lineByLine": [
+        "\"Pre-written collection of code\" — someone else already solved a problem and packaged the solution up for others to use.",
+        "\"Add to your project\" — you pull the library in (often as a dependency, declared in Gradle) rather than copy-pasting its code.",
+        "\"Reuse functionality\" — you call the library's functions to get useful behavior, like formatting dates or loading images.",
+        "\"Without writing it yourself\" — this saves enormous amounts of time compared to solving every problem from scratch."
+      ],
+      "tip": "Real-world analogy: a library is like buying a pre-made cake mix instead of inventing your own recipe from raw ingredients. You still bake the cake (use the library in your code), but someone else already figured out the tricky parts. In Android, Room (for databases) and Retrofit (for network calls) are popular libraries apps commonly add as dependencies."
+    }
+  },
+  {
+    "id": "vocab-07-def",
+    "topic": "Vocabulary: Library",
+    "difficulty": "easy",
+    "question": "What is a \"Library\"?",
+    "choices": [
+      "A larger structure that provides the overall shape of an app and calls your code at the right moments",
+      "A pre-written collection of code you can add to your project to reuse functionality, without writing it yourself",
+      "A specific instance created from a class",
+      "The environment where compiled code actually runs on a device"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A library is a pre-written bundle of code that solves a specific problem, ready for you to add to your own project and use, instead of writing that same functionality yourself.",
+      "lineByLine": [
+        "Libraries are typically added to a project as a dependency, declared in a file like build.gradle.kts.",
+        "You call functions from the library the same way you'd call functions you wrote yourself.",
+        "A library usually focuses on one specific job — like handling network requests, or working with dates and times.",
+        "Using well-tested libraries instead of writing everything from scratch saves time and reduces bugs."
+      ],
+      "tip": "Real-world analogy: a library is like a pre-made cake mix — you still do the baking, but someone else figured out the tricky recipe details. In an app's build.gradle.kts, a line like `implementation(\"androidx.room:room-runtime:2.6.1\")` adds the Room library, giving your project ready-made tools for working with a database."
+    }
+  },
+  {
+    "id": "vocab-08-word",
+    "topic": "Vocabulary: Framework",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A larger structure that provides the overall shape of an app and calls YOUR code at the right moments, rather than the other way around\"?",
+    "choices": [
+      "Library",
+      "Framework",
+      "API",
+      "Module"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A framework is bigger than a library — instead of you calling its functions when you need them, a framework provides the overall structure of your app and decides WHEN to call the specific pieces of code you've written to fit inside that structure.",
+      "lineByLine": [
+        "With a library, YOU are in control — you call the library's functions whenever you decide you need them.",
+        "With a framework, the framework is in control — it calls YOUR code at specific moments it decides are appropriate.",
+        "Android itself is a framework: it decides when to call your Activity's onCreate, when to call your BroadcastReceiver's onReceive, and so on.",
+        "This difference (who's in charge) is sometimes called \"inversion of control\" — you're not driving; the framework is, and it invites your code along for specific parts of the ride."
+      ],
+      "tip": "Real-world analogy: a library is like a toolbox you reach into whenever you need a specific tool. A framework is more like a factory assembly line — it has its own overall process, and it calls on you (your code) to do specific jobs at specific points along the line. Android itself is a framework: it decides when your Activity's `onCreate` runs, not the other way around."
+    }
+  }
+]

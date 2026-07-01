@@ -19,7 +19,12 @@ import relEasy from '../data/relationships/easy.json';
 import relModerate from '../data/relationships/moderate.json';
 import relDifficult from '../data/relationships/difficult.json';
 
-import vocabulary from '../data/vocabulary/vocabulary.json';
+import vocabSection01 from '../data/vocabulary/section-01.json';
+import vocabSection02 from '../data/vocabulary/section-02.json';
+import vocabSection03 from '../data/vocabulary/section-03.json';
+import vocabSection04 from '../data/vocabulary/section-04.json';
+import vocabSection05 from '../data/vocabulary/section-05.json';
+import vocabSection06 from '../data/vocabulary/section-06.json';
 
 const QUESTIONS_PER_SESSION = 10;
 
@@ -37,7 +42,14 @@ const relationshipQuestions: Record<Difficulty, Question[]> = {
   difficult: relDifficult as Question[],
 };
 
-const vocabularyQuestions: Question[] = vocabulary as Question[];
+export const vocabularySectionQuestions: Record<string, Question[]> = {
+  'section-01': vocabSection01 as Question[],
+  'section-02': vocabSection02 as Question[],
+  'section-03': vocabSection03 as Question[],
+  'section-04': vocabSection04 as Question[],
+  'section-05': vocabSection05 as Question[],
+  'section-06': vocabSection06 as Question[],
+};
 
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
@@ -52,6 +64,7 @@ export interface QuizState {
   mode: 'chapter' | 'difficulty' | 'vocabulary';
   chapterId?: string;
   difficulty?: Difficulty;
+  vocabSectionId?: string;
   questions: Question[];
   currentIndex: number;
   selectedAnswer: number | null;
@@ -82,10 +95,14 @@ export function useQuiz() {
     });
   }, []);
 
-  const startVocabularyQuiz = useCallback(() => {
-    const selected = shuffle(vocabularyQuestions).slice(0, QUESTIONS_PER_SESSION);
+  const startVocabularySectionQuiz = useCallback((sectionId: string) => {
+    const pool = vocabularySectionQuestions[sectionId] ?? [];
+    // Sections are a fixed, curated set of 15 unique questions each —
+    // shuffle for display order variety, but show all of them (no sampling),
+    // so every question in the section is covered every time it's played.
+    const selected = shuffle(pool);
     setQuizState({
-      mode: 'vocabulary', questions: selected,
+      mode: 'vocabulary', vocabSectionId: sectionId, questions: selected,
       currentIndex: 0, selectedAnswer: null,
       answers: new Array(selected.length).fill(null), isComplete: false,
     });
@@ -124,7 +141,7 @@ export function useQuiz() {
     quizState,
     startChapterQuiz,
     startDifficultyQuiz,
-    startVocabularyQuiz,
+    startVocabularySectionQuiz,
     selectAnswer,
     nextQuestion,
     endQuiz,

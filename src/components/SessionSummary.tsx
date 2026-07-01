@@ -1,10 +1,12 @@
 import type { Question, Difficulty } from '../types/question';
 import { CHAPTERS } from '../data/chapterList';
+import { VOCAB_SECTIONS } from '../data/vocabularySectionList';
 
 interface SessionSummaryProps {
   mode: 'chapter' | 'difficulty' | 'vocabulary';
   chapterId?: string;
   difficulty?: Difficulty;
+  vocabSectionId?: string;
   questions: Question[];
   answers: (number | null)[];
   onRetry: () => void;
@@ -26,6 +28,7 @@ export default function SessionSummary({
   mode,
   chapterId,
   difficulty,
+  vocabSectionId,
   questions,
   answers,
   onRetry,
@@ -46,6 +49,11 @@ export default function SessionSummary({
   const nextChapter = chapter ? CHAPTERS.find(c => c.number === chapter.number + 1) : undefined;
   const nextDifficulty = difficulty ? NEXT_DIFFICULTY[difficulty] : undefined;
 
+  const vocabSection = vocabSectionId ? VOCAB_SECTIONS.find(s => s.id === vocabSectionId) : undefined;
+  const nextVocabSection = vocabSection
+    ? VOCAB_SECTIONS.find(s => s.number === vocabSection.number + 1)
+    : undefined;
+
   const missed = questions
     .map((q, i) => ({ q, i }))
     .filter(({ i }) => answers[i] !== questions[i].correctIndex);
@@ -53,13 +61,13 @@ export default function SessionSummary({
   const subtitle = isChapterMode
     ? `You scored ${pct}% on Ch ${String(chapter?.number).padStart(2, '0')}: ${chapter?.title}.`
     : isVocabMode
-      ? `You scored ${pct}% on this vocabulary round.`
+      ? `You scored ${pct}% on Section ${String(vocabSection?.number).padStart(2, '0')}: ${vocabSection?.title}.`
       : `You scored ${pct}% on the ${difficulty ? DIFFICULTY_LABELS[difficulty] : ''} relationship tier.`;
 
   const retryLabel = isChapterMode
     ? '🔄 Retry this chapter'
     : isVocabMode
-      ? '🔄 Try 10 more words'
+      ? '🔄 Retry this section'
       : `🔄 Retry ${difficulty ? DIFFICULTY_LABELS[difficulty] : ''}`;
 
   return (
@@ -108,9 +116,15 @@ export default function SessionSummary({
             </button>
           )
         ) : isVocabMode ? (
-          <button className="btn-primary" onClick={onChooseNext}>
-            Choose a Path →
-          </button>
+          passed && nextVocabSection ? (
+            <button className="btn-primary" onClick={onChooseNext}>
+              Next: Section {String(nextVocabSection.number).padStart(2, '0')} →
+            </button>
+          ) : (
+            <button className="btn-primary" onClick={onChooseNext}>
+              Choose Section
+            </button>
+          )
         ) : (
           passed && nextDifficulty ? (
             <button className="btn-primary" onClick={onChooseNext}>

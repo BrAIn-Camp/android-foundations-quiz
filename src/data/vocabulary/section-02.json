@@ -1,0 +1,347 @@
+[
+  {
+    "id": "vocab-08-def",
+    "topic": "Vocabulary: Framework",
+    "difficulty": "easy",
+    "question": "What is a \"Framework\"?",
+    "choices": [
+      "A pre-written collection of code you call whenever you need it",
+      "A larger structure that provides the overall shape of an app and calls YOUR code at the right moments, rather than the other way around",
+      "A named container that holds a value",
+      "A file describing an app's structure and rules"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A framework provides the overall shape and structure of an app, and it's the one that decides when to call specific pieces of code you've written — flipping the usual relationship where you're the one calling functions when you need them.",
+      "lineByLine": [
+        "Unlike a library (which you call), a framework calls YOU — it invokes your code at moments it has decided are appropriate.",
+        "Android is a framework: it decides when to run your Activity's onCreate, when your BroadcastReceiver's onReceive fires, and so on.",
+        "You write code that fits INTO the framework's structure, following its rules about naming, structure, and behavior.",
+        "This flipped relationship (the framework is in charge, not you) is a defining feature that separates a framework from a plain library."
+      ],
+      "tip": "Real-world analogy: a library is a toolbox you reach into when you need something. A framework is more like a factory assembly line that calls on you to do specific jobs at specific points. Android itself is exactly this kind of framework — you never directly call your own `onCreate()`; the Android OS decides when to call it for you."
+    }
+  },
+  {
+    "id": "vocab-09-word",
+    "topic": "Vocabulary: Runtime",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The environment where your compiled code actually executes on a real device, as opposed to when it's being written or built\"?",
+    "choices": [
+      "IDE",
+      "SDK",
+      "Runtime",
+      "Framework"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "The runtime is the phase where your app is actually running and doing things on a real device (or emulator), as opposed to the earlier phases of writing the code or building/compiling it into a finished app.",
+      "lineByLine": [
+        "Writing code happens in an editor, before anything runs — this is not the runtime.",
+        "Building/compiling turns your written code into something a device can actually run — still not the runtime itself.",
+        "Runtime is the actual moment the app is executing — buttons are being tapped, screens are appearing, data is being fetched.",
+        "Some errors only show up \"at runtime\" — meaning the code looked fine while writing/building it, but caused a problem once it was actually running."
+      ],
+      "tip": "Real-world analogy: writing a recipe is like writing code. Baking it in the oven is the build process. Actually eating and tasting the cake is the runtime — the moment where you experience whether it truly works. In an app, a crash that only happens when a specific button is tapped is a \"runtime\" problem — it wasn't caught while writing or building the code."
+    }
+  },
+  {
+    "id": "vocab-09-def",
+    "topic": "Vocabulary: Runtime",
+    "difficulty": "easy",
+    "question": "What does \"Runtime\" refer to?",
+    "choices": [
+      "A dedicated program for writing, building, and testing code",
+      "The environment where your compiled code actually executes on a real device, as opposed to when it's being written or built",
+      "A collection of libraries, tools, and APIs for a specific platform",
+      "A blueprint that defines the properties and behaviors of a type of object"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Runtime describes the actual period when an app is executing and doing things on a device — as opposed to the earlier stages of writing the code or compiling/building it into a finished, runnable form.",
+      "lineByLine": [
+        "Code goes through several stages: being written, being built/compiled, and finally running (the runtime).",
+        "Some problems (called runtime errors) only appear once the app is actually running — the code looked fine when written and compiled, but breaks in an actual real situation.",
+        "The Manifest lesson from earlier — an undeclared Activity crashing when launched — is a classic runtime problem, since it compiles just fine but fails once actually running.",
+        "\"Runtime\" is also sometimes used to describe the underlying system that manages your code while it executes."
+      ],
+      "tip": "Real-world analogy: writing a recipe is writing code. Baking it is building/compiling. Actually eating it and finding out if it tastes good is the runtime — the real, live experience of it working (or not). In an app, launching an undeclared Activity compiles just fine but crashes at runtime, once the app actually tries to do it."
+    }
+  },
+  {
+    "id": "vocab-10-word",
+    "topic": "Vocabulary: IDE / Android Studio",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A dedicated program for writing, building, and testing code, combining an editor, compiler, and other tools into one workspace\"?",
+    "choices": [
+      "SDK",
+      "IDE",
+      "API",
+      "Library"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An IDE (Integrated Development Environment) is the main program developers use to actually write and work with their code. Android Studio is the specific IDE built for Android app development.",
+      "lineByLine": [
+        "\"Integrated\" — many separate tools (editor, compiler, debugger, emulator control) are combined into one single program.",
+        "\"Writing\" — the IDE provides a smart text editor for writing code, often catching mistakes as you type.",
+        "\"Building\" — the IDE can trigger the build process (using Gradle) to turn your code into a runnable app.",
+        "\"Testing\" — the IDE lets you run your app on an emulator or real device, and inspect what's happening while it runs."
+      ],
+      "tip": "Real-world analogy: an IDE is like a fully-equipped workshop, rather than just a single tool. Instead of a bare notepad for writing and a separate program for building, an IDE like Android Studio puts the editor, the build tools, and the testing tools all in one place. Every Android developer spends most of their time working directly inside Android Studio."
+    }
+  },
+  {
+    "id": "vocab-10-def",
+    "topic": "Vocabulary: IDE / Android Studio",
+    "difficulty": "easy",
+    "question": "What is an \"IDE\" (like Android Studio)?",
+    "choices": [
+      "A collection of libraries, tools, and APIs for a specific platform",
+      "A dedicated program for writing, building, and testing code, combining an editor, compiler, and other tools into one workspace",
+      "The final installable file for an Android app",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An IDE (Integrated Development Environment) is the main application developers use day-to-day to write code, build it into a runnable app, and test it — combining many separate tools into one unified workspace. Android Studio is the official IDE for Android development.",
+      "lineByLine": [
+        "The IDE's text editor helps you write code, often highlighting mistakes or suggesting corrections as you type.",
+        "The IDE can trigger Gradle to build your project into an actual runnable app.",
+        "The IDE lets you launch your app on an emulator or a real connected device to see it actually running.",
+        "Tools like Logcat (for viewing debug messages) are typically built directly into the IDE as well."
+      ],
+      "tip": "Real-world analogy: an IDE is like a fully-equipped workshop rather than a single bare tool — everything you need is in one place. Android Studio specifically is the IDE built for Android development, combining code editing, Gradle builds, and device testing into one program."
+    }
+  },
+  {
+    "id": "vocab-11-word",
+    "topic": "Vocabulary: SDK",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A collection of libraries, tools, and APIs specifically for building apps for a particular platform, like Android\"?",
+    "choices": [
+      "IDE",
+      "SDK",
+      "Gradle",
+      "Library"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An SDK (Software Development Kit) is a bundled package of everything you need to build apps for a specific platform — including libraries, APIs, and tools tailored to that platform's requirements.",
+      "lineByLine": [
+        "\"Collection of libraries, tools, and APIs\" — the SDK isn't just one thing, it's a whole toolkit bundled together.",
+        "\"Specifically for building apps for a particular platform\" — the Android SDK is built specifically for making Android apps, with tools and APIs that only make sense on Android.",
+        "The Android SDK includes things like the APIs for Activities, Services, and system features, plus tools to build and package your app.",
+        "You typically install and manage the SDK through your IDE (like Android Studio), which handles keeping the right pieces available."
+      ],
+      "tip": "Real-world analogy: if a library is one tool and a framework is the assembly line, an SDK is the entire equipped workshop plus the manual for building one specific kind of thing — in this case, Android apps. When you set up a new Android project, Android Studio automatically manages which pieces of the Android SDK your project needs."
+    }
+  },
+  {
+    "id": "vocab-11-def",
+    "topic": "Vocabulary: SDK",
+    "difficulty": "easy",
+    "question": "What is an \"SDK\"?",
+    "choices": [
+      "A collection of libraries, tools, and APIs specifically for building apps for a particular platform, like Android",
+      "A dedicated program for writing, building, and testing code",
+      "A tool for finding and fixing problems in running code",
+      "The final installable file for an Android app"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "An SDK (Software Development Kit) bundles together everything needed to build apps for a specific platform — APIs, libraries, and supporting tools — all tailored to that one platform's specific needs.",
+      "lineByLine": [
+        "\"compileSdk\", \"minSdk\", and \"targetSdk\" (seen in a project's build.gradle.kts) all refer to specific versions of the Android SDK.",
+        "The SDK provides the actual APIs your code calls to do Android-specific things, like starting an Activity or accessing a Service.",
+        "Different SDK versions correspond to different Android OS versions, each potentially adding new capabilities.",
+        "Android Studio manages downloading and updating the SDK components your projects need."
+      ],
+      "tip": "Real-world analogy: an SDK is like a specialized construction kit for building one particular kind of structure — it has exactly the right tools and materials for that job, and nothing else. The Android SDK gives developers everything specifically needed to build Android apps, as opposed to a general-purpose programming toolkit."
+    }
+  },
+  {
+    "id": "vocab-12-word",
+    "topic": "Vocabulary: Debugging / Logcat",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The process (and tool) for finding and fixing problems in code by inspecting messages and errors the app produces while running\"?",
+    "choices": [
+      "Runtime",
+      "Debugging / Logcat",
+      "Gradle",
+      "API"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Debugging is the overall process of figuring out why something isn't working correctly. Logcat is Android Studio's specific tool for viewing the stream of messages, warnings, and errors an app produces while it's actually running.",
+      "lineByLine": [
+        "\"Finding and fixing problems\" — debugging is the whole activity of tracking down why something is broken and correcting it.",
+        "\"Inspecting messages and errors\" — Logcat shows a running feed of text output from the app, including your own debug messages and system-level errors.",
+        "Developers often deliberately add print statements or log calls (`Log.d(...)`) specifically to help debug a tricky problem.",
+        "When an app crashes, Logcat usually shows a detailed \"stack trace\" — a trail of information about exactly where and why the crash happened."
+      ],
+      "tip": "Real-world analogy: debugging is like being a detective, and Logcat is your notebook of clues. If a car makes a weird noise, a mechanic listens carefully and checks gauges to figure out what's wrong — that's debugging. Logcat is the running log where Android shows you exactly what your app is doing (and where it's going wrong) as it happens."
+    }
+  },
+  {
+    "id": "vocab-12-def",
+    "topic": "Vocabulary: Debugging / Logcat",
+    "difficulty": "easy",
+    "question": "What does \"Debugging\" (using a tool like Logcat) mean?",
+    "choices": [
+      "The process (and tool) for finding and fixing problems in code by inspecting messages and errors the app produces while running",
+      "The final installable file for an Android app",
+      "A named container that holds a value",
+      "A larger structure that calls your code at the right moments"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "Debugging is the process of finding and fixing problems in code. Logcat is the specific tool in Android Studio that shows a running feed of messages, warnings, and errors your app produces while it's actually executing, which is essential for figuring out what's actually going wrong.",
+      "lineByLine": [
+        "When an app doesn't behave as expected, debugging is the process of investigating why.",
+        "Logcat displays a continuous stream of text, including messages your own code deliberately logs, and errors the system reports automatically.",
+        "A crash typically produces a detailed error trail in Logcat, showing exactly which line of code caused the problem.",
+        "Skilled debugging often means reading Logcat carefully, forming a guess about the cause, and testing that guess."
+      ],
+      "tip": "Real-world analogy: debugging is being a detective, and Logcat is your notebook of clues from the scene. If a car makes a strange noise, a mechanic debugs the issue by listening and checking gauges. In an app, if a button doesn't do what it should, checking Logcat for error messages is usually the very first step toward figuring out why."
+    }
+  },
+  {
+    "id": "vocab-13-word",
+    "topic": "Vocabulary: Gradle",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The build system that assembles all of a project's code, resources, and dependencies into a finished, installable app\"?",
+    "choices": [
+      "Gradle",
+      "SDK",
+      "IDE",
+      "API"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "Gradle is the tool responsible for taking everything in your project — your Kotlin code, your resources (like images and text), and any libraries you're using — and combining them all into one finished, runnable app.",
+      "lineByLine": [
+        "Gradle reads configuration files (build.gradle.kts) that describe what your project needs: which SDK version, which dependencies, and other settings.",
+        "It compiles your Kotlin code into a form the device can actually run.",
+        "It bundles in your resources — images, text, layouts — alongside the compiled code.",
+        "The end result of a Gradle build is an installable app file, ready to run on a device."
+      ],
+      "tip": "Real-world analogy: Gradle is like a factory assembly line for your app. It takes raw materials (your code, images, and libraries) and runs them through a series of steps to produce a finished product (a runnable app) at the end. Every time you click \"Run\" in Android Studio, Gradle is working behind the scenes to assemble everything."
+    }
+  },
+  {
+    "id": "vocab-13-def",
+    "topic": "Vocabulary: Gradle",
+    "difficulty": "easy",
+    "question": "What is \"Gradle\"?",
+    "choices": [
+      "A dedicated program for writing, building, and testing code",
+      "The build system that assembles all of a project's code, resources, and dependencies into a finished, installable app",
+      "A single path of execution that can run code",
+      "The set of states a component moves through over time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Gradle is the build system responsible for combining everything in an Android project — code, resources, and any external libraries (dependencies) — into one finished, installable app.",
+      "lineByLine": [
+        "Gradle reads project configuration from files ending in .gradle.kts, describing exactly what the build needs.",
+        "It handles compiling code, bundling resources, and pulling in any declared dependencies (libraries).",
+        "Different modules in a larger project each typically have their own Gradle configuration.",
+        "The output of a successful Gradle build is a runnable app file, ready to install on a device."
+      ],
+      "tip": "Real-world analogy: Gradle is like a factory assembly line — raw materials (your code, images, and libraries) go in one end, and a finished, packaged product (a runnable app) comes out the other. Whenever you press \"Run\" in Android Studio, Gradle is doing this assembly work behind the scenes."
+    }
+  },
+  {
+    "id": "vocab-14-word",
+    "topic": "Vocabulary: Module",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A self-contained section of a project (like 'app') that Gradle builds somewhat independently, often with its own dependencies\"?",
+    "choices": [
+      "Package",
+      "Module",
+      "Dependency",
+      "Resource"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A module is one distinct, self-contained part of a larger project. The most common module in a simple Android project is called \"app\" — it holds the actual application code. Bigger projects can have multiple modules working together.",
+      "lineByLine": [
+        "\"Self-contained section\" — a module has its own folder, its own build.gradle.kts, and its own specific purpose.",
+        "\"Gradle builds somewhat independently\" — each module can be built and configured somewhat separately, even though they combine into one final app.",
+        "\"Often with its own dependencies\" — one module might need a networking library, while another module doesn't.",
+        "A project's settings.gradle.kts file lists every module that's part of the overall build."
+      ],
+      "tip": "Real-world analogy: think of a module like one department in a company — it has its own team and its own specific job, but it still works together with other departments to produce the company's overall product. A simple Android project usually has just one module (\"app\"), but larger projects might split things into several modules, like \"app\", \"core-network\", and \"feature-login\"."
+    }
+  },
+  {
+    "id": "vocab-14-def",
+    "topic": "Vocabulary: Module",
+    "difficulty": "easy",
+    "question": "What is a \"Module\" in an Android project?",
+    "choices": [
+      "A special value meaning no value at all",
+      "A self-contained section of a project (like 'app') that Gradle builds somewhat independently, often with its own dependencies",
+      "A message the operating system displays outside the app itself",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A module is a self-contained section of a project, with its own folder and build configuration, that Gradle can build somewhat independently. The most common module in a simple project is \"app,\" but larger projects can have several modules working together.",
+      "lineByLine": [
+        "Every module has its own build.gradle.kts file, describing its specific dependencies and settings.",
+        "A project's settings.gradle.kts registers which modules are actually included in the build.",
+        "Splitting a project into multiple modules (like a shared \"core\" module and several \"feature\" modules) is common in larger, professional apps.",
+        "Even with multiple modules, they all ultimately combine into one final app when built."
+      ],
+      "tip": "Real-world analogy: a module is like one department in a company — it has its own specific job and team, but still works together with the rest of the company toward one final product. A simple app might have just the \"app\" module; a larger app might split work across \"app\", \"core-network\", and \"feature-login\" modules."
+    }
+  },
+  {
+    "id": "vocab-15-word",
+    "topic": "Vocabulary: Dependency",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"An external library or module that your project relies on and pulls in, rather than writing that functionality yourself\"?",
+    "choices": [
+      "Module",
+      "Dependency",
+      "Package",
+      "Resource"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A dependency is something your project needs from outside itself — usually a library — that it pulls in and relies on, instead of the developer writing that same functionality from scratch.",
+      "lineByLine": [
+        "\"External library or module\" — a dependency is code that comes from somewhere other than your own hand-written app code.",
+        "\"Your project relies on\" — your code calls functions from that dependency, expecting it to be available.",
+        "\"Pulls in\" — Gradle downloads and includes the dependency automatically, based on what's declared in build.gradle.kts.",
+        "Common examples of dependencies include Room (for databases) or Retrofit (for network calls) — both are libraries most apps don't write from scratch."
+      ],
+      "tip": "Real-world analogy: a dependency is like ordering a part from a supplier instead of manufacturing it yourself. If you're building a car, you probably don't forge your own bolts — you rely on (depend on) a supplier for standard parts. In an app's build.gradle.kts, a line like `implementation(\"androidx.room:room-runtime:2.6.1\")` declares a dependency on the Room library."
+    }
+  },
+  {
+    "id": "vocab-15-def",
+    "topic": "Vocabulary: Dependency",
+    "difficulty": "easy",
+    "question": "What is a \"Dependency\" in an Android project?",
+    "choices": [
+      "An external library or module that your project relies on and pulls in, rather than writing that functionality yourself",
+      "A message the operating system displays outside the app itself",
+      "A single path of execution that can run code",
+      "A tool that decides which thread a coroutine's work should run on"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A dependency is an external library (or another module) that your project relies on and pulls in through Gradle, instead of the developer writing that same functionality from scratch themselves.",
+      "lineByLine": [
+        "Dependencies are declared in a module's build.gradle.kts file, usually with an `implementation(...)` line.",
+        "Gradle automatically downloads and includes each declared dependency when building the project.",
+        "Your own code can then call functions from that dependency as if it were part of your own project.",
+        "Relying on well-tested dependencies (like Room or Retrofit) saves significant time compared to building the same functionality yourself."
+      ],
+      "tip": "Real-world analogy: a dependency is like ordering a part from a supplier instead of making it yourself — if you're building furniture, you probably buy the screws rather than forging your own. In Android, declaring `implementation(\"androidx.room:room-runtime:2.6.1\")` in build.gradle.kts tells Gradle \"this project depends on the Room library — please include it.\""
+    }
+  }
+]

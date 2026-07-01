@@ -1,0 +1,347 @@
+[
+  {
+    "id": "vocab-16-word",
+    "topic": "Vocabulary: APK",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The final, installable package file that contains a compiled Android app, ready to run on a device\"?",
+    "choices": [
+      "Module",
+      "Dependency",
+      "APK",
+      "SDK"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "An APK (Android Package) is the actual file format used to distribute and install a finished Android app. It's the end result of Gradle's build process — everything your app needs, packaged into one file.",
+      "lineByLine": [
+        "\"Final, installable package file\" — an APK is a single file that a device can install, unlike your raw project source code.",
+        "\"Contains a compiled Android app\" — inside an APK is your compiled code, your resources (images, text), and the Manifest, all bundled together.",
+        "\"Ready to run on a device\" — once installed, the OS knows how to launch and run the app described by that APK.",
+        "When you download an app from the Play Store, you're effectively downloading (a more modern variant of) an APK."
+      ],
+      "tip": "Real-world analogy: an APK is like a sealed, ready-to-ship box containing a fully assembled product. Everything needed is already inside — you don't need to build anything yourself, you just install it. When Gradle finishes building a project, the output is an APK (or a related format called an App Bundle) ready to install on a phone."
+    }
+  },
+  {
+    "id": "vocab-16-def",
+    "topic": "Vocabulary: APK",
+    "difficulty": "easy",
+    "question": "What is an \"APK\"?",
+    "choices": [
+      "A collection of libraries, tools, and APIs for a specific platform",
+      "The final, installable package file that contains a compiled Android app, ready to run on a device",
+      "A file that officially declares every component, permission, and rule an app needs",
+      "The build system that assembles a project into a finished app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An APK (Android Package) is the actual installable file format for a finished Android app — the output of the Gradle build process, containing compiled code, resources, and the Manifest all bundled together.",
+      "lineByLine": [
+        "An APK is what actually gets installed on a device — you can't directly install raw project source code.",
+        "Building a project (via Gradle) is the process that produces an APK from your code and resources.",
+        "Once installed from an APK, the device's operating system reads the app's Manifest to know how to run it.",
+        "A related, more modern format called an App Bundle (AAB) is what's typically uploaded to the Play Store today, but it serves a similar purpose."
+      ],
+      "tip": "Real-world analogy: an APK is like a fully sealed, ready-to-ship box containing an assembled product — nothing more needs to be built, you just install it. Every Android app you've ever installed arrived on your device in essentially this kind of package."
+    }
+  },
+  {
+    "id": "vocab-17-word",
+    "topic": "Vocabulary: Manifest",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The file that officially declares every component, permission, and rule an Android app needs — nothing runs without being listed here\"?",
+    "choices": [
+      "Manifest",
+      "Package",
+      "Resource",
+      "Module"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "The Manifest (AndroidManifest.xml) is the single file where an app officially declares everything the operating system needs to know about it: every screen, every background helper, every sensitive permission it might request.",
+      "lineByLine": [
+        "\"Officially declares\" — writing something in code isn't enough; it must also appear in the Manifest to be recognized by the OS.",
+        "\"Every component\" — Activities, Services, and BroadcastReceivers all need their own entry here.",
+        "\"Permission\" — sensitive capabilities (like using the camera) are also declared in the Manifest.",
+        "\"Nothing runs without being listed here\" — even a perfectly coded screen will crash if launched without a matching Manifest entry."
+      ],
+      "tip": "Real-world analogy: the Manifest is like a school's front-office binder listing every classroom, teacher, and rule officially recognized by the school. A classroom that's built but never added to the binder doesn't officially exist as far as the school is concerned. In an app, forgetting to add a new screen to the Manifest is one of the most common beginner mistakes — the code compiles fine, but crashes the moment it's actually launched."
+    }
+  },
+  {
+    "id": "vocab-17-def",
+    "topic": "Vocabulary: Manifest",
+    "difficulty": "easy",
+    "question": "What is the \"Manifest\" (AndroidManifest.xml)?",
+    "choices": [
+      "A text-based format using nested tags to describe structured information",
+      "The file that officially declares every component, permission, and rule an Android app needs — nothing runs without being listed here",
+      "A named container that holds a value",
+      "The tool that assembles a project's code and files into an app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The Manifest is a required file, written in XML, that officially declares everything the Android operating system needs to know about an app — every screen, every background helper, and every sensitive permission it might request.",
+      "lineByLine": [
+        "Every Activity, Service, and BroadcastReceiver must have a matching entry in the Manifest to be recognized by the OS.",
+        "Permissions the app needs (like using the camera) are also declared in the Manifest.",
+        "The Manifest also declares app-wide settings, like the app's icon and display name.",
+        "A component that exists in code but is missing from the Manifest will compile fine but crash the moment the app tries to actually use it."
+      ],
+      "tip": "Real-world analogy: the Manifest is like a school's front-office binder listing every classroom and rule the school officially recognizes. A room that's built but not written in the binder doesn't officially exist to the school. Similarly, an app screen (Activity) not declared in the Manifest doesn't officially exist to the Android OS, even if the code is otherwise perfect."
+    }
+  },
+  {
+    "id": "vocab-18-word",
+    "topic": "Vocabulary: Package",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A naming convention (like a folder path) that uniquely identifies where a piece of code belongs, often matching an app's unique ID\"?",
+    "choices": [
+      "Module",
+      "Package",
+      "Resource",
+      "Dependency"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A package is a naming system (similar to a folder structure) used to organize and uniquely identify code. In Android, the package name is often the same as the app's unique application ID, distinguishing it from every other app.",
+      "lineByLine": [
+        "\"Naming convention (like a folder path)\" — package names use dots to separate parts, like `com.example.weathernow`.",
+        "\"Uniquely identifies where a piece of code belongs\" — a Kotlin file's package declaration matches the actual folder structure it lives in.",
+        "\"Often matching an app's unique ID\" — the applicationId in Gradle is frequently the same as the app's main package name.",
+        "This naming system prevents naming collisions — two different developers' `MainActivity` classes won't conflict if they're in different packages."
+      ],
+      "tip": "Real-world analogy: a package name is like a full mailing address, ensuring your letter reaches the right house even if many other houses share the same street name elsewhere. A class named `MainActivity` in `com.example.weathernow` is a completely different thing from a class also named `MainActivity` in `com.example.somethingelse` — the package makes each one uniquely identifiable."
+    }
+  },
+  {
+    "id": "vocab-18-def",
+    "topic": "Vocabulary: Package",
+    "difficulty": "easy",
+    "question": "What is a \"Package\" in Android/Kotlin?",
+    "choices": [
+      "A stream of values over time that code can continuously observe",
+      "A naming convention (like a folder path) that uniquely identifies where a piece of code belongs, often matching an app's unique ID",
+      "The set of states a component moves through over time",
+      "A message the operating system displays outside the app itself"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A package is a dot-separated naming system used to organize code and uniquely identify where it belongs, similar to a folder path. It's commonly the same as an app's unique application ID.",
+      "lineByLine": [
+        "A package name looks like `com.example.weathernow`, with each dot-separated part corresponding to an actual folder in the project.",
+        "Every Kotlin file starts with a package declaration matching its actual folder location.",
+        "This system prevents naming collisions between different developers' code that might otherwise use the same class names.",
+        "In the Manifest, `android:name=\".MainActivity\"` uses a leading dot as shorthand for \"this app's package plus MainActivity.\""
+      ],
+      "tip": "Real-world analogy: a package name is like a full mailing address — it ensures a letter reaches exactly the right house, even if other houses elsewhere share the same street name. Two developers can each have a class called `MainActivity`, but as long as they're in different packages (like `com.example.appone` vs `com.example.apptwo`), there's no conflict."
+    }
+  },
+  {
+    "id": "vocab-19-word",
+    "topic": "Vocabulary: Resource",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"Non-code assets a project uses, like images, text, and colors, kept separate from code so they're easy to change or swap\"?",
+    "choices": [
+      "Dependency",
+      "Resource",
+      "Module",
+      "Package"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A resource is any non-code content an app needs — images, text strings, colors, and more — kept in dedicated files separate from the actual programming logic, so they can be updated easily without touching code.",
+      "lineByLine": [
+        "\"Non-code assets\" — resources are things like pictures, text, and colors, not programming logic.",
+        "\"Images, text, and colors\" — these live in the res/ folder, organized into type-specific subfolders like drawable/, values/, and layout/.",
+        "\"Kept separate from code\" — this separation means a translator can update text, or a designer can update a color, without touching any Kotlin code at all.",
+        "Code refers to resources indirectly (through the R class), so changing a resource's value updates it everywhere it's used, automatically."
+      ],
+      "tip": "Real-world analogy: a resource is like the ingredients list on a recipe card, kept separate from the cooking instructions. You can swap in a different brand of flour (a resource change) without rewriting the whole recipe (the code). In Android, updating the text in strings.xml (a resource file) updates that text everywhere the app displays it, with zero code changes required."
+    }
+  },
+  {
+    "id": "vocab-19-def",
+    "topic": "Vocabulary: Resource",
+    "difficulty": "easy",
+    "question": "What is a \"Resource\" in an Android project?",
+    "choices": [
+      "A named container that holds a value",
+      "Non-code assets a project uses, like images, text, and colors, kept separate from code so they're easy to change or swap",
+      "A tool that decides which thread a coroutine's work should run on",
+      "A defined set of tools that lets two pieces of software talk to each other"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A resource is any non-code content an app needs, like images, text, and colors, stored in dedicated files (usually inside the res/ folder) separate from the app's actual programming logic.",
+      "lineByLine": [
+        "Resources are organized by type into subfolders: drawable/ for images, values/ for text and colors, layout/ for screen layouts.",
+        "Kotlin code refers to resources indirectly through the auto-generated R class, like `R.string.app_name`.",
+        "Because code only holds a reference (not a direct copy), updating a resource's value updates it everywhere automatically.",
+        "This separation makes it easy for translators or designers to update text and colors without ever touching Kotlin code."
+      ],
+      "tip": "Real-world analogy: a resource is like the ingredients list on a recipe card, kept separate from the actual cooking steps. You can swap in a different ingredient without rewriting the whole recipe. In Android, changing a color in colors.xml updates every button and screen using that color, without touching a single line of Kotlin code."
+    }
+  },
+  {
+    "id": "vocab-20-word",
+    "topic": "Vocabulary: XML",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A text-based format using nested tags to describe structured information, used for the Manifest and many resource files\"?",
+    "choices": [
+      "JSON",
+      "XML",
+      "APK",
+      "SDK"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "XML (Extensible Markup Language) is a text-based way of describing structured information using nested tags, similar to HTML. Android uses XML extensively for files like the Manifest and many resource files.",
+      "lineByLine": [
+        "\"Text-based format\" — an XML file is just readable text, not compiled binary code.",
+        "\"Nested tags\" — information is wrapped in labeled tags, like `<string name=\"app_name\">Weather Now</string>`, and tags can contain other tags inside them.",
+        "\"Describe structured information\" — XML is good at representing hierarchical, organized data, like a Manifest listing components inside an application, itself inside the whole manifest.",
+        "AndroidManifest.xml, strings.xml, and colors.xml (among others) are all examples of files written in this format."
+      ],
+      "tip": "Real-world analogy: XML is like a nested set of labeled boxes — a big box (the whole file) contains smaller labeled boxes inside it, which might contain even smaller labeled boxes. The AndroidManifest.xml file, for example, has a `<manifest>` box containing an `<application>` box, which itself contains `<activity>` boxes describing each screen."
+    }
+  },
+  {
+    "id": "vocab-20-def",
+    "topic": "Vocabulary: XML",
+    "difficulty": "easy",
+    "question": "What is \"XML\"?",
+    "choices": [
+      "A text-based format using nested tags to describe structured information, used for the Manifest and many resource files",
+      "A collection of libraries, tools, and APIs for a specific platform",
+      "The final, installable package file that contains a compiled Android app",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "XML is a text-based file format that uses nested, labeled tags to represent structured, hierarchical information. Android relies on XML heavily for files like the Manifest, strings, and colors.",
+      "lineByLine": [
+        "XML tags look like `<tagname>content</tagname>`, and tags can be nested inside other tags to show structure.",
+        "The Manifest (AndroidManifest.xml) uses XML to nest components (like activities) inside the overall application declaration.",
+        "Resource files like strings.xml and colors.xml also use XML to define individual named values.",
+        "XML is human-readable text, which is part of why it's easy to review and edit these files directly."
+      ],
+      "tip": "Real-world analogy: XML is like a nested set of labeled boxes, one inside another, showing how things relate and group together. In AndroidManifest.xml, a `<manifest>` box contains an `<application>` box, which contains one or more `<activity>` boxes — each level nested clearly inside the one before it."
+    }
+  },
+  {
+    "id": "vocab-21-word",
+    "topic": "Vocabulary: Activity",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A single screen in an Android app, hosting whatever UI is currently shown to the user\"?",
+    "choices": [
+      "Service",
+      "Activity",
+      "Context",
+      "Intent"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Activity is Android's term for a single screen. It's the OS-managed component responsible for hosting whatever UI is currently displayed, and it's declared in the Manifest so the operating system knows it exists.",
+      "lineByLine": [
+        "\"Single screen\" — one Activity typically represents one distinct screen the user sees, like a home screen or a settings screen.",
+        "\"Hosting whatever UI is currently shown\" — the Activity doesn't directly draw pixels itself; it hosts UI content (like Composables) via `setContent { }`.",
+        "Activities must be declared in the Manifest, or attempting to launch them will crash the app at runtime.",
+        "Only one Activity is ever the current, visible one, though others can exist \"on hold\" behind it in the back stack."
+      ],
+      "tip": "Real-world analogy: an Activity is like a classroom you can walk into. It's a real, distinct place, and it's officially recognized (declared in the Manifest, like a room in the front-office binder). In Android, `class MainActivity : ComponentActivity()` is a typical Activity declaration, and `setContent { HomeScreen() }` is how it hosts the actual screen content shown to the user."
+    }
+  },
+  {
+    "id": "vocab-21-def",
+    "topic": "Vocabulary: Activity",
+    "difficulty": "easy",
+    "question": "What is an \"Activity\" in Android?",
+    "choices": [
+      "A component that can perform work in the background",
+      "A single screen in an Android app, hosting whatever UI is currently shown to the user",
+      "A component that listens for and reacts to system-wide announcements",
+      "An object that gives code access to app-wide and system-level resources"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Activity represents a single screen in an Android app. It's an OS-managed component, declared in the Manifest, responsible for hosting whatever UI content is currently displayed to the user.",
+      "lineByLine": [
+        "Activities are declared in the Manifest with an `<activity>` tag; an undeclared Activity will crash the app when the code tries to launch it.",
+        "An Activity hosts UI content (typically Composable functions) via a call like `setContent { }`.",
+        "Only one Activity is ever the current, visible screen at a time, though others may exist \"on hold\" in the back stack.",
+        "The Android operating system manages an Activity's lifecycle — creating it, pausing it, and eventually destroying it based on what the user is doing."
+      ],
+      "tip": "Real-world analogy: an Activity is like a classroom you can walk into — a real, officially recognized place (declared in the Manifest). In code, `class MainActivity : ComponentActivity()` declares an Activity, and inside its `onCreate`, `setContent { HomeScreen() }` shows the actual screen content the user sees."
+    }
+  },
+  {
+    "id": "vocab-22-word",
+    "topic": "Vocabulary: Service",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A component that can perform work in the background, independent of whether any screen is currently open\"?",
+    "choices": [
+      "Activity",
+      "Service",
+      "BroadcastReceiver",
+      "Context"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Service is an Android component built specifically for doing work that doesn't need a visible screen, and — importantly — that can keep running even after the screen that started it closes.",
+      "lineByLine": [
+        "\"Perform work in the background\" — a Service has no UI of its own; it just does a job, like syncing data or playing music.",
+        "\"Independent of whether any screen is currently open\" — unlike most app components, a Service's lifetime isn't tied to any specific Activity staying open.",
+        "A Service still needs to be declared in the Manifest, just like an Activity — being invisible doesn't exempt it from that requirement.",
+        "A Service that needs to keep running with the user's awareness (like ongoing music playback) is often promoted to a \"foreground Service,\" showing a persistent notification."
+      ],
+      "tip": "Real-world analogy: a Service is like a school custodian who keeps cleaning even after all the students have gone home for the day. Their job isn't tied to any specific classroom being occupied. In an app, a Service called `WeatherSyncService` might keep downloading forecast data in the background, even after the screen that started it has been closed."
+    }
+  },
+  {
+    "id": "vocab-22-def",
+    "topic": "Vocabulary: Service",
+    "difficulty": "easy",
+    "question": "What is a \"Service\" in Android?",
+    "choices": [
+      "A single screen in an Android app",
+      "A component that can perform work in the background, independent of whether any screen is currently open",
+      "A request object used to start an Activity or Service",
+      "The set of states a component moves through over time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Service is an Android component designed to perform work in the background, with no screen of its own, and — critically — its running lifetime isn't tied to whether the screen that started it is still open.",
+      "lineByLine": [
+        "A Service has no visible UI; its whole purpose is doing a job, like syncing data or downloading a file.",
+        "Even though it has no screen, a Service must still be declared in the Manifest, just like an Activity.",
+        "A Service's lifetime is independent of any specific Activity — closing the screen that started it doesn't automatically stop it.",
+        "A Service performing ongoing work the user should be aware of is often promoted to a \"foreground Service,\" which requires showing a persistent notification."
+      ],
+      "tip": "Real-world analogy: a Service is like a school custodian who keeps working even after students go home — their job isn't tied to any one classroom staying occupied. In an app, a Service can keep syncing data in the background, even after you've closed the screen that started it."
+    }
+  },
+  {
+    "id": "vocab-23-word",
+    "topic": "Vocabulary: BroadcastReceiver",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A component that listens for and reacts to system-wide or app-wide announcements, called broadcasts\"?",
+    "choices": [
+      "Service",
+      "BroadcastReceiver",
+      "Activity",
+      "Intent"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A BroadcastReceiver is the component built specifically to listen for and react to broadcasts — one-to-many announcements that many independent parts of a system can all notice and respond to at once.",
+      "lineByLine": [
+        "\"Listens for\" — a BroadcastReceiver declares which specific kind of broadcast it cares about, like the device finishing booting up.",
+        "\"System-wide or app-wide announcements\" — broadcasts can come from the Android OS itself, or from an app's own code announcing something to itself.",
+        "\"Broadcasts\" — this specific term refers to the one-to-many messages that can be heard by many independent receivers simultaneously.",
+        "Unlike an Activity or Service, a BroadcastReceiver's reaction (onReceive) is meant to be brief — longer work should be handed off to a Service."
+      ],
+      "tip": "Real-world analogy: a BroadcastReceiver is like a classroom listening to the school's PA system. The principal's ONE announcement reaches every listening classroom at once, and each one independently decides how (or whether) to react. In Android, a BroadcastReceiver might listen for \"the device just finished booting,\" reacting the same way any listening classroom reacts to a PA announcement."
+    }
+  }
+]

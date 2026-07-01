@@ -26,7 +26,7 @@ export default function PathSelector({
             <p className="path-description">
               New to Android development? Start here. Learn the 45 core terms
               you'll see everywhere else in this app — Gradle, ViewModel, Intent,
-              Coroutine, and more — in plain language, tested from both directions.
+              Coroutine, and more — across 6 short sections, tested from both directions.
             </p>
             <div className="path-tiers">
               <span className="tier-pip pip-easy">Function</span>

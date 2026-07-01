@@ -1,0 +1,347 @@
+[
+  {
+    "id": "vocab-38-def",
+    "topic": "Vocabulary: Notification",
+    "difficulty": "easy",
+    "question": "What is a \"Notification\" in Android?",
+    "choices": [
+      "A message the operating system displays outside the app itself, often used to inform the user about something happening in the background",
+      "The ordered history of screens a user has visited",
+      "A component that can perform work in the background",
+      "A collection of libraries, tools, and APIs for a specific platform"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A Notification is a message displayed by the operating system, outside the app's own screen, commonly used to inform the user about background activity or to invite them back into the app.",
+      "lineByLine": [
+        "Notifications appear in the notification shade or as banners, independent of whether the app's own screen is currently open.",
+        "A foreground Service performing ongoing work (like a sync) is required to show a persistent Notification while it runs.",
+        "On modern Android, Notifications must belong to a previously declared Notification Channel to be shown at all.",
+        "Tapping a Notification commonly fires a PendingIntent, opening a specific screen back in the app."
+      ],
+      "tip": "Real-world analogy: a Notification is like a note slipped under your door, letting you know something happened while you weren't in the room. In an app, a background sync might show a Notification like \"Syncing weather data... 45%,\" letting the user know without needing the app's screen open at all."
+    }
+  },
+  {
+    "id": "vocab-39-word",
+    "topic": "Vocabulary: Back Stack",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The ordered history of screens a user has visited, used to determine what appears when the user navigates backward\"?",
+    "choices": [
+      "Back Stack",
+      "Lifecycle",
+      "Layout",
+      "Process"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "The Back Stack is Android's ordered record of every screen (Activity) the user has visited, in the order they visited them. It's what determines exactly what reappears when the user presses the back button.",
+      "lineByLine": [
+        "\"Ordered history of screens visited\" — each new screen you open is stacked on top of the one that led to it.",
+        "\"Used to determine what appears when the user navigates backward\" — pressing back simply reveals whatever's next in that stack, not something arbitrary.",
+        "A screen isn't destroyed just because you navigated away from it — it's still \"on hold\" in the Back Stack, waiting to reappear.",
+        "This is sometimes represented as `[MainActivity, ForecastDetailActivity]`, with the last (rightmost) entry being the currently visible screen."
+      ],
+      "tip": "Real-world analogy: a Back Stack is like a trail of breadcrumbs showing exactly which rooms you walked through to get where you are. Walking back simply retraces those same steps, one room at a time, in reverse. In an app, if MainActivity launches ForecastDetailActivity, the Back Stack becomes `[MainActivity, ForecastDetailActivity]`, and pressing back reveals MainActivity again, exactly where it was left."
+    }
+  },
+  {
+    "id": "vocab-39-def",
+    "topic": "Vocabulary: Back Stack",
+    "difficulty": "easy",
+    "question": "What is the \"Back Stack\" in Android?",
+    "choices": [
+      "A holder for UI-related data that survives configuration changes",
+      "The ordered history of screens a user has visited, used to determine what appears when the user navigates backward",
+      "A defined set of tools that lets two pieces of software talk to each other",
+      "A single path of execution that can run code"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The Back Stack is the ordered record of screens (Activities) a user has visited, with each new screen stacking on top of the previous one. It's exactly what determines what reappears when the user presses back.",
+      "lineByLine": [
+        "Launching a new screen pushes it onto the top of the Back Stack, above whatever screen launched it.",
+        "The screen underneath isn't destroyed — it's simply not visible, patiently waiting its turn.",
+        "Pressing back pops the top screen off the stack, revealing whatever screen is now on top.",
+        "This ordered, stack-like structure is why backward navigation always feels predictable and consistent."
+      ],
+      "tip": "Real-world analogy: a Back Stack is like a trail of breadcrumbs marking the rooms you walked through — retracing your steps means walking back through those same rooms in reverse order. In an app, if MainActivity launches ForecastDetailActivity, the Back Stack becomes `[MainActivity, ForecastDetailActivity]`; pressing back reveals MainActivity again, right where it was."
+    }
+  },
+  {
+    "id": "vocab-40-word",
+    "topic": "Vocabulary: Thread",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A single path of execution that can run code, with multiple threads allowing different work to happen in parallel\"?",
+    "choices": [
+      "Process",
+      "Thread",
+      "Coroutine",
+      "Dispatcher"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Thread is one single, ongoing path of execution capable of running code. A device can run multiple Threads at once, letting different pieces of work genuinely happen in parallel rather than strictly one at a time.",
+      "lineByLine": [
+        "\"Single path of execution\" — a Thread runs instructions one after another, in order.",
+        "\"Multiple threads allowing different work to happen in parallel\" — a device isn't limited to just one Thread; several can run truly simultaneously.",
+        "An app has one particularly important Thread, often called the Main Thread or UI Thread, responsible for drawing the screen and responding to touches.",
+        "If a slow task runs directly on that one important Thread, the whole app can freeze, since that Thread can't do anything else while it's busy."
+      ],
+      "tip": "Real-world analogy: a Thread is like one single worker doing tasks one at a time, in order. Having multiple Threads is like having multiple workers, each able to handle a different task at the same time. In an app, if a slow network call runs directly on the one Thread responsible for the screen, the whole app freezes — it's like the one worker in charge of answering the door being stuck doing something else entirely."
+    }
+  },
+  {
+    "id": "vocab-40-def",
+    "topic": "Vocabulary: Thread",
+    "difficulty": "easy",
+    "question": "What is a \"Thread\" in programming?",
+    "choices": [
+      "A running instance of an app on the device",
+      "A single path of execution that can run code, with multiple threads allowing different work to happen in parallel",
+      "A tool for scheduling work that should reliably happen eventually",
+      "A special value meaning no value at all"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Thread is one continuous path of execution capable of running code, one instruction after another. A device can run several Threads at once, allowing genuinely parallel work, rather than everything happening strictly one thing at a time.",
+      "lineByLine": [
+        "An app typically has one especially important Thread — often called the Main Thread or UI Thread — dedicated to drawing the screen and handling touches.",
+        "Running a slow task directly on that one important Thread can freeze the whole app, since that Thread has no ability to do anything else while busy.",
+        "Additional Threads can be used to do slow work (like network calls) without blocking the Main Thread.",
+        "Tools like coroutines are built on top of Threads, offering a more convenient way to manage this kind of work."
+      ],
+      "tip": "Real-world analogy: a Thread is like one worker doing tasks in order, one at a time. Multiple Threads are like multiple workers, each able to handle different tasks simultaneously. In an app, if a slow network call runs directly on the one Thread responsible for the screen, the whole app freezes — like the one person answering the door being stuck doing something else."
+    }
+  },
+  {
+    "id": "vocab-41-word",
+    "topic": "Vocabulary: UI Thread",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The one specific thread responsible for updating the screen, which must never be blocked by slow work\"?",
+    "choices": [
+      "Thread",
+      "UI Thread",
+      "Coroutine",
+      "Dispatcher"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The UI Thread (also called the Main Thread) is the ONE specific Thread responsible for drawing the screen and responding to taps and scrolls. If it gets blocked by something slow, the entire app appears frozen, since nothing else can happen on that same Thread in the meantime.",
+      "lineByLine": [
+        "\"The one specific thread\" — out of potentially many Threads, this particular one has a special, singular responsibility.",
+        "\"Responsible for updating the screen\" — every visible change, animation, and touch response happens through this Thread.",
+        "\"Must never be blocked by slow work\" — if this Thread is busy with something slow (like a raw network call), the whole app becomes unresponsive.",
+        "Coroutines dispatched to a different Thread (like via Dispatchers.IO) are the standard way to keep slow work off this critical Thread."
+      ],
+      "tip": "Real-world analogy: the UI Thread is like the one receptionist at a busy front desk — if they get stuck on a long phone call, nobody else can be helped, and the whole office appears \"frozen\" from a visitor's perspective. In an app, running a slow network call directly on the UI Thread freezes the whole screen until that call finishes."
+    }
+  },
+  {
+    "id": "vocab-41-def",
+    "topic": "Vocabulary: UI Thread",
+    "difficulty": "easy",
+    "question": "What is the \"UI Thread\" (or \"Main Thread\") in Android?",
+    "choices": [
+      "A tool for scheduling work that should reliably happen eventually",
+      "The one specific thread responsible for updating the screen, which must never be blocked by slow work",
+      "A function marked so it can pause at a slow point without blocking",
+      "A tool that decides which thread a coroutine's work should run on"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The UI Thread (or Main Thread) is the single Thread in an app specifically responsible for drawing the screen and responding to user interaction. Blocking it with slow work causes the entire app to appear frozen and unresponsive.",
+      "lineByLine": [
+        "Every screen update, animation, and tap response happens through this one particular Thread.",
+        "If a slow operation (like a direct, blocking network call) runs on this Thread, nothing else can happen until it finishes.",
+        "This is why slow work is typically moved to a different Thread, often via a coroutine dispatched with something like `Dispatchers.IO`.",
+        "A severely blocked UI Thread can eventually trigger an ANR (\"Application Not Responding\") warning from the OS."
+      ],
+      "tip": "Real-world analogy: the UI Thread is like the one receptionist at a busy front desk — if they're stuck on a long call, nobody else gets helped, and the whole office seems frozen. In an app, a slow task running directly on the UI Thread has this exact effect on the entire visible screen."
+    }
+  },
+  {
+    "id": "vocab-42-word",
+    "topic": "Vocabulary: Coroutine",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A way to write code that can pause at slow operations without blocking the thread it's running on\"?",
+    "choices": [
+      "Thread",
+      "Coroutine",
+      "Dispatcher",
+      "WorkManager"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Coroutine is Kotlin's tool for writing code that handles slow operations gracefully — it can pause at a slow point (like waiting on the network) without blocking the underlying Thread, which stays free to do other work in the meantime.",
+      "lineByLine": [
+        "\"A way to write code that can pause\" — a coroutine can stop partway through, at a slow operation, and pick back up later.",
+        "\"Without blocking the thread it's running on\" — this is the key benefit: the Thread isn't stuck waiting; it's freed up for other work while the coroutine is paused.",
+        "Coroutines are started with functions like `launch { }` or `async { }`, typically inside a defined scope tied to something like an Activity's lifecycle.",
+        "A suspend function is the specific kind of function that can actually be paused this way, and it can only be called from inside a coroutine."
+      ],
+      "tip": "Real-world analogy: a coroutine is like starting a print job and walking away to do other things, instead of standing frozen at the printer the whole time. In an app, `lifecycleScope.launch { fetchWeatherFromNetwork() }` starts a coroutine that can pause during the slow network call, without freezing the rest of the app."
+    }
+  },
+  {
+    "id": "vocab-42-def",
+    "topic": "Vocabulary: Coroutine",
+    "difficulty": "easy",
+    "question": "What is a \"Coroutine\" in Kotlin?",
+    "choices": [
+      "A single path of execution that can run code",
+      "A way to write code that can pause at slow operations without blocking the thread it's running on",
+      "The final, installable package file that contains a compiled Android app",
+      "A component that listens for and reacts to system-wide announcements"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Coroutine lets code pause at slow operations, like a network call, without blocking the underlying Thread. While paused, that Thread is free to do other work, which is exactly what keeps an app's UI responsive during slow tasks.",
+      "lineByLine": [
+        "Coroutines are typically started using functions like `launch { }` (fire-and-forget) or `async { }` (returns a result you can wait for).",
+        "A coroutine is usually tied to a specific scope, like `lifecycleScope`, so its lifetime is connected to something meaningful, like an Activity.",
+        "Inside a coroutine, suspend functions can be called — these are the specific functions capable of actually pausing without blocking.",
+        "Using coroutines correctly is the standard solution to the classic 'frozen app' problem caused by slow work running directly on the UI Thread."
+      ],
+      "tip": "Real-world analogy: a coroutine is like starting a print job and walking away to do other things, rather than standing frozen at the printer. In an app, `lifecycleScope.launch { fetchWeatherFromNetwork() }` starts a coroutine that can pause during a slow network call without freezing anything else."
+    }
+  },
+  {
+    "id": "vocab-43-word",
+    "topic": "Vocabulary: Suspend function",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A function marked so it can pause at a slow point without blocking, callable only from a coroutine or another suspend function\"?",
+    "choices": [
+      "Function",
+      "Suspend function",
+      "Callback",
+      "Dispatcher"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A suspend function is a specific kind of function marked with the `suspend` keyword, meaning it's allowed to pause partway through (typically at a slow operation) without blocking the Thread it's running on. It can only be called from inside a coroutine, or from another suspend function.",
+      "lineByLine": [
+        "\"A function marked so it can pause\" — the `suspend` keyword is what signals this special pausing ability.",
+        "\"At a slow point without blocking\" — this is exactly the mechanism that lets code wait on something slow (like a network response) without freezing the underlying Thread.",
+        "\"Callable only from a coroutine or another suspend function\" — this restriction exists because pausability only makes sense within a context (a coroutine) that's actually capable of supporting a pause.",
+        "Trying to call a suspend function from a regular, non-suspend function results in a compile error, since there's no coroutine context available to support the pause."
+      ],
+      "tip": "Real-world analogy: a suspend function is like a recipe step that says \"let it rest for 10 minutes\" — the step itself is allowed to pause, but only within the context of actually following the whole recipe (the coroutine); you can't have a resting step floating around outside any recipe at all. In code, `suspend fun fetchWeatherFromNetwork(): Weather` can only be called from inside a coroutine, like one started with `launch { }`."
+    }
+  },
+  {
+    "id": "vocab-43-def",
+    "topic": "Vocabulary: Suspend function",
+    "difficulty": "easy",
+    "question": "What is a \"Suspend function\" in Kotlin?",
+    "choices": [
+      "A holder for UI-related data that survives configuration changes",
+      "A function marked so it can pause at a slow point without blocking, callable only from a coroutine or another suspend function",
+      "A message the operating system displays outside the app itself",
+      "A collection of libraries, tools, and APIs for a specific platform"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A suspend function is marked with the `suspend` keyword, signaling that it can pause at a slow operation without blocking its underlying Thread. It's only callable from within a coroutine (or from another suspend function), since pausability requires that supporting context.",
+      "lineByLine": [
+        "The `suspend` keyword marks a function as one that MIGHT pause partway through its execution.",
+        "This pausing happens without blocking the Thread — other work can continue while the suspend function is paused, waiting on something slow.",
+        "Attempting to call a suspend function from an ordinary, non-suspend function is a compile error, since there's no coroutine to support the pause.",
+        "This is exactly why you'll always see suspend functions called from inside something like `lifecycleScope.launch { }`."
+      ],
+      "tip": "Real-world analogy: a suspend function is like a recipe step that says \"let it rest for 10 minutes\" — the pause only makes sense within the context of following an actual recipe (a coroutine), not floating on its own. In code, `suspend fun fetchWeatherFromNetwork(): Weather` can only be called from inside a coroutine."
+    }
+  },
+  {
+    "id": "vocab-44-word",
+    "topic": "Vocabulary: Dispatcher",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A tool that decides which thread or thread pool a coroutine's work should actually run on\"?",
+    "choices": [
+      "Coroutine",
+      "Dispatcher",
+      "Thread",
+      "WorkManager"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Dispatcher decides WHERE a coroutine's work actually runs — which Thread or group of Threads (thread pool) it's assigned to. Different kinds of work (like UI updates versus network calls) fit different Dispatchers better.",
+      "lineByLine": [
+        "\"Decides which thread or thread pool a coroutine's work should run on\" — this is the Dispatcher's whole job: choosing the right execution location for a given task.",
+        "`Dispatchers.Main` — runs work on the UI Thread, appropriate for anything touching the screen directly.",
+        "`Dispatchers.IO` — runs work on a Thread pool suited for slow, blocking-style tasks like network or disk access, kept off the UI Thread.",
+        "`Dispatchers.Default` — runs work on a Thread pool suited for heavy computation, like sorting large amounts of data."
+      ],
+      "tip": "Real-world analogy: a Dispatcher is like an office manager deciding which specific desk or team should handle an incoming task — customer-facing requests go to the front desk (Main), heavy paperwork goes to the back office (IO), and complex calculations go to the analytics team (Default). In code, `lifecycleScope.launch(Dispatchers.IO) { ... }` explicitly tells the coroutine to run its slow work on the IO Dispatcher, not the Main one."
+    }
+  },
+  {
+    "id": "vocab-44-def",
+    "topic": "Vocabulary: Dispatcher",
+    "difficulty": "easy",
+    "question": "What is a \"Dispatcher\" in Kotlin coroutines?",
+    "choices": [
+      "A function marked so it can pause at a slow point without blocking",
+      "A tool that decides which thread or thread pool a coroutine's work should actually run on",
+      "A single screen in an Android app",
+      "Structured, organized storage for data that can be saved and queried later"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Dispatcher determines exactly which Thread or thread pool a coroutine's work actually executes on. Choosing the right Dispatcher matters, since different kinds of work — touching the UI, doing slow I/O, or heavy computation — each fit a different Dispatcher best.",
+      "lineByLine": [
+        "`Dispatchers.Main` is for anything that needs to touch the UI directly, running on the UI Thread.",
+        "`Dispatchers.IO` is for slow, blocking-style work like network calls or database access, kept off the UI Thread.",
+        "`Dispatchers.Default` is for CPU-intensive computation, like sorting or processing large amounts of data.",
+        "`withContext(Dispatchers.Main) { }` is commonly used to briefly switch back to the UI Thread in the middle of otherwise IO-focused work, like updating the screen after a network call finishes."
+      ],
+      "tip": "Real-world analogy: a Dispatcher is like an office manager assigning incoming tasks to the right team — customer requests to the front desk (Main), heavy paperwork to the back office (IO), complex calculations to the analytics team (Default). In code, `Dispatchers.IO` is explicitly chosen for slow network calls to keep them off the all-important Main Thread."
+    }
+  },
+  {
+    "id": "vocab-45-word",
+    "topic": "Vocabulary: WorkManager",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A tool for scheduling work that should reliably happen eventually, even if it needs to wait for certain conditions or survive the app closing\"?",
+    "choices": [
+      "Service",
+      "WorkManager",
+      "Coroutine",
+      "Dispatcher"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "WorkManager is Android's tool for scheduling flexible, guaranteed-eventually background work. Unlike work that must happen immediately, WorkManager-scheduled tasks can wait for the right conditions (like network availability), and the request itself survives even if the app is closed or the process is killed in the meantime.",
+      "lineByLine": [
+        "\"Scheduling work that should reliably happen eventually\" — WorkManager is for tasks where the exact timing isn't critical, just eventual completion.",
+        "\"Even if it needs to wait for certain conditions\" — WorkManager supports constraints, like requiring network access before running.",
+        "\"Survive the app closing\" — WorkManager persists its own scheduling information, so a request isn't lost even if the process is killed before it runs.",
+        "This makes WorkManager well suited for tasks like backing up photos or syncing data, where exact timing doesn't matter, but eventual completion does."
+      ],
+      "tip": "Real-world analogy: WorkManager is like leaving a note for the maintenance crew: \"please fix this whenever convenient, once the hallway is quiet — no rush.\" The note doesn't disappear if you go home for the day; the task will still get done eventually, once the right conditions line up. In an app, a WorkManager request with a network constraint patiently waits until the device actually has a connection, then runs — even if the app was closed the whole time."
+    }
+  },
+  {
+    "id": "vocab-45-def",
+    "topic": "Vocabulary: WorkManager",
+    "difficulty": "easy",
+    "question": "What is \"WorkManager\" in Android?",
+    "choices": [
+      "A component that can perform work in the background, independent of whether any screen is currently open",
+      "A tool for scheduling work that should reliably happen eventually, even if it needs to wait for certain conditions or survive the app closing",
+      "A single path of execution that can run code",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "WorkManager is Android's tool for scheduling background work that doesn't need to happen immediately, but should reliably happen eventually — even if it needs to wait for specific conditions, and even if the app's process is killed in the meantime.",
+      "lineByLine": [
+        "WorkManager requests can include constraints, like requiring the device to have network access or be charging before running.",
+        "Unlike a Service (which is built for immediate, visible work), WorkManager is built for flexible-timing tasks, without needing a persistent notification.",
+        "WorkManager persists its own scheduling information to disk, so a request survives even a full process kill before it's had a chance to run.",
+        "Requests can also be chained together, so one task's completion triggers the next one in sequence."
+      ],
+      "tip": "Real-world analogy: WorkManager is like leaving a note for the maintenance crew: \"fix this whenever convenient, once the hallway is quiet.\" The note doesn't vanish if you go home for the day — the task still gets done eventually. In an app, a WorkManager request with a network constraint patiently waits for a connection before running, even surviving the app being fully closed in the meantime."
+    }
+  }
+]

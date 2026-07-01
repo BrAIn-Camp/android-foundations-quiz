@@ -27,6 +27,13 @@ export interface ChapterInfo {
   description: string;
 }
 
+export interface VocabularySectionInfo {
+  id: string;
+  number: number;
+  title: string;
+  description: string;
+}
+
 export interface ChapterProgress {
   bestScore: number;
   totalSeen: number;
@@ -44,5 +51,5 @@ export interface Progress {
   easy: DifficultyProgress;
   moderate: DifficultyProgress;
   difficult: DifficultyProgress;
-  vocabulary: ChapterProgress;
+  vocabularySections: Record<string, ChapterProgress>;
 }

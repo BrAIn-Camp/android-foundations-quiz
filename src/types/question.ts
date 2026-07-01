@@ -44,4 +44,5 @@ export interface Progress {
   easy: DifficultyProgress;
   moderate: DifficultyProgress;
   difficult: DifficultyProgress;
+  vocabulary: ChapterProgress;
 }

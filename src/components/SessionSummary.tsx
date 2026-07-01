@@ -2,7 +2,7 @@ import type { Question, Difficulty } from '../types/question';
 import { CHAPTERS } from '../data/chapterList';
 
 interface SessionSummaryProps {
-  mode: 'chapter' | 'difficulty';
+  mode: 'chapter' | 'difficulty' | 'vocabulary';
   chapterId?: string;
   difficulty?: Difficulty;
   questions: Question[];
@@ -38,6 +38,7 @@ export default function SessionSummary({
   const pct = Math.round((score / total) * 100);
 
   const isChapterMode = mode === 'chapter';
+  const isVocabMode = mode === 'vocabulary';
   const passThreshold = isChapterMode ? 80 : 70;
   const passed = pct >= passThreshold;
 
@@ -51,9 +52,15 @@ export default function SessionSummary({
 
   const subtitle = isChapterMode
     ? `You scored ${pct}% on Ch ${String(chapter?.number).padStart(2, '0')}: ${chapter?.title}.`
-    : `You scored ${pct}% on the ${difficulty ? DIFFICULTY_LABELS[difficulty] : ''} relationship tier.`;
+    : isVocabMode
+      ? `You scored ${pct}% on this vocabulary round.`
+      : `You scored ${pct}% on the ${difficulty ? DIFFICULTY_LABELS[difficulty] : ''} relationship tier.`;
 
-  const retryLabel = isChapterMode ? '🔄 Retry this chapter' : `🔄 Retry ${difficulty ? DIFFICULTY_LABELS[difficulty] : ''}`;
+  const retryLabel = isChapterMode
+    ? '🔄 Retry this chapter'
+    : isVocabMode
+      ? '🔄 Try 10 more words'
+      : `🔄 Retry ${difficulty ? DIFFICULTY_LABELS[difficulty] : ''}`;
 
   return (
     <div className="summary-card">
@@ -69,7 +76,7 @@ export default function SessionSummary({
 
       {missed.length > 0 && (
         <div className="missed-section">
-          <h3 className="missed-title">Relationships to revisit</h3>
+          <h3 className="missed-title">{isVocabMode ? 'Words to review' : 'Relationships to revisit'}</h3>
           <ul className="missed-list">
             {missed.map(({ q, i }) => (
               <li key={i} className="missed-item">
@@ -100,6 +107,10 @@ export default function SessionSummary({
               Choose Chapter
             </button>
           )
+        ) : isVocabMode ? (
+          <button className="btn-primary" onClick={onChooseNext}>
+            Choose a Path →
+          </button>
         ) : (
           passed && nextDifficulty ? (
             <button className="btn-primary" onClick={onChooseNext}>

@@ -11,6 +11,7 @@ const initialProgress = (): Progress => ({
   easy: defaultTier(),
   moderate: defaultTier(),
   difficult: defaultTier(),
+  vocabulary: defaultChapter(),
 });
 
 function loadProgress(): Progress {
@@ -22,6 +23,7 @@ function loadProgress(): Progress {
     if (!parsed.easy) parsed.easy = defaultTier();
     if (!parsed.moderate) parsed.moderate = defaultTier();
     if (!parsed.difficult) parsed.difficult = defaultTier();
+    if (!parsed.vocabulary) parsed.vocabulary = defaultChapter();
     return parsed;
   } catch {
     return initialProgress();
@@ -72,6 +74,22 @@ export function useProgress() {
     });
   }, []);
 
+  const recordVocabularySession = useCallback((score: number, total: number) => {
+    setProgress(prev => {
+      const tier = prev.vocabulary;
+      const updated: Progress = {
+        ...prev,
+        vocabulary: {
+          bestScore: Math.max(tier.bestScore, score),
+          totalSeen: total,
+          attempts: tier.attempts + 1,
+        },
+      };
+      saveProgress(updated);
+      return updated;
+    });
+  }, []);
+
   const resetProgress = useCallback(() => {
     const fresh = initialProgress();
     saveProgress(fresh);
@@ -91,5 +109,12 @@ export function useProgress() {
     [progress]
   );
 
-  return { progress, recordSession, recordDifficultySession, resetProgress, isDifficultyUnlocked };
+  return {
+    progress,
+    recordSession,
+    recordDifficultySession,
+    recordVocabularySession,
+    resetProgress,
+    isDifficultyUnlocked,
+  };
 }

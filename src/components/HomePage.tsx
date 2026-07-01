@@ -13,16 +13,17 @@ export default function HomePage({ onStart }: HomePageProps) {
         Understand how Android's building blocks relate to each other.
       </p>
       <ul className="home-features">
+        <li>🔤 <strong>Vocabulary</strong> — new here? Start with the 45 core terms first</li>
         <li>📖 <strong>By Chapter</strong> — 13 chapters, read code and predict what happens</li>
         <li>🕸️ <strong>By Relationship</strong> — see the whole system, 3 difficulty tiers</li>
-        <li>🟢 Easy tier explains everything in plain language, no jargon required</li>
         <li>🔴 Difficult tier covers full branching flows, like reviewing real AI-generated code</li>
       </ul>
       <p className="home-description">
-        Every question is about a <strong>relationship</strong> — what depends on what,
-        what happens when something changes, why one component needs another — not about
-        memorizing syntax. Read the snippet, reason about the relationship, then read a
-        detailed explanation tying it back to what you've already learned.
+        If you're new to Android (or new to coding entirely), start with{' '}
+        <strong>Vocabulary</strong> — quick, plain-language definitions of terms like
+        ViewModel, Gradle, and Intent, tested from both directions. Once the words feel
+        familiar, move on to reading real code by chapter, or exploring how every
+        component in the system relates to every other one.
       </p>
       <button className="btn-primary btn-large" onClick={onStart}>
         Start Learning →

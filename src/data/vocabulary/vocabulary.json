@@ -1,0 +1,2072 @@
+[
+  {
+    "id": "vocab-01-word",
+    "topic": "Vocabulary: Function",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A named, reusable block of code that performs a specific task, optionally taking inputs and returning a result\"?",
+    "choices": [
+      "Class",
+      "Function",
+      "Variable",
+      "Library"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A function is one of the most basic building blocks in any programming language. It's a named chunk of instructions you can run whenever you need that specific task done, instead of retyping the same steps over and over.",
+      "lineByLine": [
+        "\"Named\" — you give it a label, like `calculateTotal` or `fetchWeather`, so you can refer to it later.",
+        "\"Reusable\" — once written, you can call it as many times as you want from different places.",
+        "\"Optionally taking inputs\" — a function can accept values (called parameters) to work with, like a recipe taking ingredients.",
+        "\"Returning a result\" — many functions hand back a value when they're done, like a vending machine giving you a snack after you press a button."
+      ],
+      "tip": "Real-world analogy: a function is like a recipe card. It has a name (\"Make Pancakes\"), it might take ingredients (inputs), and it produces a result (pancakes). In an Android app, `fun calculateAverage(temps: List<Int>): Int` is a function — you give it a list of temperatures, and it hands back one average number."
+    }
+  },
+  {
+    "id": "vocab-01-def",
+    "topic": "Vocabulary: Function",
+    "difficulty": "easy",
+    "question": "What is a \"Function\"?",
+    "choices": [
+      "A blueprint used to create objects",
+      "A named, reusable block of code that performs a specific task, optionally taking inputs and returning a result",
+      "A file that lists everything an app is allowed to do",
+      "The final installable file for an Android app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A function is a named, reusable block of code that performs a specific task. It can take inputs (called parameters) and can return a result when it's done.",
+      "lineByLine": [
+        "Functions let you write a piece of logic ONE time and reuse it anywhere it's needed, instead of copy-pasting the same code repeatedly.",
+        "A function's name should describe what it does, like `sendEmail` or `formatDate`.",
+        "Some functions take inputs (parameters) to customize what they do, and some return a result back to whoever called them.",
+        "Functions are the basic unit of \"doing something\" in almost every programming language, including Kotlin."
+      ],
+      "tip": "Real-world analogy: think of a function like a recipe card — it has a name, it might need ingredients (inputs), and it produces something when followed (a result). In an app, a function like `fun login(username: String, password: String): Boolean` takes two inputs and returns true or false depending on whether the login worked."
+    }
+  },
+  {
+    "id": "vocab-02-word",
+    "topic": "Vocabulary: Class",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A blueprint that defines the properties and behaviors of a type of object; you create actual objects from it\"?",
+    "choices": [
+      "Class",
+      "Function",
+      "Package",
+      "Resource"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A class is a blueprint — it describes what a type of thing should look like and what it can do, but it isn't a real, usable thing by itself. You use a class to create actual objects, each with their own data.",
+      "lineByLine": [
+        "\"Blueprint\" — a class describes the shape of something, like what properties (data) and functions (behavior) it has.",
+        "\"Properties\" — the pieces of data a class defines, like a `User` class having a `name` and an `age`.",
+        "\"Behaviors\" — the functions a class defines, like a `User` class having a `sendMessage()` function.",
+        "\"You create actual objects from it\" — the class itself is just the plan; each real, usable version made from that plan is called an object."
+      ],
+      "tip": "Real-world analogy: a class is like a blueprint for a house. The blueprint itself isn't a house you can live in — it's just the plan. You can build many actual houses (objects) from the same blueprint (class), and each house can have its own paint color (its own data), even though they all follow the same basic design."
+    }
+  },
+  {
+    "id": "vocab-02-def",
+    "topic": "Vocabulary: Class",
+    "difficulty": "easy",
+    "question": "What is a \"Class\"?",
+    "choices": [
+      "A special value meaning no value at all",
+      "A blueprint that defines the properties and behaviors of a type of object; you create actual objects from it",
+      "A named container that holds a value which can change",
+      "A defined set of tools that lets two pieces of software talk to each other"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A class is a blueprint describing what a type of thing should look like (its properties) and what it can do (its behaviors/functions). It's not a real, usable thing on its own — you use the class to create actual objects.",
+      "lineByLine": [
+        "Classes group related data and functions together into one named blueprint, like `Dog` or `WeatherForecast`.",
+        "Properties are the pieces of data the class holds, like a `Dog` class having a `name` and a `breed`.",
+        "Functions defined inside a class describe its behaviors, like a `Dog` class having a `bark()` function.",
+        "You never use the class directly — you create individual objects from it, each with their own specific data."
+      ],
+      "tip": "Real-world analogy: a class is like a cookie cutter. The cutter itself isn't a cookie — it's the shape used to make many actual cookies (objects) from dough. In Kotlin, `class User(val name: String, val age: Int)` is a blueprint; `User(\"Alice\", 30)` creates one actual object following that blueprint."
+    }
+  },
+  {
+    "id": "vocab-03-word",
+    "topic": "Vocabulary: Object",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A specific instance created from a class, holding its own data based on that class's blueprint\"?",
+    "choices": [
+      "Class",
+      "Object",
+      "Variable",
+      "Function"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An object is a real, usable thing created from a class's blueprint. While the class describes what's possible, the object is an actual, specific version with its own real data.",
+      "lineByLine": [
+        "\"Specific instance\" — one actual, real example created from a class, as opposed to the abstract blueprint itself.",
+        "\"Created from a class\" — you always need a class first; the object is built following that class's design.",
+        "\"Holding its own data\" — even though many objects can come from the same class, each one can have different actual values.",
+        "This is why you might create many objects from one class — like many `User` objects, each with a different name and age."
+      ],
+      "tip": "Real-world analogy: if a class is a cookie cutter, an object is one actual cookie made using it. Every cookie shares the same shape (the class's design), but each one is a separate, real cookie you can actually eat. In code, `val myDog = Dog(\"Rex\", \"Labrador\")` creates one object — a real, specific dog — following the blueprint of the `Dog` class."
+    }
+  },
+  {
+    "id": "vocab-03-def",
+    "topic": "Vocabulary: Object",
+    "difficulty": "easy",
+    "question": "What is an \"Object\"?",
+    "choices": [
+      "A file describing an app's structure and rules",
+      "A specific instance created from a class, holding its own data based on that class's blueprint",
+      "A collection of pre-written code you can reuse",
+      "The environment where compiled code actually runs on a device"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An object is a real, specific instance created from a class. The class is the blueprint; the object is an actual usable thing built following that blueprint, with its own real values filled in.",
+      "lineByLine": [
+        "Every object comes from exactly one class — the class defines what properties and functions the object will have.",
+        "Multiple objects can be created from the same class, each with its own independent data.",
+        "Changing one object's data doesn't affect any other object created from the same class.",
+        "\"Creating an object\" is often called instantiating a class — making one specific instance of it."
+      ],
+      "tip": "Real-world analogy: if a class is a cookie cutter, an object is one actual cookie. You can make many cookies (objects) from one cutter (class), and each cookie is separate — frosting one doesn't frost the others. In an app, `val forecast = Weather(city = \"Seattle\", temp = 62)` creates one real object holding specific data, following the `Weather` class's blueprint."
+    }
+  },
+  {
+    "id": "vocab-04-word",
+    "topic": "Vocabulary: Variable",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A named container that holds a value, which can be read or (if mutable) changed later\"?",
+    "choices": [
+      "Variable",
+      "Object",
+      "Null",
+      "Function"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A variable is a named spot in the program's memory that holds a value. You give it a name so you can refer to that value later, and depending on how it's declared, that value might be allowed to change over time.",
+      "lineByLine": [
+        "\"Named container\" — a variable has a label (like `age` or `userName`) so the program (and you) can refer to it.",
+        "\"Holds a value\" — the variable stores something, like a number, a piece of text, or an object.",
+        "\"Can be read\" — you can look at what value the variable currently holds.",
+        "\"If mutable, changed later\" — some variables can be reassigned to a new value; others are locked once set."
+      ],
+      "tip": "Real-world analogy: a variable is like a labeled jar on a shelf. The label is the variable's name, and whatever is inside the jar is its current value. Some jars (like Kotlin's `val`) are sealed once filled — you can look inside, but never swap the contents. Other jars (like Kotlin's `var`) can be emptied and refilled with something new later."
+    }
+  },
+  {
+    "id": "vocab-04-def",
+    "topic": "Vocabulary: Variable",
+    "difficulty": "easy",
+    "question": "What is a \"Variable\"?",
+    "choices": [
+      "A named container that holds a value, which can be read or (if mutable) changed later",
+      "A special value meaning no value at all",
+      "The final installable file for an Android app",
+      "A tool for finding and fixing problems in running code"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A variable is a named container for a value. Its name lets your code refer back to that value later, and depending on how the variable is declared, it may or may not be allowed to change after it's first set.",
+      "lineByLine": [
+        "Every variable has a name, chosen by the programmer, that describes what it's holding.",
+        "The value inside a variable could be many kinds of things: a number, a piece of text, true/false, or even a whole object.",
+        "In Kotlin, a `val` variable is fixed once assigned — you can't reassign it. A `var` variable CAN be reassigned to a different value later.",
+        "Variables are how a program keeps track of information as it runs."
+      ],
+      "tip": "Real-world analogy: a variable is like a labeled jar. \"score\" might be the label, and the number inside is the current value. A sealed jar (val) can be looked at but never refilled. An open jar (var) can be emptied and refilled anytime. In an app, `var tapCount = 0` is a variable that starts at 0 and can be updated as the user taps a button."
+    }
+  },
+  {
+    "id": "vocab-05-word",
+    "topic": "Vocabulary: Null",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A special value meaning 'no value at all' — the absence of any real data\"?",
+    "choices": [
+      "Variable",
+      "Object",
+      "Null",
+      "Class"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "Null represents the complete absence of a value. It's not zero, it's not an empty piece of text — it means there's genuinely nothing there at all, which is an important, common situation to plan for in code.",
+      "lineByLine": [
+        "Null is different from a value like 0 or an empty string — those are still real, existing values. Null means there's no value whatsoever.",
+        "A variable can sometimes be null if it's declared as \"nullable\" — meaning the programmer expects it might not have a real value yet.",
+        "Trying to use a null value as if it were real (like calling a function on it) can cause errors, so code often has to check for null first.",
+        "Handling null carefully is a big part of writing reliable code, especially in Kotlin, which has strong built-in tools for this."
+      ],
+      "tip": "Real-world analogy: null is like an empty mailbox with no letter inside — not a letter that says \"nothing,\" but a complete absence of any letter at all. In an app, `val city: String? = null` means the city variable is allowed to have no value yet, which the app must check for before trying to use it."
+    }
+  },
+  {
+    "id": "vocab-05-def",
+    "topic": "Vocabulary: Null",
+    "difficulty": "easy",
+    "question": "What does \"Null\" mean?",
+    "choices": [
+      "A blueprint used to create objects",
+      "A named container that holds a value",
+      "A special value meaning 'no value at all' — the absence of any real data",
+      "A collection of pre-written code you can reuse"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "Null means the complete absence of a value — not zero, not an empty piece of text, but genuinely nothing at all. It's a normal, expected situation in code that has to be planned for carefully.",
+      "lineByLine": [
+        "A variable holding null isn't holding \"an empty version\" of something — it's holding nothing whatsoever.",
+        "Some variables are allowed to be null (called \"nullable\"), and some are never allowed to be null.",
+        "Code that assumes a value is never null, when it actually can be, is one of the most common sources of crashes in software.",
+        "Kotlin has special tools (like `?.` and `?:`) specifically designed to safely handle values that might be null."
+      ],
+      "tip": "Real-world analogy: null is like an empty parking spot — there's a spot (the variable exists), but there's no car in it (no actual value). In an app, if a user hasn't set a profile picture yet, `val profilePhoto: String? = null` correctly represents that there simply isn't one yet, rather than pretending there's a blank picture."
+    }
+  },
+  {
+    "id": "vocab-06-word",
+    "topic": "Vocabulary: API",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A defined set of tools and rules that lets one piece of software talk to another, without needing to know its internal details\"?",
+    "choices": [
+      "Library",
+      "API",
+      "Framework",
+      "SDK"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An API (Application Programming Interface) is like an agreed-upon menu of requests one piece of software can make to another. You don't need to know how the other side works internally — you just need to know what you can ask for and what you'll get back.",
+      "lineByLine": [
+        "\"Defined set of tools and rules\" — an API specifies exactly what requests are allowed and what format they need to be in.",
+        "\"Lets one piece of software talk to another\" — this could be your app talking to a weather service, or one part of your own code talking to another part.",
+        "\"Without needing to know its internal details\" — you don't need to understand HOW the weather service calculates temperature, just how to ask for it and read the answer.",
+        "APIs exist at many levels: a weather company's API, Android's own system APIs, or even a simple API made of a few functions inside your own app."
+      ],
+      "tip": "Real-world analogy: an API is like a restaurant menu. You don't need to know how the kitchen works — you just need to know what you can order (the menu items) and what you'll get back (the dish). In an app, calling a weather API means sending a request like \"give me today's forecast for Seattle\" and getting structured data back, without knowing how that service gathers its weather data."
+    }
+  },
+  {
+    "id": "vocab-06-def",
+    "topic": "Vocabulary: API",
+    "difficulty": "easy",
+    "question": "What is an \"API\"?",
+    "choices": [
+      "A pre-written collection of code you can add to your project",
+      "A defined set of tools and rules that lets one piece of software talk to another, without needing to know its internal details",
+      "The final installable file for an Android app",
+      "A tool for finding and fixing problems in running code"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An API (Application Programming Interface) is an agreed-upon set of requests one piece of software can make to another, along with the rules for how to ask and what you'll get back — all without needing to understand the other side's internal workings.",
+      "lineByLine": [
+        "APIs define exactly which requests are allowed, what information they need, and what format the response will be in.",
+        "The word \"interface\" is key — it's the boundary between two systems, hiding the complicated internal details on either side.",
+        "Apps commonly use APIs to fetch data from the internet, like weather, news, or maps information.",
+        "Android itself provides many APIs your app can use, like ones for accessing the camera, location, or notifications."
+      ],
+      "tip": "Real-world analogy: an API is like a restaurant menu — you order by name, without knowing the kitchen's recipes. In an app, `WeatherApi.fetchLatestForecasts()` is a call to an API — you ask for the latest forecasts, and you get structured data back, without knowing how that weather service actually calculates its predictions."
+    }
+  },
+  {
+    "id": "vocab-07-word",
+    "topic": "Vocabulary: Library",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A pre-written collection of code you can add to your project to reuse functionality, without writing it yourself\"?",
+    "choices": [
+      "Framework",
+      "API",
+      "Library",
+      "Module"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "A library is a bundle of already-written code that solves a specific problem, which you can add to your own project and use directly, saving you from writing that same functionality from scratch.",
+      "lineByLine": [
+        "\"Pre-written collection of code\" — someone else already solved a problem and packaged the solution up for others to use.",
+        "\"Add to your project\" — you pull the library in (often as a dependency, declared in Gradle) rather than copy-pasting its code.",
+        "\"Reuse functionality\" — you call the library's functions to get useful behavior, like formatting dates or loading images.",
+        "\"Without writing it yourself\" — this saves enormous amounts of time compared to solving every problem from scratch."
+      ],
+      "tip": "Real-world analogy: a library is like buying a pre-made cake mix instead of inventing your own recipe from raw ingredients. You still bake the cake (use the library in your code), but someone else already figured out the tricky parts. In Android, Room (for databases) and Retrofit (for network calls) are popular libraries apps commonly add as dependencies."
+    }
+  },
+  {
+    "id": "vocab-07-def",
+    "topic": "Vocabulary: Library",
+    "difficulty": "easy",
+    "question": "What is a \"Library\"?",
+    "choices": [
+      "A larger structure that provides the overall shape of an app and calls your code at the right moments",
+      "A pre-written collection of code you can add to your project to reuse functionality, without writing it yourself",
+      "A specific instance created from a class",
+      "The environment where compiled code actually runs on a device"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A library is a pre-written bundle of code that solves a specific problem, ready for you to add to your own project and use, instead of writing that same functionality yourself.",
+      "lineByLine": [
+        "Libraries are typically added to a project as a dependency, declared in a file like build.gradle.kts.",
+        "You call functions from the library the same way you'd call functions you wrote yourself.",
+        "A library usually focuses on one specific job — like handling network requests, or working with dates and times.",
+        "Using well-tested libraries instead of writing everything from scratch saves time and reduces bugs."
+      ],
+      "tip": "Real-world analogy: a library is like a pre-made cake mix — you still do the baking, but someone else figured out the tricky recipe details. In an app's build.gradle.kts, a line like `implementation(\"androidx.room:room-runtime:2.6.1\")` adds the Room library, giving your project ready-made tools for working with a database."
+    }
+  },
+  {
+    "id": "vocab-08-word",
+    "topic": "Vocabulary: Framework",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A larger structure that provides the overall shape of an app and calls YOUR code at the right moments, rather than the other way around\"?",
+    "choices": [
+      "Library",
+      "Framework",
+      "API",
+      "Module"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A framework is bigger than a library — instead of you calling its functions when you need them, a framework provides the overall structure of your app and decides WHEN to call the specific pieces of code you've written to fit inside that structure.",
+      "lineByLine": [
+        "With a library, YOU are in control — you call the library's functions whenever you decide you need them.",
+        "With a framework, the framework is in control — it calls YOUR code at specific moments it decides are appropriate.",
+        "Android itself is a framework: it decides when to call your Activity's onCreate, when to call your BroadcastReceiver's onReceive, and so on.",
+        "This difference (who's in charge) is sometimes called \"inversion of control\" — you're not driving; the framework is, and it invites your code along for specific parts of the ride."
+      ],
+      "tip": "Real-world analogy: a library is like a toolbox you reach into whenever you need a specific tool. A framework is more like a factory assembly line — it has its own overall process, and it calls on you (your code) to do specific jobs at specific points along the line. Android itself is a framework: it decides when your Activity's `onCreate` runs, not the other way around."
+    }
+  },
+  {
+    "id": "vocab-08-def",
+    "topic": "Vocabulary: Framework",
+    "difficulty": "easy",
+    "question": "What is a \"Framework\"?",
+    "choices": [
+      "A pre-written collection of code you call whenever you need it",
+      "A larger structure that provides the overall shape of an app and calls YOUR code at the right moments, rather than the other way around",
+      "A named container that holds a value",
+      "A file describing an app's structure and rules"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A framework provides the overall shape and structure of an app, and it's the one that decides when to call specific pieces of code you've written — flipping the usual relationship where you're the one calling functions when you need them.",
+      "lineByLine": [
+        "Unlike a library (which you call), a framework calls YOU — it invokes your code at moments it has decided are appropriate.",
+        "Android is a framework: it decides when to run your Activity's onCreate, when your BroadcastReceiver's onReceive fires, and so on.",
+        "You write code that fits INTO the framework's structure, following its rules about naming, structure, and behavior.",
+        "This flipped relationship (the framework is in charge, not you) is a defining feature that separates a framework from a plain library."
+      ],
+      "tip": "Real-world analogy: a library is a toolbox you reach into when you need something. A framework is more like a factory assembly line that calls on you to do specific jobs at specific points. Android itself is exactly this kind of framework — you never directly call your own `onCreate()`; the Android OS decides when to call it for you."
+    }
+  },
+  {
+    "id": "vocab-09-word",
+    "topic": "Vocabulary: Runtime",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The environment where your compiled code actually executes on a real device, as opposed to when it's being written or built\"?",
+    "choices": [
+      "IDE",
+      "SDK",
+      "Runtime",
+      "Framework"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "The runtime is the phase where your app is actually running and doing things on a real device (or emulator), as opposed to the earlier phases of writing the code or building/compiling it into a finished app.",
+      "lineByLine": [
+        "Writing code happens in an editor, before anything runs — this is not the runtime.",
+        "Building/compiling turns your written code into something a device can actually run — still not the runtime itself.",
+        "Runtime is the actual moment the app is executing — buttons are being tapped, screens are appearing, data is being fetched.",
+        "Some errors only show up \"at runtime\" — meaning the code looked fine while writing/building it, but caused a problem once it was actually running."
+      ],
+      "tip": "Real-world analogy: writing a recipe is like writing code. Baking it in the oven is the build process. Actually eating and tasting the cake is the runtime — the moment where you experience whether it truly works. In an app, a crash that only happens when a specific button is tapped is a \"runtime\" problem — it wasn't caught while writing or building the code."
+    }
+  },
+  {
+    "id": "vocab-09-def",
+    "topic": "Vocabulary: Runtime",
+    "difficulty": "easy",
+    "question": "What does \"Runtime\" refer to?",
+    "choices": [
+      "A dedicated program for writing, building, and testing code",
+      "The environment where your compiled code actually executes on a real device, as opposed to when it's being written or built",
+      "A collection of libraries, tools, and APIs for a specific platform",
+      "A blueprint that defines the properties and behaviors of a type of object"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Runtime describes the actual period when an app is executing and doing things on a device — as opposed to the earlier stages of writing the code or compiling/building it into a finished, runnable form.",
+      "lineByLine": [
+        "Code goes through several stages: being written, being built/compiled, and finally running (the runtime).",
+        "Some problems (called runtime errors) only appear once the app is actually running — the code looked fine when written and compiled, but breaks in an actual real situation.",
+        "The Manifest lesson from earlier — an undeclared Activity crashing when launched — is a classic runtime problem, since it compiles just fine but fails once actually running.",
+        "\"Runtime\" is also sometimes used to describe the underlying system that manages your code while it executes."
+      ],
+      "tip": "Real-world analogy: writing a recipe is writing code. Baking it is building/compiling. Actually eating it and finding out if it tastes good is the runtime — the real, live experience of it working (or not). In an app, launching an undeclared Activity compiles just fine but crashes at runtime, once the app actually tries to do it."
+    }
+  },
+  {
+    "id": "vocab-10-word",
+    "topic": "Vocabulary: IDE / Android Studio",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A dedicated program for writing, building, and testing code, combining an editor, compiler, and other tools into one workspace\"?",
+    "choices": [
+      "SDK",
+      "IDE",
+      "API",
+      "Library"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An IDE (Integrated Development Environment) is the main program developers use to actually write and work with their code. Android Studio is the specific IDE built for Android app development.",
+      "lineByLine": [
+        "\"Integrated\" — many separate tools (editor, compiler, debugger, emulator control) are combined into one single program.",
+        "\"Writing\" — the IDE provides a smart text editor for writing code, often catching mistakes as you type.",
+        "\"Building\" — the IDE can trigger the build process (using Gradle) to turn your code into a runnable app.",
+        "\"Testing\" — the IDE lets you run your app on an emulator or real device, and inspect what's happening while it runs."
+      ],
+      "tip": "Real-world analogy: an IDE is like a fully-equipped workshop, rather than just a single tool. Instead of a bare notepad for writing and a separate program for building, an IDE like Android Studio puts the editor, the build tools, and the testing tools all in one place. Every Android developer spends most of their time working directly inside Android Studio."
+    }
+  },
+  {
+    "id": "vocab-10-def",
+    "topic": "Vocabulary: IDE / Android Studio",
+    "difficulty": "easy",
+    "question": "What is an \"IDE\" (like Android Studio)?",
+    "choices": [
+      "A collection of libraries, tools, and APIs for a specific platform",
+      "A dedicated program for writing, building, and testing code, combining an editor, compiler, and other tools into one workspace",
+      "The final installable file for an Android app",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An IDE (Integrated Development Environment) is the main application developers use day-to-day to write code, build it into a runnable app, and test it — combining many separate tools into one unified workspace. Android Studio is the official IDE for Android development.",
+      "lineByLine": [
+        "The IDE's text editor helps you write code, often highlighting mistakes or suggesting corrections as you type.",
+        "The IDE can trigger Gradle to build your project into an actual runnable app.",
+        "The IDE lets you launch your app on an emulator or a real connected device to see it actually running.",
+        "Tools like Logcat (for viewing debug messages) are typically built directly into the IDE as well."
+      ],
+      "tip": "Real-world analogy: an IDE is like a fully-equipped workshop rather than a single bare tool — everything you need is in one place. Android Studio specifically is the IDE built for Android development, combining code editing, Gradle builds, and device testing into one program."
+    }
+  },
+  {
+    "id": "vocab-11-word",
+    "topic": "Vocabulary: SDK",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A collection of libraries, tools, and APIs specifically for building apps for a particular platform, like Android\"?",
+    "choices": [
+      "IDE",
+      "SDK",
+      "Gradle",
+      "Library"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An SDK (Software Development Kit) is a bundled package of everything you need to build apps for a specific platform — including libraries, APIs, and tools tailored to that platform's requirements.",
+      "lineByLine": [
+        "\"Collection of libraries, tools, and APIs\" — the SDK isn't just one thing, it's a whole toolkit bundled together.",
+        "\"Specifically for building apps for a particular platform\" — the Android SDK is built specifically for making Android apps, with tools and APIs that only make sense on Android.",
+        "The Android SDK includes things like the APIs for Activities, Services, and system features, plus tools to build and package your app.",
+        "You typically install and manage the SDK through your IDE (like Android Studio), which handles keeping the right pieces available."
+      ],
+      "tip": "Real-world analogy: if a library is one tool and a framework is the assembly line, an SDK is the entire equipped workshop plus the manual for building one specific kind of thing — in this case, Android apps. When you set up a new Android project, Android Studio automatically manages which pieces of the Android SDK your project needs."
+    }
+  },
+  {
+    "id": "vocab-11-def",
+    "topic": "Vocabulary: SDK",
+    "difficulty": "easy",
+    "question": "What is an \"SDK\"?",
+    "choices": [
+      "A collection of libraries, tools, and APIs specifically for building apps for a particular platform, like Android",
+      "A dedicated program for writing, building, and testing code",
+      "A tool for finding and fixing problems in running code",
+      "The final installable file for an Android app"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "An SDK (Software Development Kit) bundles together everything needed to build apps for a specific platform — APIs, libraries, and supporting tools — all tailored to that one platform's specific needs.",
+      "lineByLine": [
+        "\"compileSdk\", \"minSdk\", and \"targetSdk\" (seen in a project's build.gradle.kts) all refer to specific versions of the Android SDK.",
+        "The SDK provides the actual APIs your code calls to do Android-specific things, like starting an Activity or accessing a Service.",
+        "Different SDK versions correspond to different Android OS versions, each potentially adding new capabilities.",
+        "Android Studio manages downloading and updating the SDK components your projects need."
+      ],
+      "tip": "Real-world analogy: an SDK is like a specialized construction kit for building one particular kind of structure — it has exactly the right tools and materials for that job, and nothing else. The Android SDK gives developers everything specifically needed to build Android apps, as opposed to a general-purpose programming toolkit."
+    }
+  },
+  {
+    "id": "vocab-12-word",
+    "topic": "Vocabulary: Debugging / Logcat",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The process (and tool) for finding and fixing problems in code by inspecting messages and errors the app produces while running\"?",
+    "choices": [
+      "Runtime",
+      "Debugging / Logcat",
+      "Gradle",
+      "API"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Debugging is the overall process of figuring out why something isn't working correctly. Logcat is Android Studio's specific tool for viewing the stream of messages, warnings, and errors an app produces while it's actually running.",
+      "lineByLine": [
+        "\"Finding and fixing problems\" — debugging is the whole activity of tracking down why something is broken and correcting it.",
+        "\"Inspecting messages and errors\" — Logcat shows a running feed of text output from the app, including your own debug messages and system-level errors.",
+        "Developers often deliberately add print statements or log calls (`Log.d(...)`) specifically to help debug a tricky problem.",
+        "When an app crashes, Logcat usually shows a detailed \"stack trace\" — a trail of information about exactly where and why the crash happened."
+      ],
+      "tip": "Real-world analogy: debugging is like being a detective, and Logcat is your notebook of clues. If a car makes a weird noise, a mechanic listens carefully and checks gauges to figure out what's wrong — that's debugging. Logcat is the running log where Android shows you exactly what your app is doing (and where it's going wrong) as it happens."
+    }
+  },
+  {
+    "id": "vocab-12-def",
+    "topic": "Vocabulary: Debugging / Logcat",
+    "difficulty": "easy",
+    "question": "What does \"Debugging\" (using a tool like Logcat) mean?",
+    "choices": [
+      "The process (and tool) for finding and fixing problems in code by inspecting messages and errors the app produces while running",
+      "The final installable file for an Android app",
+      "A named container that holds a value",
+      "A larger structure that calls your code at the right moments"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "Debugging is the process of finding and fixing problems in code. Logcat is the specific tool in Android Studio that shows a running feed of messages, warnings, and errors your app produces while it's actually executing, which is essential for figuring out what's actually going wrong.",
+      "lineByLine": [
+        "When an app doesn't behave as expected, debugging is the process of investigating why.",
+        "Logcat displays a continuous stream of text, including messages your own code deliberately logs, and errors the system reports automatically.",
+        "A crash typically produces a detailed error trail in Logcat, showing exactly which line of code caused the problem.",
+        "Skilled debugging often means reading Logcat carefully, forming a guess about the cause, and testing that guess."
+      ],
+      "tip": "Real-world analogy: debugging is being a detective, and Logcat is your notebook of clues from the scene. If a car makes a strange noise, a mechanic debugs the issue by listening and checking gauges. In an app, if a button doesn't do what it should, checking Logcat for error messages is usually the very first step toward figuring out why."
+    }
+  },
+  {
+    "id": "vocab-13-word",
+    "topic": "Vocabulary: Gradle",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The build system that assembles all of a project's code, resources, and dependencies into a finished, installable app\"?",
+    "choices": [
+      "Gradle",
+      "SDK",
+      "IDE",
+      "API"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "Gradle is the tool responsible for taking everything in your project — your Kotlin code, your resources (like images and text), and any libraries you're using — and combining them all into one finished, runnable app.",
+      "lineByLine": [
+        "Gradle reads configuration files (build.gradle.kts) that describe what your project needs: which SDK version, which dependencies, and other settings.",
+        "It compiles your Kotlin code into a form the device can actually run.",
+        "It bundles in your resources — images, text, layouts — alongside the compiled code.",
+        "The end result of a Gradle build is an installable app file, ready to run on a device."
+      ],
+      "tip": "Real-world analogy: Gradle is like a factory assembly line for your app. It takes raw materials (your code, images, and libraries) and runs them through a series of steps to produce a finished product (a runnable app) at the end. Every time you click \"Run\" in Android Studio, Gradle is working behind the scenes to assemble everything."
+    }
+  },
+  {
+    "id": "vocab-13-def",
+    "topic": "Vocabulary: Gradle",
+    "difficulty": "easy",
+    "question": "What is \"Gradle\"?",
+    "choices": [
+      "A dedicated program for writing, building, and testing code",
+      "The build system that assembles all of a project's code, resources, and dependencies into a finished, installable app",
+      "A single path of execution that can run code",
+      "The set of states a component moves through over time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Gradle is the build system responsible for combining everything in an Android project — code, resources, and any external libraries (dependencies) — into one finished, installable app.",
+      "lineByLine": [
+        "Gradle reads project configuration from files ending in .gradle.kts, describing exactly what the build needs.",
+        "It handles compiling code, bundling resources, and pulling in any declared dependencies (libraries).",
+        "Different modules in a larger project each typically have their own Gradle configuration.",
+        "The output of a successful Gradle build is a runnable app file, ready to install on a device."
+      ],
+      "tip": "Real-world analogy: Gradle is like a factory assembly line — raw materials (your code, images, and libraries) go in one end, and a finished, packaged product (a runnable app) comes out the other. Whenever you press \"Run\" in Android Studio, Gradle is doing this assembly work behind the scenes."
+    }
+  },
+  {
+    "id": "vocab-14-word",
+    "topic": "Vocabulary: Module",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A self-contained section of a project (like 'app') that Gradle builds somewhat independently, often with its own dependencies\"?",
+    "choices": [
+      "Package",
+      "Module",
+      "Dependency",
+      "Resource"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A module is one distinct, self-contained part of a larger project. The most common module in a simple Android project is called \"app\" — it holds the actual application code. Bigger projects can have multiple modules working together.",
+      "lineByLine": [
+        "\"Self-contained section\" — a module has its own folder, its own build.gradle.kts, and its own specific purpose.",
+        "\"Gradle builds somewhat independently\" — each module can be built and configured somewhat separately, even though they combine into one final app.",
+        "\"Often with its own dependencies\" — one module might need a networking library, while another module doesn't.",
+        "A project's settings.gradle.kts file lists every module that's part of the overall build."
+      ],
+      "tip": "Real-world analogy: think of a module like one department in a company — it has its own team and its own specific job, but it still works together with other departments to produce the company's overall product. A simple Android project usually has just one module (\"app\"), but larger projects might split things into several modules, like \"app\", \"core-network\", and \"feature-login\"."
+    }
+  },
+  {
+    "id": "vocab-14-def",
+    "topic": "Vocabulary: Module",
+    "difficulty": "easy",
+    "question": "What is a \"Module\" in an Android project?",
+    "choices": [
+      "A special value meaning no value at all",
+      "A self-contained section of a project (like 'app') that Gradle builds somewhat independently, often with its own dependencies",
+      "A message the operating system displays outside the app itself",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A module is a self-contained section of a project, with its own folder and build configuration, that Gradle can build somewhat independently. The most common module in a simple project is \"app,\" but larger projects can have several modules working together.",
+      "lineByLine": [
+        "Every module has its own build.gradle.kts file, describing its specific dependencies and settings.",
+        "A project's settings.gradle.kts registers which modules are actually included in the build.",
+        "Splitting a project into multiple modules (like a shared \"core\" module and several \"feature\" modules) is common in larger, professional apps.",
+        "Even with multiple modules, they all ultimately combine into one final app when built."
+      ],
+      "tip": "Real-world analogy: a module is like one department in a company — it has its own specific job and team, but still works together with the rest of the company toward one final product. A simple app might have just the \"app\" module; a larger app might split work across \"app\", \"core-network\", and \"feature-login\" modules."
+    }
+  },
+  {
+    "id": "vocab-15-word",
+    "topic": "Vocabulary: Dependency",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"An external library or module that your project relies on and pulls in, rather than writing that functionality yourself\"?",
+    "choices": [
+      "Module",
+      "Dependency",
+      "Package",
+      "Resource"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A dependency is something your project needs from outside itself — usually a library — that it pulls in and relies on, instead of the developer writing that same functionality from scratch.",
+      "lineByLine": [
+        "\"External library or module\" — a dependency is code that comes from somewhere other than your own hand-written app code.",
+        "\"Your project relies on\" — your code calls functions from that dependency, expecting it to be available.",
+        "\"Pulls in\" — Gradle downloads and includes the dependency automatically, based on what's declared in build.gradle.kts.",
+        "Common examples of dependencies include Room (for databases) or Retrofit (for network calls) — both are libraries most apps don't write from scratch."
+      ],
+      "tip": "Real-world analogy: a dependency is like ordering a part from a supplier instead of manufacturing it yourself. If you're building a car, you probably don't forge your own bolts — you rely on (depend on) a supplier for standard parts. In an app's build.gradle.kts, a line like `implementation(\"androidx.room:room-runtime:2.6.1\")` declares a dependency on the Room library."
+    }
+  },
+  {
+    "id": "vocab-15-def",
+    "topic": "Vocabulary: Dependency",
+    "difficulty": "easy",
+    "question": "What is a \"Dependency\" in an Android project?",
+    "choices": [
+      "An external library or module that your project relies on and pulls in, rather than writing that functionality yourself",
+      "A message the operating system displays outside the app itself",
+      "A single path of execution that can run code",
+      "A tool that decides which thread a coroutine's work should run on"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A dependency is an external library (or another module) that your project relies on and pulls in through Gradle, instead of the developer writing that same functionality from scratch themselves.",
+      "lineByLine": [
+        "Dependencies are declared in a module's build.gradle.kts file, usually with an `implementation(...)` line.",
+        "Gradle automatically downloads and includes each declared dependency when building the project.",
+        "Your own code can then call functions from that dependency as if it were part of your own project.",
+        "Relying on well-tested dependencies (like Room or Retrofit) saves significant time compared to building the same functionality yourself."
+      ],
+      "tip": "Real-world analogy: a dependency is like ordering a part from a supplier instead of making it yourself — if you're building furniture, you probably buy the screws rather than forging your own. In Android, declaring `implementation(\"androidx.room:room-runtime:2.6.1\")` in build.gradle.kts tells Gradle \"this project depends on the Room library — please include it.\""
+    }
+  },
+  {
+    "id": "vocab-16-word",
+    "topic": "Vocabulary: APK",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The final, installable package file that contains a compiled Android app, ready to run on a device\"?",
+    "choices": [
+      "Module",
+      "Dependency",
+      "APK",
+      "SDK"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "An APK (Android Package) is the actual file format used to distribute and install a finished Android app. It's the end result of Gradle's build process — everything your app needs, packaged into one file.",
+      "lineByLine": [
+        "\"Final, installable package file\" — an APK is a single file that a device can install, unlike your raw project source code.",
+        "\"Contains a compiled Android app\" — inside an APK is your compiled code, your resources (images, text), and the Manifest, all bundled together.",
+        "\"Ready to run on a device\" — once installed, the OS knows how to launch and run the app described by that APK.",
+        "When you download an app from the Play Store, you're effectively downloading (a more modern variant of) an APK."
+      ],
+      "tip": "Real-world analogy: an APK is like a sealed, ready-to-ship box containing a fully assembled product. Everything needed is already inside — you don't need to build anything yourself, you just install it. When Gradle finishes building a project, the output is an APK (or a related format called an App Bundle) ready to install on a phone."
+    }
+  },
+  {
+    "id": "vocab-16-def",
+    "topic": "Vocabulary: APK",
+    "difficulty": "easy",
+    "question": "What is an \"APK\"?",
+    "choices": [
+      "A collection of libraries, tools, and APIs for a specific platform",
+      "The final, installable package file that contains a compiled Android app, ready to run on a device",
+      "A file that officially declares every component, permission, and rule an app needs",
+      "The build system that assembles a project into a finished app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An APK (Android Package) is the actual installable file format for a finished Android app — the output of the Gradle build process, containing compiled code, resources, and the Manifest all bundled together.",
+      "lineByLine": [
+        "An APK is what actually gets installed on a device — you can't directly install raw project source code.",
+        "Building a project (via Gradle) is the process that produces an APK from your code and resources.",
+        "Once installed from an APK, the device's operating system reads the app's Manifest to know how to run it.",
+        "A related, more modern format called an App Bundle (AAB) is what's typically uploaded to the Play Store today, but it serves a similar purpose."
+      ],
+      "tip": "Real-world analogy: an APK is like a fully sealed, ready-to-ship box containing an assembled product — nothing more needs to be built, you just install it. Every Android app you've ever installed arrived on your device in essentially this kind of package."
+    }
+  },
+  {
+    "id": "vocab-17-word",
+    "topic": "Vocabulary: Manifest",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The file that officially declares every component, permission, and rule an Android app needs — nothing runs without being listed here\"?",
+    "choices": [
+      "Manifest",
+      "Package",
+      "Resource",
+      "Module"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "The Manifest (AndroidManifest.xml) is the single file where an app officially declares everything the operating system needs to know about it: every screen, every background helper, every sensitive permission it might request.",
+      "lineByLine": [
+        "\"Officially declares\" — writing something in code isn't enough; it must also appear in the Manifest to be recognized by the OS.",
+        "\"Every component\" — Activities, Services, and BroadcastReceivers all need their own entry here.",
+        "\"Permission\" — sensitive capabilities (like using the camera) are also declared in the Manifest.",
+        "\"Nothing runs without being listed here\" — even a perfectly coded screen will crash if launched without a matching Manifest entry."
+      ],
+      "tip": "Real-world analogy: the Manifest is like a school's front-office binder listing every classroom, teacher, and rule officially recognized by the school. A classroom that's built but never added to the binder doesn't officially exist as far as the school is concerned. In an app, forgetting to add a new screen to the Manifest is one of the most common beginner mistakes — the code compiles fine, but crashes the moment it's actually launched."
+    }
+  },
+  {
+    "id": "vocab-17-def",
+    "topic": "Vocabulary: Manifest",
+    "difficulty": "easy",
+    "question": "What is the \"Manifest\" (AndroidManifest.xml)?",
+    "choices": [
+      "A text-based format using nested tags to describe structured information",
+      "The file that officially declares every component, permission, and rule an Android app needs — nothing runs without being listed here",
+      "A named container that holds a value",
+      "The tool that assembles a project's code and files into an app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The Manifest is a required file, written in XML, that officially declares everything the Android operating system needs to know about an app — every screen, every background helper, and every sensitive permission it might request.",
+      "lineByLine": [
+        "Every Activity, Service, and BroadcastReceiver must have a matching entry in the Manifest to be recognized by the OS.",
+        "Permissions the app needs (like using the camera) are also declared in the Manifest.",
+        "The Manifest also declares app-wide settings, like the app's icon and display name.",
+        "A component that exists in code but is missing from the Manifest will compile fine but crash the moment the app tries to actually use it."
+      ],
+      "tip": "Real-world analogy: the Manifest is like a school's front-office binder listing every classroom and rule the school officially recognizes. A room that's built but not written in the binder doesn't officially exist to the school. Similarly, an app screen (Activity) not declared in the Manifest doesn't officially exist to the Android OS, even if the code is otherwise perfect."
+    }
+  },
+  {
+    "id": "vocab-18-word",
+    "topic": "Vocabulary: Package",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A naming convention (like a folder path) that uniquely identifies where a piece of code belongs, often matching an app's unique ID\"?",
+    "choices": [
+      "Module",
+      "Package",
+      "Resource",
+      "Dependency"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A package is a naming system (similar to a folder structure) used to organize and uniquely identify code. In Android, the package name is often the same as the app's unique application ID, distinguishing it from every other app.",
+      "lineByLine": [
+        "\"Naming convention (like a folder path)\" — package names use dots to separate parts, like `com.example.weathernow`.",
+        "\"Uniquely identifies where a piece of code belongs\" — a Kotlin file's package declaration matches the actual folder structure it lives in.",
+        "\"Often matching an app's unique ID\" — the applicationId in Gradle is frequently the same as the app's main package name.",
+        "This naming system prevents naming collisions — two different developers' `MainActivity` classes won't conflict if they're in different packages."
+      ],
+      "tip": "Real-world analogy: a package name is like a full mailing address, ensuring your letter reaches the right house even if many other houses share the same street name elsewhere. A class named `MainActivity` in `com.example.weathernow` is a completely different thing from a class also named `MainActivity` in `com.example.somethingelse` — the package makes each one uniquely identifiable."
+    }
+  },
+  {
+    "id": "vocab-18-def",
+    "topic": "Vocabulary: Package",
+    "difficulty": "easy",
+    "question": "What is a \"Package\" in Android/Kotlin?",
+    "choices": [
+      "A stream of values over time that code can continuously observe",
+      "A naming convention (like a folder path) that uniquely identifies where a piece of code belongs, often matching an app's unique ID",
+      "The set of states a component moves through over time",
+      "A message the operating system displays outside the app itself"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A package is a dot-separated naming system used to organize code and uniquely identify where it belongs, similar to a folder path. It's commonly the same as an app's unique application ID.",
+      "lineByLine": [
+        "A package name looks like `com.example.weathernow`, with each dot-separated part corresponding to an actual folder in the project.",
+        "Every Kotlin file starts with a package declaration matching its actual folder location.",
+        "This system prevents naming collisions between different developers' code that might otherwise use the same class names.",
+        "In the Manifest, `android:name=\".MainActivity\"` uses a leading dot as shorthand for \"this app's package plus MainActivity.\""
+      ],
+      "tip": "Real-world analogy: a package name is like a full mailing address — it ensures a letter reaches exactly the right house, even if other houses elsewhere share the same street name. Two developers can each have a class called `MainActivity`, but as long as they're in different packages (like `com.example.appone` vs `com.example.apptwo`), there's no conflict."
+    }
+  },
+  {
+    "id": "vocab-19-word",
+    "topic": "Vocabulary: Resource",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"Non-code assets a project uses, like images, text, and colors, kept separate from code so they're easy to change or swap\"?",
+    "choices": [
+      "Dependency",
+      "Resource",
+      "Module",
+      "Package"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A resource is any non-code content an app needs — images, text strings, colors, and more — kept in dedicated files separate from the actual programming logic, so they can be updated easily without touching code.",
+      "lineByLine": [
+        "\"Non-code assets\" — resources are things like pictures, text, and colors, not programming logic.",
+        "\"Images, text, and colors\" — these live in the res/ folder, organized into type-specific subfolders like drawable/, values/, and layout/.",
+        "\"Kept separate from code\" — this separation means a translator can update text, or a designer can update a color, without touching any Kotlin code at all.",
+        "Code refers to resources indirectly (through the R class), so changing a resource's value updates it everywhere it's used, automatically."
+      ],
+      "tip": "Real-world analogy: a resource is like the ingredients list on a recipe card, kept separate from the cooking instructions. You can swap in a different brand of flour (a resource change) without rewriting the whole recipe (the code). In Android, updating the text in strings.xml (a resource file) updates that text everywhere the app displays it, with zero code changes required."
+    }
+  },
+  {
+    "id": "vocab-19-def",
+    "topic": "Vocabulary: Resource",
+    "difficulty": "easy",
+    "question": "What is a \"Resource\" in an Android project?",
+    "choices": [
+      "A named container that holds a value",
+      "Non-code assets a project uses, like images, text, and colors, kept separate from code so they're easy to change or swap",
+      "A tool that decides which thread a coroutine's work should run on",
+      "A defined set of tools that lets two pieces of software talk to each other"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A resource is any non-code content an app needs, like images, text, and colors, stored in dedicated files (usually inside the res/ folder) separate from the app's actual programming logic.",
+      "lineByLine": [
+        "Resources are organized by type into subfolders: drawable/ for images, values/ for text and colors, layout/ for screen layouts.",
+        "Kotlin code refers to resources indirectly through the auto-generated R class, like `R.string.app_name`.",
+        "Because code only holds a reference (not a direct copy), updating a resource's value updates it everywhere automatically.",
+        "This separation makes it easy for translators or designers to update text and colors without ever touching Kotlin code."
+      ],
+      "tip": "Real-world analogy: a resource is like the ingredients list on a recipe card, kept separate from the actual cooking steps. You can swap in a different ingredient without rewriting the whole recipe. In Android, changing a color in colors.xml updates every button and screen using that color, without touching a single line of Kotlin code."
+    }
+  },
+  {
+    "id": "vocab-20-word",
+    "topic": "Vocabulary: XML",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A text-based format using nested tags to describe structured information, used for the Manifest and many resource files\"?",
+    "choices": [
+      "JSON",
+      "XML",
+      "APK",
+      "SDK"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "XML (Extensible Markup Language) is a text-based way of describing structured information using nested tags, similar to HTML. Android uses XML extensively for files like the Manifest and many resource files.",
+      "lineByLine": [
+        "\"Text-based format\" — an XML file is just readable text, not compiled binary code.",
+        "\"Nested tags\" — information is wrapped in labeled tags, like `<string name=\"app_name\">Weather Now</string>`, and tags can contain other tags inside them.",
+        "\"Describe structured information\" — XML is good at representing hierarchical, organized data, like a Manifest listing components inside an application, itself inside the whole manifest.",
+        "AndroidManifest.xml, strings.xml, and colors.xml (among others) are all examples of files written in this format."
+      ],
+      "tip": "Real-world analogy: XML is like a nested set of labeled boxes — a big box (the whole file) contains smaller labeled boxes inside it, which might contain even smaller labeled boxes. The AndroidManifest.xml file, for example, has a `<manifest>` box containing an `<application>` box, which itself contains `<activity>` boxes describing each screen."
+    }
+  },
+  {
+    "id": "vocab-20-def",
+    "topic": "Vocabulary: XML",
+    "difficulty": "easy",
+    "question": "What is \"XML\"?",
+    "choices": [
+      "A text-based format using nested tags to describe structured information, used for the Manifest and many resource files",
+      "A collection of libraries, tools, and APIs for a specific platform",
+      "The final, installable package file that contains a compiled Android app",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "XML is a text-based file format that uses nested, labeled tags to represent structured, hierarchical information. Android relies on XML heavily for files like the Manifest, strings, and colors.",
+      "lineByLine": [
+        "XML tags look like `<tagname>content</tagname>`, and tags can be nested inside other tags to show structure.",
+        "The Manifest (AndroidManifest.xml) uses XML to nest components (like activities) inside the overall application declaration.",
+        "Resource files like strings.xml and colors.xml also use XML to define individual named values.",
+        "XML is human-readable text, which is part of why it's easy to review and edit these files directly."
+      ],
+      "tip": "Real-world analogy: XML is like a nested set of labeled boxes, one inside another, showing how things relate and group together. In AndroidManifest.xml, a `<manifest>` box contains an `<application>` box, which contains one or more `<activity>` boxes — each level nested clearly inside the one before it."
+    }
+  },
+  {
+    "id": "vocab-21-word",
+    "topic": "Vocabulary: Activity",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A single screen in an Android app, hosting whatever UI is currently shown to the user\"?",
+    "choices": [
+      "Service",
+      "Activity",
+      "Context",
+      "Intent"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Activity is Android's term for a single screen. It's the OS-managed component responsible for hosting whatever UI is currently displayed, and it's declared in the Manifest so the operating system knows it exists.",
+      "lineByLine": [
+        "\"Single screen\" — one Activity typically represents one distinct screen the user sees, like a home screen or a settings screen.",
+        "\"Hosting whatever UI is currently shown\" — the Activity doesn't directly draw pixels itself; it hosts UI content (like Composables) via `setContent { }`.",
+        "Activities must be declared in the Manifest, or attempting to launch them will crash the app at runtime.",
+        "Only one Activity is ever the current, visible one, though others can exist \"on hold\" behind it in the back stack."
+      ],
+      "tip": "Real-world analogy: an Activity is like a classroom you can walk into. It's a real, distinct place, and it's officially recognized (declared in the Manifest, like a room in the front-office binder). In Android, `class MainActivity : ComponentActivity()` is a typical Activity declaration, and `setContent { HomeScreen() }` is how it hosts the actual screen content shown to the user."
+    }
+  },
+  {
+    "id": "vocab-21-def",
+    "topic": "Vocabulary: Activity",
+    "difficulty": "easy",
+    "question": "What is an \"Activity\" in Android?",
+    "choices": [
+      "A component that can perform work in the background",
+      "A single screen in an Android app, hosting whatever UI is currently shown to the user",
+      "A component that listens for and reacts to system-wide announcements",
+      "An object that gives code access to app-wide and system-level resources"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Activity represents a single screen in an Android app. It's an OS-managed component, declared in the Manifest, responsible for hosting whatever UI content is currently displayed to the user.",
+      "lineByLine": [
+        "Activities are declared in the Manifest with an `<activity>` tag; an undeclared Activity will crash the app when the code tries to launch it.",
+        "An Activity hosts UI content (typically Composable functions) via a call like `setContent { }`.",
+        "Only one Activity is ever the current, visible screen at a time, though others may exist \"on hold\" in the back stack.",
+        "The Android operating system manages an Activity's lifecycle — creating it, pausing it, and eventually destroying it based on what the user is doing."
+      ],
+      "tip": "Real-world analogy: an Activity is like a classroom you can walk into — a real, officially recognized place (declared in the Manifest). In code, `class MainActivity : ComponentActivity()` declares an Activity, and inside its `onCreate`, `setContent { HomeScreen() }` shows the actual screen content the user sees."
+    }
+  },
+  {
+    "id": "vocab-22-word",
+    "topic": "Vocabulary: Service",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A component that can perform work in the background, independent of whether any screen is currently open\"?",
+    "choices": [
+      "Activity",
+      "Service",
+      "BroadcastReceiver",
+      "Context"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Service is an Android component built specifically for doing work that doesn't need a visible screen, and — importantly — that can keep running even after the screen that started it closes.",
+      "lineByLine": [
+        "\"Perform work in the background\" — a Service has no UI of its own; it just does a job, like syncing data or playing music.",
+        "\"Independent of whether any screen is currently open\" — unlike most app components, a Service's lifetime isn't tied to any specific Activity staying open.",
+        "A Service still needs to be declared in the Manifest, just like an Activity — being invisible doesn't exempt it from that requirement.",
+        "A Service that needs to keep running with the user's awareness (like ongoing music playback) is often promoted to a \"foreground Service,\" showing a persistent notification."
+      ],
+      "tip": "Real-world analogy: a Service is like a school custodian who keeps cleaning even after all the students have gone home for the day. Their job isn't tied to any specific classroom being occupied. In an app, a Service called `WeatherSyncService` might keep downloading forecast data in the background, even after the screen that started it has been closed."
+    }
+  },
+  {
+    "id": "vocab-22-def",
+    "topic": "Vocabulary: Service",
+    "difficulty": "easy",
+    "question": "What is a \"Service\" in Android?",
+    "choices": [
+      "A single screen in an Android app",
+      "A component that can perform work in the background, independent of whether any screen is currently open",
+      "A request object used to start an Activity or Service",
+      "The set of states a component moves through over time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Service is an Android component designed to perform work in the background, with no screen of its own, and — critically — its running lifetime isn't tied to whether the screen that started it is still open.",
+      "lineByLine": [
+        "A Service has no visible UI; its whole purpose is doing a job, like syncing data or downloading a file.",
+        "Even though it has no screen, a Service must still be declared in the Manifest, just like an Activity.",
+        "A Service's lifetime is independent of any specific Activity — closing the screen that started it doesn't automatically stop it.",
+        "A Service performing ongoing work the user should be aware of is often promoted to a \"foreground Service,\" which requires showing a persistent notification."
+      ],
+      "tip": "Real-world analogy: a Service is like a school custodian who keeps working even after students go home — their job isn't tied to any one classroom staying occupied. In an app, a Service can keep syncing data in the background, even after you've closed the screen that started it."
+    }
+  },
+  {
+    "id": "vocab-23-word",
+    "topic": "Vocabulary: BroadcastReceiver",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A component that listens for and reacts to system-wide or app-wide announcements, called broadcasts\"?",
+    "choices": [
+      "Service",
+      "BroadcastReceiver",
+      "Activity",
+      "Intent"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A BroadcastReceiver is the component built specifically to listen for and react to broadcasts — one-to-many announcements that many independent parts of a system can all notice and respond to at once.",
+      "lineByLine": [
+        "\"Listens for\" — a BroadcastReceiver declares which specific kind of broadcast it cares about, like the device finishing booting up.",
+        "\"System-wide or app-wide announcements\" — broadcasts can come from the Android OS itself, or from an app's own code announcing something to itself.",
+        "\"Broadcasts\" — this specific term refers to the one-to-many messages that can be heard by many independent receivers simultaneously.",
+        "Unlike an Activity or Service, a BroadcastReceiver's reaction (onReceive) is meant to be brief — longer work should be handed off to a Service."
+      ],
+      "tip": "Real-world analogy: a BroadcastReceiver is like a classroom listening to the school's PA system. The principal's ONE announcement reaches every listening classroom at once, and each one independently decides how (or whether) to react. In Android, a BroadcastReceiver might listen for \"the device just finished booting,\" reacting the same way any listening classroom reacts to a PA announcement."
+    }
+  },
+  {
+    "id": "vocab-23-def",
+    "topic": "Vocabulary: BroadcastReceiver",
+    "difficulty": "easy",
+    "question": "What is a \"BroadcastReceiver\" in Android?",
+    "choices": [
+      "A single screen in an Android app",
+      "A component that listens for and reacts to system-wide or app-wide announcements, called broadcasts",
+      "An object that gives code access to app-wide and system-level resources",
+      "A tool for scheduling work that should reliably happen eventually"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A BroadcastReceiver is an Android component that listens for and reacts to broadcasts — messages that can be heard by many independent parts of the system at once, rather than being addressed to just one specific destination.",
+      "lineByLine": [
+        "A BroadcastReceiver declares which specific broadcast it cares about, like a network connectivity change.",
+        "Broadcasts can be sent by the Android operating system itself, or by an app's own code.",
+        "Because many receivers can listen for the same broadcast independently, this is fundamentally different from a private, one-to-one Intent request.",
+        "A BroadcastReceiver's onReceive function is meant to react briefly, often delegating any longer work to a Service."
+      ],
+      "tip": "Real-world analogy: a BroadcastReceiver is like a classroom listening to the school's PA system — ONE announcement reaches every listening room at once, and each decides independently how to react. In an app, a BroadcastReceiver might react to \"the device just finished booting\" the same way a classroom reacts to hearing a principal's announcement."
+    }
+  },
+  {
+    "id": "vocab-24-word",
+    "topic": "Vocabulary: Context",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"An object that gives code access to app-wide and system-level resources and capabilities, like starting other components\"?",
+    "choices": [
+      "Intent",
+      "Context",
+      "Resource",
+      "Package"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Context is an object that grants code access to important app-wide and system-level capabilities — things like reading resources, starting other components, and accessing system services. Activities are one common example of something that is a Context.",
+      "lineByLine": [
+        "\"Gives code access to app-wide and system-level resources\" — a Context can retrieve strings, colors, and other resources declared elsewhere.",
+        "\"Starting other components\" — you typically need a Context to launch a new Activity or Service.",
+        "An Activity IS-A Context (through inheritance), which is why Activities can freely do all these Context-related things.",
+        "Plain classes (not Activities) that need to do Context-dependent work usually need a Context explicitly passed in to them."
+      ],
+      "tip": "Real-world analogy: a Context is like a staff ID badge that unlocks certain doors and privileges around a school building. An Activity naturally has this badge (since it IS a kind of Context), letting it access resources and start other components. A plain helper class without its own badge would need someone to lend it one (pass in a Context) before it could do the same things."
+    }
+  },
+  {
+    "id": "vocab-24-def",
+    "topic": "Vocabulary: Context",
+    "difficulty": "easy",
+    "question": "What is a \"Context\" in Android?",
+    "choices": [
+      "A request object used to start an Activity or Service",
+      "An object that gives code access to app-wide and system-level resources and capabilities, like starting other components",
+      "A component that can perform work in the background",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Context is an object that grants access to important app-wide and system-level capabilities, like reading resources, accessing system services, and starting other components such as Activities or Services.",
+      "lineByLine": [
+        "Activities inherit from Context, which is why they can freely access resources and start other components.",
+        "Plain, ordinary classes that aren't Activities usually need a Context explicitly given to them if they need to do Context-related work.",
+        "Calling `getSystemService(...)` to retrieve a shared system tool (like NotificationManager) requires a Context.",
+        "Reading a resource, like a string or color declared in XML, also relies on having access to a Context."
+      ],
+      "tip": "Real-world analogy: a Context is like a staff ID badge that unlocks certain doors and privileges in a building. An Activity has this badge built in (since it inherits from Context), letting it access resources and start other components directly. Other classes without their own badge need one lent to them (a Context passed in) before they can do the same things."
+    }
+  },
+  {
+    "id": "vocab-25-word",
+    "topic": "Vocabulary: Intent",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A request object used to start an Activity or Service, or to deliver a broadcast, either naming an exact target or describing a need\"?",
+    "choices": [
+      "Context",
+      "Intent",
+      "Package",
+      "Permission"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Intent is a request object — a messenger — used to ask the Android system to do something, like open a specific screen, start a background helper, or send an announcement. It can either name an exact destination or describe a general need.",
+      "lineByLine": [
+        "\"Request object used to start an Activity or Service\" — an Intent is how one component asks the system to launch another.",
+        "\"Deliver a broadcast\" — Intents are also the underlying mechanism used to send broadcasts to BroadcastReceivers.",
+        "\"Naming an exact target\" — an explicit Intent names one specific screen or Service by name, with no ambiguity.",
+        "\"Describing a need\" — an implicit Intent describes what should happen (like \"share this text\"), letting the operating system figure out who can help."
+      ],
+      "tip": "Real-world analogy: an Intent is like a hall pass. A private, named hall pass (an explicit Intent) sends you to one exact classroom. A vague hall pass that just says \"I need someone who can help with printing\" (an implicit Intent) lets the front office figure out where to send you. In Android, `Intent(this, SettingsActivity::class.java)` is an explicit Intent naming an exact target screen."
+    }
+  },
+  {
+    "id": "vocab-25-def",
+    "topic": "Vocabulary: Intent",
+    "difficulty": "easy",
+    "question": "What is an \"Intent\" in Android?",
+    "choices": [
+      "A single path of execution that can run code",
+      "A request object used to start an Activity or Service, or to deliver a broadcast, either naming an exact target or describing a need",
+      "A collection of pre-written code you can add to a project",
+      "The environment where compiled code actually runs on a device"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Intent is a request object used to ask the Android system to start something — an Activity, a Service, or to deliver a broadcast. It can either name an exact target directly (explicit) or describe what's needed and let the system figure out who can help (implicit).",
+      "lineByLine": [
+        "An explicit Intent names a specific class directly, like `Intent(this, SettingsActivity::class.java)` — completely unambiguous.",
+        "An implicit Intent describes an action and some data, like \"share this text,\" without naming a specific app or screen.",
+        "The Android OS resolves an implicit Intent by checking every installed app's declared intent-filters for a match.",
+        "Intents can also carry additional data alongside their addressing, called extras, so the target has information to work with once launched."
+      ],
+      "tip": "Real-world analogy: an Intent is like a hall pass. A private, named hall pass (explicit Intent) sends you to exactly one classroom. A vague hall pass just describing a need (implicit Intent) lets the front office decide who can help. In code, `Intent(this, SettingsActivity::class.java)` names an exact destination, just like a private hall pass would."
+    }
+  },
+  {
+    "id": "vocab-26-word",
+    "topic": "Vocabulary: PendingIntent",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"An Intent wrapped up so that a different piece of code (like the notification system) can trigger it later, on the app's behalf\"?",
+    "choices": [
+      "Intent",
+      "PendingIntent",
+      "Context",
+      "Callback"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A PendingIntent is an Intent that's been wrapped and handed off to a different system (most commonly the notification system), so THAT system can trigger the Intent later, when something specific happens — like the user tapping a notification.",
+      "lineByLine": [
+        "\"An Intent wrapped up\" — a PendingIntent doesn't replace a regular Intent, it packages one for delayed use.",
+        "\"A different piece of code\" — this is usually a system outside your own app's code, like the notification system.",
+        "\"Trigger it later, on the app's behalf\" — the notification system doesn't need to know what's inside; it just fires the wrapped Intent when the user taps.",
+        "This is exactly how tapping a notification opens a specific screen — the notification was holding a PendingIntent the whole time."
+      ],
+      "tip": "Real-world analogy: a PendingIntent is like handing a sealed envelope (containing a hall pass) to the school's front desk, saying \"please deliver this exactly when the recipient checks in.\" The front desk doesn't need to know what the hall pass says — it just delivers it at the right moment. In an app, `PendingIntent.getActivity(context, 0, intent, FLAG_IMMUTABLE)` wraps up an ordinary Intent for a notification to fire later, when tapped."
+    }
+  },
+  {
+    "id": "vocab-26-def",
+    "topic": "Vocabulary: PendingIntent",
+    "difficulty": "easy",
+    "question": "What is a \"PendingIntent\"?",
+    "choices": [
+      "A request object used to start an Activity or Service directly, right now",
+      "An Intent wrapped up so that a different piece of code (like the notification system) can trigger it later, on the app's behalf",
+      "A single screen in an Android app",
+      "A value that, when it changes, can automatically cause dependent UI to update"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A PendingIntent wraps an ordinary Intent, along with permission for a different system (typically the notification system) to fire that Intent later, at an appropriate moment, on the app's behalf.",
+      "lineByLine": [
+        "A PendingIntent doesn't fire immediately — it's held onto and triggered later by whatever system it was handed to.",
+        "The most common use is attaching one to a notification, so tapping the notification fires the wrapped Intent.",
+        "The system holding the PendingIntent (like the notification system) doesn't need to understand what's inside it — it just triggers it at the right moment.",
+        "PendingIntent.getActivity(...) and PendingIntent.getBroadcast(...) are two common ways to create one, targeting either an Activity or a BroadcastReceiver."
+      ],
+      "tip": "Real-world analogy: a PendingIntent is like handing a sealed envelope to the school's front desk with instructions: \"deliver this exactly when the recipient checks in.\" The desk doesn't need to know the envelope's contents. In an app, a notification holding a PendingIntent works the same way — tapping it triggers the wrapped Intent, opening a specific screen."
+    }
+  },
+  {
+    "id": "vocab-27-word",
+    "topic": "Vocabulary: View",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A traditional building block of Android UI, representing one on-screen element like a button or a piece of text\"?",
+    "choices": [
+      "View",
+      "Composable",
+      "Layout",
+      "Activity"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A View is the traditional (older-style) building block for Android user interfaces — one View typically represents one visible thing on screen, like a single button or a single line of text.",
+      "lineByLine": [
+        "\"Traditional building block\" — Views were Android's original UI system, before Jetpack Compose existed.",
+        "\"One on-screen element\" — a Button is a View, a TextView (for displaying text) is a View, and so on.",
+        "Views are often arranged using XML layout files, describing how multiple Views fit together on one screen.",
+        "Modern Android development increasingly uses Composables instead of Views, though many existing apps still use Views extensively."
+      ],
+      "tip": "Real-world analogy: a View is like one specific piece of furniture in a classroom — a single desk, or the whiteboard. Multiple Views (pieces of furniture) are arranged together to build a complete classroom (screen). In older Android code, you'd see things like `<Button android:id=\"@+id/submitButton\" />` inside an XML layout file, defining one specific View."
+    }
+  },
+  {
+    "id": "vocab-27-def",
+    "topic": "Vocabulary: View",
+    "difficulty": "easy",
+    "question": "What is a \"View\" in Android?",
+    "choices": [
+      "A function marked to describe a piece of UI in Jetpack Compose",
+      "A traditional building block of Android UI, representing one on-screen element like a button or a piece of text",
+      "A single screen in an Android app",
+      "The arrangement describing how UI elements are positioned relative to each other"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A View is Android's original, traditional building block for UI — each View typically represents one visible element on screen, like a single button or a piece of displayed text.",
+      "lineByLine": [
+        "Views predate Jetpack Compose and were the standard way to build Android UI for many years.",
+        "Common Views include Button, TextView (for text), and ImageView (for pictures).",
+        "Views are traditionally arranged using XML layout files that describe their positions and sizes.",
+        "Newer Android apps commonly use Composables instead of, or alongside, traditional Views."
+      ],
+      "tip": "Real-world analogy: a View is like one piece of furniture in a classroom — a single desk, or the whiteboard on the wall. Several Views combine to build a complete screen. In older-style Android code, you'd see something like `<TextView android:text=\"Hello\" />` inside an XML layout, defining one specific View."
+    }
+  },
+  {
+    "id": "vocab-28-word",
+    "topic": "Vocabulary: Composable",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A function marked to describe a piece of UI in Jetpack Compose, Android's modern UI toolkit\"?",
+    "choices": [
+      "View",
+      "Composable",
+      "Layout",
+      "Resource"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Composable is a Kotlin function, marked with a special @Composable annotation, that describes a piece of UI. Multiple Composables are combined together to build a complete screen, which is the foundation of Jetpack Compose, Android's modern approach to building UI.",
+      "lineByLine": [
+        "\"Function marked to describe a piece of UI\" — the `@Composable` annotation is what lets a regular Kotlin function participate in describing UI.",
+        "\"Jetpack Compose\" — this is the name of Android's modern UI toolkit, which uses Composables instead of the older View system.",
+        "Composables can call other Composables, nesting smaller pieces of UI together to build a complete screen.",
+        "An Activity's `setContent { }` is where the hand-off from the Activity to a tree of Composables happens."
+      ],
+      "tip": "Real-world analogy: if a View is like one specific piece of furniture, a Composable is more like a description of how a small section of a room should look, which can itself be built from smaller descriptions. A classroom's \"reading corner\" Composable might be built from a smaller \"rug\" Composable and a smaller \"bookshelf\" Composable. In code, `@Composable fun WeatherHeader() { Text(\"Today's Weather\") }` is a simple Composable."
+    }
+  },
+  {
+    "id": "vocab-28-def",
+    "topic": "Vocabulary: Composable",
+    "difficulty": "easy",
+    "question": "What is a \"Composable\" in Android?",
+    "choices": [
+      "A traditional building block of Android UI, representing one on-screen element",
+      "A function marked to describe a piece of UI in Jetpack Compose, Android's modern UI toolkit",
+      "A single screen in an Android app",
+      "A file describing an app's structure and rules"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Composable is a Kotlin function marked with @Composable, used to describe a piece of UI within Jetpack Compose, Android's modern UI toolkit. Composables are combined together, nested inside one another, to build up a complete screen.",
+      "lineByLine": [
+        "The @Composable annotation is what allows a function to describe UI and call other Composables.",
+        "A larger screen is typically built from many smaller Composables, each responsible for one piece.",
+        "Composables can accept parameters, letting the same piece of UI be reused with different data.",
+        "An Activity's `setContent { }` call is the bridge point where Composables are actually displayed on screen."
+      ],
+      "tip": "Real-world analogy: a Composable is like a description of a section of a room, which can itself be built from smaller sections. A \"reading corner\" section might be built from a \"rug\" section and a \"bookshelf\" section. In code, `@Composable fun WeatherHeader() { Text(\"Today's Weather\") }` describes a small, reusable piece of UI."
+    }
+  },
+  {
+    "id": "vocab-29-word",
+    "topic": "Vocabulary: Layout",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The arrangement describing how UI elements are positioned relative to each other on a screen\"?",
+    "choices": [
+      "View",
+      "Composable",
+      "Layout",
+      "State"
+    ],
+    "correctIndex": 2,
+    "explanation": {
+      "summary": "A layout describes HOW multiple UI elements are positioned relative to one another — side by side, stacked vertically, or overlapping — rather than being a UI element itself.",
+      "lineByLine": [
+        "\"Arrangement\" — a layout is about positioning and structure, not about the content itself.",
+        "\"How UI elements are positioned relative to each other\" — a layout decides whether things sit side-by-side, stacked, or overlapping.",
+        "In Compose, container Composables like Row, Column, and Box serve this exact arranging purpose.",
+        "In the older View system, XML layout files served this same purpose, describing how multiple Views should be positioned."
+      ],
+      "tip": "Real-world analogy: a layout is like the floor plan of a classroom, deciding where the desks, whiteboard, and reading corner each go relative to one another — separate from what those pieces of furniture actually look like. In Compose, `Row { Text(\"Monday\"); Text(\"72°F\") }` is a layout decision: it arranges the two Text elements side by side, horizontally."
+    }
+  },
+  {
+    "id": "vocab-29-def",
+    "topic": "Vocabulary: Layout",
+    "difficulty": "easy",
+    "question": "What does \"Layout\" mean in the context of Android UI?",
+    "choices": [
+      "A function marked to describe a piece of UI in Jetpack Compose",
+      "The arrangement describing how UI elements are positioned relative to each other on a screen",
+      "A single path of execution that can run code",
+      "A value that, when it changes, can automatically cause dependent UI to update"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Layout refers to the arrangement of UI elements — how they're positioned relative to one another, like side-by-side, stacked, or overlapping — as opposed to what those elements actually contain or look like individually.",
+      "lineByLine": [
+        "Layout is about positioning and structure, distinct from the actual content being arranged.",
+        "In Jetpack Compose, container Composables like Row (horizontal), Column (vertical), and Box (overlapping) handle this arranging job.",
+        "In the older View system, XML layout files described this same kind of arrangement for Views.",
+        "The same content (like two pieces of text) can look very different depending purely on which layout arranges them."
+      ],
+      "tip": "Real-world analogy: a layout is like a classroom's floor plan — it decides where the desks, whiteboard, and reading corner go relative to each other, separate from what those pieces of furniture actually look like. In Compose, wrapping two Text elements in a `Row { }` arranges them side by side; wrapping the same two elements in a `Column { }` instead stacks them vertically."
+    }
+  },
+  {
+    "id": "vocab-30-word",
+    "topic": "Vocabulary: State",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A value that, when it changes, can automatically cause the UI depending on it to update\"?",
+    "choices": [
+      "Layout",
+      "State",
+      "Resource",
+      "Package"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "State is a value Compose is specifically tracking — when that value changes, any UI depending on it can automatically update to reflect the new value, without you manually telling each piece of UI to refresh.",
+      "lineByLine": [
+        "\"A value\" — state could be anything: a number, a piece of text, a true/false flag, or more complex data.",
+        "\"When it changes\" — the key part is that Compose is watching this value specifically for changes.",
+        "\"Automatically cause the UI depending on it to update\" — you don't manually refresh the screen; Compose does it for you, in a process called recomposition.",
+        "Tools like `remember` and `mutableStateOf` are how a piece of data gets marked as state that Compose should track this way."
+      ],
+      "tip": "Real-world analogy: state is like a scoreboard at a game — the moment the score changes, everyone watching automatically sees the new number, without needing to be told to look again. In an app, a temperature value held as state means the on-screen Text automatically shows the updated number the instant that value changes, with no manual refresh code needed."
+    }
+  },
+  {
+    "id": "vocab-30-def",
+    "topic": "Vocabulary: State",
+    "difficulty": "easy",
+    "question": "What does \"State\" mean in the context of Jetpack Compose?",
+    "choices": [
+      "The arrangement describing how UI elements are positioned relative to each other",
+      "A value that, when it changes, can automatically cause the UI depending on it to update",
+      "A single screen in an Android app",
+      "A collection of pre-written code you can add to a project"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "State refers to a value that Compose is specifically tracking, such that when the value changes, any UI depending on it can automatically update — without the developer manually refreshing anything.",
+      "lineByLine": [
+        "State can hold any kind of value — numbers, text, booleans, or more complex data.",
+        "Tools like `remember` and `mutableStateOf` mark a value as state that Compose should watch for changes.",
+        "When state changes, Compose automatically re-runs (recomposes) just the parts of the UI that actually depend on it.",
+        "This automatic-update relationship is central to how Compose keeps the screen in sync with the app's underlying data."
+      ],
+      "tip": "Real-world analogy: state is like a scoreboard at a game — the moment the score updates, everyone watching sees the new number automatically, without being told to check again. In Compose, a temperature held as state means the displayed number updates by itself the instant the underlying value changes."
+    }
+  },
+  {
+    "id": "vocab-31-word",
+    "topic": "Vocabulary: Recomposition",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The process where Compose automatically re-runs and redraws only the parts of the UI that depend on State that just changed\"?",
+    "choices": [
+      "Recomposition",
+      "Layout",
+      "Lifecycle",
+      "State"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "Recomposition is the actual mechanism behind Compose's automatic UI updates. When a piece of State changes, Compose figures out exactly which Composables depend on it and re-runs (recomposes) just those pieces — not the entire screen.",
+      "lineByLine": [
+        "\"Automatically re-runs and redraws\" — Compose handles this without you writing manual refresh code.",
+        "\"Only the parts of the UI that depend on State that just changed\" — recomposition is smart about scope; unrelated Composables aren't re-run unnecessarily.",
+        "This is the engine behind the earlier idea of State — State is the trigger, and recomposition is the actual response to that trigger.",
+        "Recomposition can happen very frequently and efficiently, since it typically only touches small, specific pieces of the UI."
+      ],
+      "tip": "Real-world analogy: recomposition is like a scoreboard operator who only updates the specific numbers that changed, rather than repainting the entire scoreboard from scratch every time. In an app, if only a temperature value changes, Compose recomposes just the Text showing that number — not the whole screen around it."
+    }
+  },
+  {
+    "id": "vocab-31-def",
+    "topic": "Vocabulary: Recomposition",
+    "difficulty": "easy",
+    "question": "What is \"Recomposition\" in Jetpack Compose?",
+    "choices": [
+      "The set of states a component moves through over time",
+      "The process where Compose automatically re-runs and redraws only the parts of the UI that depend on State that just changed",
+      "A holder for UI-related data that survives configuration changes",
+      "Structured, organized storage for data that can be saved and queried later"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Recomposition is Compose's process of automatically re-running specific Composable functions when the State they depend on changes, updating just those parts of the UI rather than the entire screen.",
+      "lineByLine": [
+        "Recomposition is triggered whenever a piece of tracked State actually changes value.",
+        "Only Composables that actually read that specific piece of State are re-run — unrelated parts of the screen are left alone.",
+        "This selective re-running is what makes Compose efficient, even with frequent small updates.",
+        "Recomposition is the direct mechanism that fulfills the promise behind State: 'when this value changes, dependent UI updates automatically.'"
+      ],
+      "tip": "Real-world analogy: recomposition is like a scoreboard operator updating only the numbers that changed, rather than repainting the whole board from scratch. In an app, changing just a temperature value triggers recomposition of only the Text displaying that number, leaving the rest of the screen untouched."
+    }
+  },
+  {
+    "id": "vocab-32-word",
+    "topic": "Vocabulary: ViewModel",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A holder for UI-related data that survives configuration changes like screen rotation, keeping data separate from any one screen instance\"?",
+    "choices": [
+      "Activity",
+      "ViewModel",
+      "Database",
+      "Context"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A ViewModel is a special holder for UI-related data, deliberately kept separate from any one specific Activity instance, so it can survive events (like screen rotation) that would otherwise destroy and recreate the Activity holding that data.",
+      "lineByLine": [
+        "\"Holder for UI-related data\" — a ViewModel typically holds things like a list of items to display, or the current state of a form.",
+        "\"Survives configuration changes like screen rotation\" — normally, rotating a phone destroys and recreates the Activity, wiping out any data it was holding directly. A ViewModel is specially retained across that exact event.",
+        "\"Keeping data separate from any one screen instance\" — this is exactly why the data survives: it was never actually owned by the destroyed Activity instance in the first place.",
+        "When a new Activity instance is created after rotation, it simply reconnects to the SAME ViewModel, recovering the data automatically."
+      ],
+      "tip": "Real-world analogy: a ViewModel is like a filing cabinet kept in the hallway outside a classroom, rather than inside it. If a fire drill causes the classroom itself to be completely reset (a fire drill = rotation), the filing cabinet in the hallway is untouched, and the class can pick right back up using the same files once they return. In an app, `WeatherViewModel` might hold the current forecast data, surviving rotation even though the Activity itself gets destroyed and recreated."
+    }
+  },
+  {
+    "id": "vocab-32-def",
+    "topic": "Vocabulary: ViewModel",
+    "difficulty": "easy",
+    "question": "What is a \"ViewModel\" in Android?",
+    "choices": [
+      "A single screen in an Android app",
+      "A holder for UI-related data that survives configuration changes like screen rotation, keeping data separate from any one screen instance",
+      "A message the operating system displays outside the app itself",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A ViewModel holds UI-related data separately from any one specific Activity instance, so that data can survive events like screen rotation, which would otherwise destroy the Activity and any data it was holding directly.",
+      "lineByLine": [
+        "Rotation destroys the current Activity instance and creates a brand new one — but a ViewModel tied to that screen is deliberately kept alive by the OS through that exact event.",
+        "The new Activity instance, once created, simply reconnects to the SAME ViewModel, recovering whatever data it was holding.",
+        "This solves a real problem: without a ViewModel, information like a fetched list of items would be lost every time the phone rotates.",
+        "A ViewModel does NOT survive a full app close and reopening later — that requires genuine persistence tools instead, like a database."
+      ],
+      "tip": "Real-world analogy: a ViewModel is like a filing cabinet kept in the hallway rather than inside the classroom itself. If a fire drill (rotation) resets the classroom completely, the hallway filing cabinet is untouched, and class can continue using the same files once everyone returns. In an app, `WeatherViewModel` might hold forecast data that survives rotation, even though the Activity itself gets destroyed and recreated."
+    }
+  },
+  {
+    "id": "vocab-33-word",
+    "topic": "Vocabulary: Database",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"Structured, organized storage for data that can be saved, queried, and retrieved later, even after an app closes\"?",
+    "choices": [
+      "ViewModel",
+      "Database",
+      "Resource",
+      "State"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A database is a tool for genuinely saving structured data — like many records with several fields each — so it can be searched, sorted, and retrieved later, even long after the app has been completely closed and reopened.",
+      "lineByLine": [
+        "\"Structured, organized storage\" — a database typically organizes data into tables, with defined fields for each record, like a forecast's city, date, and temperature.",
+        "\"Can be saved, queried, and retrieved later\" — unlike a ViewModel (which only survives rotation), a database genuinely persists data to disk.",
+        "\"Even after an app closes\" — this is the key distinction from temporary, in-memory data — a database survives a full app close and reopening, even weeks later.",
+        "In Android, Room is a common library used to work with a structured, on-device database."
+      ],
+      "tip": "Real-world analogy: a database is like a well-organized filing cabinet in a permanent records office, as opposed to a sticky note on your desk. The sticky note (in-memory data) is gone the moment you clean your desk; the filing cabinet (database) keeps everything safely organized, ready to look up again months later. In an app, hundreds of historical forecast records are exactly the kind of structured data suited to a database."
+    }
+  },
+  {
+    "id": "vocab-33-def",
+    "topic": "Vocabulary: Database",
+    "difficulty": "easy",
+    "question": "What is a \"Database\" in the context of an app?",
+    "choices": [
+      "A holder for UI-related data that survives configuration changes",
+      "Structured, organized storage for data that can be saved, queried, and retrieved later, even after an app closes",
+      "A function marked to describe a piece of UI in Jetpack Compose",
+      "A running instance of an app on the device"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A database is a genuinely persistent storage tool for structured data — often many records, each with several related fields — that can be saved, searched, and retrieved even long after the app has been fully closed and reopened.",
+      "lineByLine": [
+        "Data in a database is organized into tables, with each record having defined fields, like a forecast's city, date, and temperature.",
+        "A database is queryable — you can ask for specific subsets of data, like \"all forecasts for Seattle,\" rather than only reading everything at once.",
+        "Unlike a ViewModel, which only survives configuration changes, a database survives a full app close, and even a device restart.",
+        "In Android, Room is a commonly used library that provides a structured, on-device database."
+      ],
+      "tip": "Real-world analogy: a database is like a well-organized filing cabinet in a permanent records office, unlike a sticky note that gets thrown away when your desk is cleaned. In an app, hundreds of historical weather records — needing to be searched and sorted later — are exactly the kind of data suited to a database rather than simple, temporary storage."
+    }
+  },
+  {
+    "id": "vocab-34-word",
+    "topic": "Vocabulary: Flow / StateFlow",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A stream of values over time that code can continuously observe, automatically reacting whenever a new value is emitted\"?",
+    "choices": [
+      "Database",
+      "Flow / StateFlow",
+      "Resource",
+      "Callback"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Flow is a stream of values that can change over time, which other code can continuously watch. Rather than asking once \"what's the current value?\", observing a Flow means being automatically notified every time a new value comes through.",
+      "lineByLine": [
+        "\"Stream of values over time\" — unlike a single one-time answer, a Flow can produce many values, one after another, as things change.",
+        "\"Continuously observe\" — code that's watching a Flow doesn't need to keep re-asking; it's notified automatically.",
+        "\"Automatically reacting whenever a new value is emitted\" — this is what makes a Flow useful for keeping a UI in sync with changing data, like a database table.",
+        "A StateFlow is a specific kind of Flow that always holds a current value, even before anything starts observing it."
+      ],
+      "tip": "Real-world analogy: a Flow is like a subscription to a newsletter, rather than looking up a single fact once. Instead of checking a website repeatedly for updates, you subscribe once, and new issues (values) arrive automatically whenever there's something new. In an app, `dao.observeAllForecasts(): Flow<List<ForecastRecord>>` gives an ongoing stream that automatically emits a new list whenever the underlying database table changes."
+    }
+  },
+  {
+    "id": "vocab-34-def",
+    "topic": "Vocabulary: Flow / StateFlow",
+    "difficulty": "easy",
+    "question": "What is a \"Flow\" (or \"StateFlow\")?",
+    "choices": [
+      "Structured, organized storage for data that can be saved and queried later",
+      "A stream of values over time that code can continuously observe, automatically reacting whenever a new value is emitted",
+      "A single screen in an Android app",
+      "The set of states a component moves through over time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Flow represents an ongoing stream of values over time, rather than a single, one-time answer. Code observing a Flow is automatically notified whenever a new value comes through, without needing to repeatedly ask.",
+      "lineByLine": [
+        "A Flow can emit many values over its lifetime, one after another, as the underlying data changes.",
+        "Observing a Flow means subscribing to it, rather than fetching a value just once.",
+        "This is commonly used to keep a UI automatically in sync with a changing database table — a new emission triggers a UI update.",
+        "A StateFlow is a specialized kind of Flow that always has a current value available, even before any observer starts watching it."
+      ],
+      "tip": "Real-world analogy: a Flow is like subscribing to a newsletter rather than checking a website once for updates. New issues (values) arrive automatically whenever there's something new, without you needing to keep checking. In an app, a Flow from a database automatically emits a fresh list every time the underlying data changes, keeping the UI continuously up to date."
+    }
+  },
+  {
+    "id": "vocab-35-word",
+    "topic": "Vocabulary: Lifecycle",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The set of states a component like an Activity moves through over time, controlled by the operating system rather than app code directly\"?",
+    "choices": [
+      "Lifecycle",
+      "Runtime",
+      "Process",
+      "State"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A Lifecycle is the sequence of states a component (most commonly an Activity) moves through — like being created, becoming visible, being paused, and eventually being destroyed. Crucially, the operating system decides when these transitions happen, not the app's own code.",
+      "lineByLine": [
+        "\"Set of states\" — an Activity might be created, started, resumed, paused, stopped, or destroyed, among others.",
+        "\"Moves through over time\" — an Activity doesn't just have one fixed status; it transitions between states based on what's happening around it.",
+        "\"Controlled by the operating system\" — the app doesn't decide when to pause or stop; the OS calls specific functions (like onPause) at the appropriate moments.",
+        "Rotation is a dramatic example of a lifecycle event — it destroys the current Activity instance entirely and creates a brand new one."
+      ],
+      "tip": "Real-world analogy: a Lifecycle is like a classroom's daily schedule — in session, at recess, locked up for the night — except the SCHOOL (not the classroom itself) decides when each transition happens. In an app, `onCreate`, `onPause`, and `onDestroy` are all specific Lifecycle callback functions the Android OS calls on an Activity at the appropriate moments."
+    }
+  },
+  {
+    "id": "vocab-35-def",
+    "topic": "Vocabulary: Lifecycle",
+    "difficulty": "easy",
+    "question": "What does \"Lifecycle\" mean in Android?",
+    "choices": [
+      "A running instance of an app on the device",
+      "The set of states a component like an Activity moves through over time, controlled by the operating system rather than app code directly",
+      "A message the operating system displays outside the app itself",
+      "A tool for scheduling work that should reliably happen eventually"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Lifecycle refers to the sequence of states a component (typically an Activity) transitions through over time — created, visible, paused, stopped, destroyed — with the operating system, not the app's own code, deciding when each transition happens.",
+      "lineByLine": [
+        "Common Lifecycle states include being created, becoming visible and interactive, losing focus, becoming fully hidden, and finally being destroyed.",
+        "The app doesn't call these transitions itself — the OS calls specific functions (like `onPause()` or `onStop()`) on the Activity at the right moments.",
+        "Rotation is one dramatic Lifecycle event: it fully destroys the current Activity instance and creates a brand new one.",
+        "Understanding an Activity's current Lifecycle state helps explain many behaviors, like why data can be lost on rotation unless it's specifically protected against that."
+      ],
+      "tip": "Real-world analogy: a Lifecycle is like a classroom's daily schedule — in session, recess, locked up for the night — except the SCHOOL (not the classroom) decides when each transition happens. In Android, `onCreate`, `onPause`, and `onDestroy` are specific Lifecycle functions the OS calls on an Activity at appropriate times, not ones the app calls itself."
+    }
+  },
+  {
+    "id": "vocab-36-word",
+    "topic": "Vocabulary: Permission",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"Formal approval an app must request before performing a sensitive action, like using the camera or finding a location\"?",
+    "choices": [
+      "Permission",
+      "Manifest",
+      "Context",
+      "Notification"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A Permission is formal approval an app must get before doing something sensitive — like accessing the camera, finding the user's location, or reading contacts. Simply declaring intent to do this in the Manifest isn't enough; for sensitive actions, the actual person using the phone must approve it too.",
+      "lineByLine": [
+        "\"Formal approval\" — approval isn't automatic; it must be explicitly requested and granted.",
+        "\"Before performing a sensitive action\" — Permissions specifically apply to actions with real privacy or safety implications.",
+        "\"Using the camera or finding a location\" — these are classic examples of 'dangerous' permissions requiring explicit user approval, beyond just being declared in the Manifest.",
+        "Some Permissions (called 'normal') only need to be declared in the Manifest; others (called 'dangerous') additionally require the user's explicit approval at runtime."
+      ],
+      "tip": "Real-world analogy: a Permission is like a signed permission slip required before a sensitive field trip — simply wanting to go isn't enough; a parent or guardian must actually approve it first. In an app, requesting the camera permission means the app must ask, and the actual user must tap \"Allow,\" before the camera can be used."
+    }
+  },
+  {
+    "id": "vocab-36-def",
+    "topic": "Vocabulary: Permission",
+    "difficulty": "easy",
+    "question": "What is a \"Permission\" in Android?",
+    "choices": [
+      "A running instance of an app on the device",
+      "Formal approval an app must request before performing a sensitive action, like using the camera or finding a location",
+      "The ordered history of screens a user has visited",
+      "A message the operating system displays outside the app itself"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Permission is formal approval an app must obtain before performing a sensitive action, such as using the camera, accessing location, or reading contacts. Some permissions only need a Manifest declaration; more sensitive ones also require the user's explicit approval while the app is running.",
+      "lineByLine": [
+        "\"Normal\" permissions (like internet access) only require a simple Manifest declaration to be granted.",
+        "\"Dangerous\" permissions (like camera or location) require BOTH a Manifest declaration AND an explicit runtime approval from the actual phone user.",
+        "If a dangerous permission is denied, the app must handle that gracefully rather than assuming access will always be granted.",
+        "A user can revoke a previously granted permission at any time through the device's Settings, so apps should always check current status before relying on it."
+      ],
+      "tip": "Real-world analogy: a Permission is like a signed permission slip needed for a sensitive field trip — simply wanting to go isn't enough; someone with actual authority (a parent) must approve it. In an app, requesting camera access means asking the user directly, and respecting whatever they decide."
+    }
+  },
+  {
+    "id": "vocab-37-word",
+    "topic": "Vocabulary: Process",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A running instance of an app on the device, which the operating system can start, pause, or shut down as needed\"?",
+    "choices": [
+      "Runtime",
+      "Process",
+      "Thread",
+      "Lifecycle"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Process is the actual running instance of your entire app on the device. The operating system can start it, and — importantly — can also kill it entirely if it needs the memory for something else, especially if your app isn't currently visible or active.",
+      "lineByLine": [
+        "\"Running instance of an app\" — when you open an app, the OS starts a Process for it to run inside.",
+        "\"The operating system can start, pause, or shut down as needed\" — this is entirely the OS's decision, based on things like available memory.",
+        "If an app's screen is stopped and not visible, its entire Process becomes a candidate for the OS to kill, freeing up memory for whatever the user is currently using.",
+        "Information held only in memory (not genuinely saved/persisted) is lost completely if the Process is killed."
+      ],
+      "tip": "Real-world analogy: a Process is like a single, complete performance of a play — if the theater needs the stage for something more urgent, it can end the current performance early, and if you want to watch again, a whole new performance has to start from the beginning. In an app, information only held in memory (not saved) is lost forever if the OS kills the Process running the app, exactly like a performance that gets cut short."
+    }
+  },
+  {
+    "id": "vocab-37-def",
+    "topic": "Vocabulary: Process",
+    "difficulty": "easy",
+    "question": "What is a \"Process\" in the context of an Android app?",
+    "choices": [
+      "The environment where compiled code actually executes on a real device",
+      "A running instance of an app on the device, which the operating system can start, pause, or shut down as needed",
+      "A single path of execution that can run code",
+      "A tool that decides which thread a coroutine's work should run on"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Process is the actual running instance of an app, managed entirely by the operating system. The OS can start it when the app is opened, and can also kill it entirely — especially if the app is in the background and the device needs memory for something else.",
+      "lineByLine": [
+        "Opening an app starts a Process; the app's code actually executes within that Process.",
+        "The OS can kill a Process it decides isn't currently important, especially one whose screens are all stopped and invisible.",
+        "Information held only in memory (not genuinely saved to disk) is lost completely if the Process is killed.",
+        "Reopening the app after its Process was killed effectively starts a brand new Process from scratch."
+      ],
+      "tip": "Real-world analogy: a Process is like one complete performance of a play — if the theater needs the stage urgently, the performance can be cut short, and watching it again means starting a whole new performance from the beginning. In an app, unsaved in-memory data is lost forever if the OS kills the Process, just like an interrupted performance can't simply resume where it left off."
+    }
+  },
+  {
+    "id": "vocab-38-word",
+    "topic": "Vocabulary: Notification",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A message the operating system displays outside the app itself, often used to inform the user about something happening in the background\"?",
+    "choices": [
+      "Intent",
+      "Notification",
+      "Permission",
+      "Callback"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Notification is a message shown by the operating system, outside the app's own screen — appearing in the notification shade or as a banner — commonly used to tell the user about something happening in the background, or to prompt them back into the app.",
+      "lineByLine": [
+        "\"Message the operating system displays outside the app itself\" — a Notification appears even if the app's own screen isn't currently open.",
+        "\"Inform the user about something happening in the background\" — this is especially common for Services doing ongoing work, like a download or sync.",
+        "Notifications must belong to a declared Notification Channel on modern Android before they can be shown at all.",
+        "Tapping a Notification commonly triggers a PendingIntent, opening a specific screen in the app."
+      ],
+      "tip": "Real-world analogy: a Notification is like a note slipped under your door, letting you know something happened even while you weren't in the room. In an app, a foreground Service doing a long sync might show a Notification like \"Syncing weather data... 45%\" so the user knows work is happening, even without the app's screen open."
+    }
+  },
+  {
+    "id": "vocab-38-def",
+    "topic": "Vocabulary: Notification",
+    "difficulty": "easy",
+    "question": "What is a \"Notification\" in Android?",
+    "choices": [
+      "A message the operating system displays outside the app itself, often used to inform the user about something happening in the background",
+      "The ordered history of screens a user has visited",
+      "A component that can perform work in the background",
+      "A collection of libraries, tools, and APIs for a specific platform"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "A Notification is a message displayed by the operating system, outside the app's own screen, commonly used to inform the user about background activity or to invite them back into the app.",
+      "lineByLine": [
+        "Notifications appear in the notification shade or as banners, independent of whether the app's own screen is currently open.",
+        "A foreground Service performing ongoing work (like a sync) is required to show a persistent Notification while it runs.",
+        "On modern Android, Notifications must belong to a previously declared Notification Channel to be shown at all.",
+        "Tapping a Notification commonly fires a PendingIntent, opening a specific screen back in the app."
+      ],
+      "tip": "Real-world analogy: a Notification is like a note slipped under your door, letting you know something happened while you weren't in the room. In an app, a background sync might show a Notification like \"Syncing weather data... 45%,\" letting the user know without needing the app's screen open at all."
+    }
+  },
+  {
+    "id": "vocab-39-word",
+    "topic": "Vocabulary: Back Stack",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The ordered history of screens a user has visited, used to determine what appears when the user navigates backward\"?",
+    "choices": [
+      "Back Stack",
+      "Lifecycle",
+      "Layout",
+      "Process"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "The Back Stack is Android's ordered record of every screen (Activity) the user has visited, in the order they visited them. It's what determines exactly what reappears when the user presses the back button.",
+      "lineByLine": [
+        "\"Ordered history of screens visited\" — each new screen you open is stacked on top of the one that led to it.",
+        "\"Used to determine what appears when the user navigates backward\" — pressing back simply reveals whatever's next in that stack, not something arbitrary.",
+        "A screen isn't destroyed just because you navigated away from it — it's still \"on hold\" in the Back Stack, waiting to reappear.",
+        "This is sometimes represented as `[MainActivity, ForecastDetailActivity]`, with the last (rightmost) entry being the currently visible screen."
+      ],
+      "tip": "Real-world analogy: a Back Stack is like a trail of breadcrumbs showing exactly which rooms you walked through to get where you are. Walking back simply retraces those same steps, one room at a time, in reverse. In an app, if MainActivity launches ForecastDetailActivity, the Back Stack becomes `[MainActivity, ForecastDetailActivity]`, and pressing back reveals MainActivity again, exactly where it was left."
+    }
+  },
+  {
+    "id": "vocab-39-def",
+    "topic": "Vocabulary: Back Stack",
+    "difficulty": "easy",
+    "question": "What is the \"Back Stack\" in Android?",
+    "choices": [
+      "A holder for UI-related data that survives configuration changes",
+      "The ordered history of screens a user has visited, used to determine what appears when the user navigates backward",
+      "A defined set of tools that lets two pieces of software talk to each other",
+      "A single path of execution that can run code"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The Back Stack is the ordered record of screens (Activities) a user has visited, with each new screen stacking on top of the previous one. It's exactly what determines what reappears when the user presses back.",
+      "lineByLine": [
+        "Launching a new screen pushes it onto the top of the Back Stack, above whatever screen launched it.",
+        "The screen underneath isn't destroyed — it's simply not visible, patiently waiting its turn.",
+        "Pressing back pops the top screen off the stack, revealing whatever screen is now on top.",
+        "This ordered, stack-like structure is why backward navigation always feels predictable and consistent."
+      ],
+      "tip": "Real-world analogy: a Back Stack is like a trail of breadcrumbs marking the rooms you walked through — retracing your steps means walking back through those same rooms in reverse order. In an app, if MainActivity launches ForecastDetailActivity, the Back Stack becomes `[MainActivity, ForecastDetailActivity]`; pressing back reveals MainActivity again, right where it was."
+    }
+  },
+  {
+    "id": "vocab-40-word",
+    "topic": "Vocabulary: Thread",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A single path of execution that can run code, with multiple threads allowing different work to happen in parallel\"?",
+    "choices": [
+      "Process",
+      "Thread",
+      "Coroutine",
+      "Dispatcher"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Thread is one single, ongoing path of execution capable of running code. A device can run multiple Threads at once, letting different pieces of work genuinely happen in parallel rather than strictly one at a time.",
+      "lineByLine": [
+        "\"Single path of execution\" — a Thread runs instructions one after another, in order.",
+        "\"Multiple threads allowing different work to happen in parallel\" — a device isn't limited to just one Thread; several can run truly simultaneously.",
+        "An app has one particularly important Thread, often called the Main Thread or UI Thread, responsible for drawing the screen and responding to touches.",
+        "If a slow task runs directly on that one important Thread, the whole app can freeze, since that Thread can't do anything else while it's busy."
+      ],
+      "tip": "Real-world analogy: a Thread is like one single worker doing tasks one at a time, in order. Having multiple Threads is like having multiple workers, each able to handle a different task at the same time. In an app, if a slow network call runs directly on the one Thread responsible for the screen, the whole app freezes — it's like the one worker in charge of answering the door being stuck doing something else entirely."
+    }
+  },
+  {
+    "id": "vocab-40-def",
+    "topic": "Vocabulary: Thread",
+    "difficulty": "easy",
+    "question": "What is a \"Thread\" in programming?",
+    "choices": [
+      "A running instance of an app on the device",
+      "A single path of execution that can run code, with multiple threads allowing different work to happen in parallel",
+      "A tool for scheduling work that should reliably happen eventually",
+      "A special value meaning no value at all"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Thread is one continuous path of execution capable of running code, one instruction after another. A device can run several Threads at once, allowing genuinely parallel work, rather than everything happening strictly one thing at a time.",
+      "lineByLine": [
+        "An app typically has one especially important Thread — often called the Main Thread or UI Thread — dedicated to drawing the screen and handling touches.",
+        "Running a slow task directly on that one important Thread can freeze the whole app, since that Thread has no ability to do anything else while busy.",
+        "Additional Threads can be used to do slow work (like network calls) without blocking the Main Thread.",
+        "Tools like coroutines are built on top of Threads, offering a more convenient way to manage this kind of work."
+      ],
+      "tip": "Real-world analogy: a Thread is like one worker doing tasks in order, one at a time. Multiple Threads are like multiple workers, each able to handle different tasks simultaneously. In an app, if a slow network call runs directly on the one Thread responsible for the screen, the whole app freezes — like the one person answering the door being stuck doing something else."
+    }
+  },
+  {
+    "id": "vocab-41-word",
+    "topic": "Vocabulary: UI Thread",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"The one specific thread responsible for updating the screen, which must never be blocked by slow work\"?",
+    "choices": [
+      "Thread",
+      "UI Thread",
+      "Coroutine",
+      "Dispatcher"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The UI Thread (also called the Main Thread) is the ONE specific Thread responsible for drawing the screen and responding to taps and scrolls. If it gets blocked by something slow, the entire app appears frozen, since nothing else can happen on that same Thread in the meantime.",
+      "lineByLine": [
+        "\"The one specific thread\" — out of potentially many Threads, this particular one has a special, singular responsibility.",
+        "\"Responsible for updating the screen\" — every visible change, animation, and touch response happens through this Thread.",
+        "\"Must never be blocked by slow work\" — if this Thread is busy with something slow (like a raw network call), the whole app becomes unresponsive.",
+        "Coroutines dispatched to a different Thread (like via Dispatchers.IO) are the standard way to keep slow work off this critical Thread."
+      ],
+      "tip": "Real-world analogy: the UI Thread is like the one receptionist at a busy front desk — if they get stuck on a long phone call, nobody else can be helped, and the whole office appears \"frozen\" from a visitor's perspective. In an app, running a slow network call directly on the UI Thread freezes the whole screen until that call finishes."
+    }
+  },
+  {
+    "id": "vocab-41-def",
+    "topic": "Vocabulary: UI Thread",
+    "difficulty": "easy",
+    "question": "What is the \"UI Thread\" (or \"Main Thread\") in Android?",
+    "choices": [
+      "A tool for scheduling work that should reliably happen eventually",
+      "The one specific thread responsible for updating the screen, which must never be blocked by slow work",
+      "A function marked so it can pause at a slow point without blocking",
+      "A tool that decides which thread a coroutine's work should run on"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The UI Thread (or Main Thread) is the single Thread in an app specifically responsible for drawing the screen and responding to user interaction. Blocking it with slow work causes the entire app to appear frozen and unresponsive.",
+      "lineByLine": [
+        "Every screen update, animation, and tap response happens through this one particular Thread.",
+        "If a slow operation (like a direct, blocking network call) runs on this Thread, nothing else can happen until it finishes.",
+        "This is why slow work is typically moved to a different Thread, often via a coroutine dispatched with something like `Dispatchers.IO`.",
+        "A severely blocked UI Thread can eventually trigger an ANR (\"Application Not Responding\") warning from the OS."
+      ],
+      "tip": "Real-world analogy: the UI Thread is like the one receptionist at a busy front desk — if they're stuck on a long call, nobody else gets helped, and the whole office seems frozen. In an app, a slow task running directly on the UI Thread has this exact effect on the entire visible screen."
+    }
+  },
+  {
+    "id": "vocab-42-word",
+    "topic": "Vocabulary: Coroutine",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A way to write code that can pause at slow operations without blocking the thread it's running on\"?",
+    "choices": [
+      "Thread",
+      "Coroutine",
+      "Dispatcher",
+      "WorkManager"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Coroutine is Kotlin's tool for writing code that handles slow operations gracefully — it can pause at a slow point (like waiting on the network) without blocking the underlying Thread, which stays free to do other work in the meantime.",
+      "lineByLine": [
+        "\"A way to write code that can pause\" — a coroutine can stop partway through, at a slow operation, and pick back up later.",
+        "\"Without blocking the thread it's running on\" — this is the key benefit: the Thread isn't stuck waiting; it's freed up for other work while the coroutine is paused.",
+        "Coroutines are started with functions like `launch { }` or `async { }`, typically inside a defined scope tied to something like an Activity's lifecycle.",
+        "A suspend function is the specific kind of function that can actually be paused this way, and it can only be called from inside a coroutine."
+      ],
+      "tip": "Real-world analogy: a coroutine is like starting a print job and walking away to do other things, instead of standing frozen at the printer the whole time. In an app, `lifecycleScope.launch { fetchWeatherFromNetwork() }` starts a coroutine that can pause during the slow network call, without freezing the rest of the app."
+    }
+  },
+  {
+    "id": "vocab-42-def",
+    "topic": "Vocabulary: Coroutine",
+    "difficulty": "easy",
+    "question": "What is a \"Coroutine\" in Kotlin?",
+    "choices": [
+      "A single path of execution that can run code",
+      "A way to write code that can pause at slow operations without blocking the thread it's running on",
+      "The final, installable package file that contains a compiled Android app",
+      "A component that listens for and reacts to system-wide announcements"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Coroutine lets code pause at slow operations, like a network call, without blocking the underlying Thread. While paused, that Thread is free to do other work, which is exactly what keeps an app's UI responsive during slow tasks.",
+      "lineByLine": [
+        "Coroutines are typically started using functions like `launch { }` (fire-and-forget) or `async { }` (returns a result you can wait for).",
+        "A coroutine is usually tied to a specific scope, like `lifecycleScope`, so its lifetime is connected to something meaningful, like an Activity.",
+        "Inside a coroutine, suspend functions can be called — these are the specific functions capable of actually pausing without blocking.",
+        "Using coroutines correctly is the standard solution to the classic 'frozen app' problem caused by slow work running directly on the UI Thread."
+      ],
+      "tip": "Real-world analogy: a coroutine is like starting a print job and walking away to do other things, rather than standing frozen at the printer. In an app, `lifecycleScope.launch { fetchWeatherFromNetwork() }` starts a coroutine that can pause during a slow network call without freezing anything else."
+    }
+  },
+  {
+    "id": "vocab-43-word",
+    "topic": "Vocabulary: Suspend function",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A function marked so it can pause at a slow point without blocking, callable only from a coroutine or another suspend function\"?",
+    "choices": [
+      "Function",
+      "Suspend function",
+      "Callback",
+      "Dispatcher"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A suspend function is a specific kind of function marked with the `suspend` keyword, meaning it's allowed to pause partway through (typically at a slow operation) without blocking the Thread it's running on. It can only be called from inside a coroutine, or from another suspend function.",
+      "lineByLine": [
+        "\"A function marked so it can pause\" — the `suspend` keyword is what signals this special pausing ability.",
+        "\"At a slow point without blocking\" — this is exactly the mechanism that lets code wait on something slow (like a network response) without freezing the underlying Thread.",
+        "\"Callable only from a coroutine or another suspend function\" — this restriction exists because pausability only makes sense within a context (a coroutine) that's actually capable of supporting a pause.",
+        "Trying to call a suspend function from a regular, non-suspend function results in a compile error, since there's no coroutine context available to support the pause."
+      ],
+      "tip": "Real-world analogy: a suspend function is like a recipe step that says \"let it rest for 10 minutes\" — the step itself is allowed to pause, but only within the context of actually following the whole recipe (the coroutine); you can't have a resting step floating around outside any recipe at all. In code, `suspend fun fetchWeatherFromNetwork(): Weather` can only be called from inside a coroutine, like one started with `launch { }`."
+    }
+  },
+  {
+    "id": "vocab-43-def",
+    "topic": "Vocabulary: Suspend function",
+    "difficulty": "easy",
+    "question": "What is a \"Suspend function\" in Kotlin?",
+    "choices": [
+      "A holder for UI-related data that survives configuration changes",
+      "A function marked so it can pause at a slow point without blocking, callable only from a coroutine or another suspend function",
+      "A message the operating system displays outside the app itself",
+      "A collection of libraries, tools, and APIs for a specific platform"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A suspend function is marked with the `suspend` keyword, signaling that it can pause at a slow operation without blocking its underlying Thread. It's only callable from within a coroutine (or from another suspend function), since pausability requires that supporting context.",
+      "lineByLine": [
+        "The `suspend` keyword marks a function as one that MIGHT pause partway through its execution.",
+        "This pausing happens without blocking the Thread — other work can continue while the suspend function is paused, waiting on something slow.",
+        "Attempting to call a suspend function from an ordinary, non-suspend function is a compile error, since there's no coroutine to support the pause.",
+        "This is exactly why you'll always see suspend functions called from inside something like `lifecycleScope.launch { }`."
+      ],
+      "tip": "Real-world analogy: a suspend function is like a recipe step that says \"let it rest for 10 minutes\" — the pause only makes sense within the context of following an actual recipe (a coroutine), not floating on its own. In code, `suspend fun fetchWeatherFromNetwork(): Weather` can only be called from inside a coroutine."
+    }
+  },
+  {
+    "id": "vocab-44-word",
+    "topic": "Vocabulary: Dispatcher",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A tool that decides which thread or thread pool a coroutine's work should actually run on\"?",
+    "choices": [
+      "Coroutine",
+      "Dispatcher",
+      "Thread",
+      "WorkManager"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Dispatcher decides WHERE a coroutine's work actually runs — which Thread or group of Threads (thread pool) it's assigned to. Different kinds of work (like UI updates versus network calls) fit different Dispatchers better.",
+      "lineByLine": [
+        "\"Decides which thread or thread pool a coroutine's work should run on\" — this is the Dispatcher's whole job: choosing the right execution location for a given task.",
+        "`Dispatchers.Main` — runs work on the UI Thread, appropriate for anything touching the screen directly.",
+        "`Dispatchers.IO` — runs work on a Thread pool suited for slow, blocking-style tasks like network or disk access, kept off the UI Thread.",
+        "`Dispatchers.Default` — runs work on a Thread pool suited for heavy computation, like sorting large amounts of data."
+      ],
+      "tip": "Real-world analogy: a Dispatcher is like an office manager deciding which specific desk or team should handle an incoming task — customer-facing requests go to the front desk (Main), heavy paperwork goes to the back office (IO), and complex calculations go to the analytics team (Default). In code, `lifecycleScope.launch(Dispatchers.IO) { ... }` explicitly tells the coroutine to run its slow work on the IO Dispatcher, not the Main one."
+    }
+  },
+  {
+    "id": "vocab-44-def",
+    "topic": "Vocabulary: Dispatcher",
+    "difficulty": "easy",
+    "question": "What is a \"Dispatcher\" in Kotlin coroutines?",
+    "choices": [
+      "A function marked so it can pause at a slow point without blocking",
+      "A tool that decides which thread or thread pool a coroutine's work should actually run on",
+      "A single screen in an Android app",
+      "Structured, organized storage for data that can be saved and queried later"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A Dispatcher determines exactly which Thread or thread pool a coroutine's work actually executes on. Choosing the right Dispatcher matters, since different kinds of work — touching the UI, doing slow I/O, or heavy computation — each fit a different Dispatcher best.",
+      "lineByLine": [
+        "`Dispatchers.Main` is for anything that needs to touch the UI directly, running on the UI Thread.",
+        "`Dispatchers.IO` is for slow, blocking-style work like network calls or database access, kept off the UI Thread.",
+        "`Dispatchers.Default` is for CPU-intensive computation, like sorting or processing large amounts of data.",
+        "`withContext(Dispatchers.Main) { }` is commonly used to briefly switch back to the UI Thread in the middle of otherwise IO-focused work, like updating the screen after a network call finishes."
+      ],
+      "tip": "Real-world analogy: a Dispatcher is like an office manager assigning incoming tasks to the right team — customer requests to the front desk (Main), heavy paperwork to the back office (IO), complex calculations to the analytics team (Default). In code, `Dispatchers.IO` is explicitly chosen for slow network calls to keep them off the all-important Main Thread."
+    }
+  },
+  {
+    "id": "vocab-45-word",
+    "topic": "Vocabulary: WorkManager",
+    "difficulty": "easy",
+    "question": "Which term matches this definition: \"A tool for scheduling work that should reliably happen eventually, even if it needs to wait for certain conditions or survive the app closing\"?",
+    "choices": [
+      "Service",
+      "WorkManager",
+      "Coroutine",
+      "Dispatcher"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "WorkManager is Android's tool for scheduling flexible, guaranteed-eventually background work. Unlike work that must happen immediately, WorkManager-scheduled tasks can wait for the right conditions (like network availability), and the request itself survives even if the app is closed or the process is killed in the meantime.",
+      "lineByLine": [
+        "\"Scheduling work that should reliably happen eventually\" — WorkManager is for tasks where the exact timing isn't critical, just eventual completion.",
+        "\"Even if it needs to wait for certain conditions\" — WorkManager supports constraints, like requiring network access before running.",
+        "\"Survive the app closing\" — WorkManager persists its own scheduling information, so a request isn't lost even if the process is killed before it runs.",
+        "This makes WorkManager well suited for tasks like backing up photos or syncing data, where exact timing doesn't matter, but eventual completion does."
+      ],
+      "tip": "Real-world analogy: WorkManager is like leaving a note for the maintenance crew: \"please fix this whenever convenient, once the hallway is quiet — no rush.\" The note doesn't disappear if you go home for the day; the task will still get done eventually, once the right conditions line up. In an app, a WorkManager request with a network constraint patiently waits until the device actually has a connection, then runs — even if the app was closed the whole time."
+    }
+  },
+  {
+    "id": "vocab-45-def",
+    "topic": "Vocabulary: WorkManager",
+    "difficulty": "easy",
+    "question": "What is \"WorkManager\" in Android?",
+    "choices": [
+      "A component that can perform work in the background, independent of whether any screen is currently open",
+      "A tool for scheduling work that should reliably happen eventually, even if it needs to wait for certain conditions or survive the app closing",
+      "A single path of execution that can run code",
+      "A stream of values over time that code can continuously observe"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "WorkManager is Android's tool for scheduling background work that doesn't need to happen immediately, but should reliably happen eventually — even if it needs to wait for specific conditions, and even if the app's process is killed in the meantime.",
+      "lineByLine": [
+        "WorkManager requests can include constraints, like requiring the device to have network access or be charging before running.",
+        "Unlike a Service (which is built for immediate, visible work), WorkManager is built for flexible-timing tasks, without needing a persistent notification.",
+        "WorkManager persists its own scheduling information to disk, so a request survives even a full process kill before it's had a chance to run.",
+        "Requests can also be chained together, so one task's completion triggers the next one in sequence."
+      ],
+      "tip": "Real-world analogy: WorkManager is like leaving a note for the maintenance crew: \"fix this whenever convenient, once the hallway is quiet.\" The note doesn't vanish if you go home for the day — the task still gets done eventually. In an app, a WorkManager request with a network constraint patiently waits for a connection before running, even surviving the app being fully closed in the meantime."
+    }
+  }
+]

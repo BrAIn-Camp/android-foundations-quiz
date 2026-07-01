@@ -1,10 +1,16 @@
 interface PathSelectorProps {
+  onSelectVocabulary: () => void;
   onSelectChapters: () => void;
   onSelectDifficulty: () => void;
   onBack: () => void;
 }
 
-export default function PathSelector({ onSelectChapters, onSelectDifficulty, onBack }: PathSelectorProps) {
+export default function PathSelector({
+  onSelectVocabulary,
+  onSelectChapters,
+  onSelectDifficulty,
+  onBack,
+}: PathSelectorProps) {
   return (
     <div className="path-selector">
       <button className="back-btn" onClick={onBack}>← Back</button>
@@ -12,6 +18,24 @@ export default function PathSelector({ onSelectChapters, onSelectDifficulty, onB
       <p className="module-subtitle">Choose a learning path that fits your goal.</p>
 
       <div className="path-cards">
+        <button className="path-card path-card-recommended" onClick={onSelectVocabulary}>
+          <span className="path-recommended-badge">Start Here</span>
+          <div className="path-icon">🔤</div>
+          <div className="path-body">
+            <h3 className="path-title">Vocabulary</h3>
+            <p className="path-description">
+              New to Android development? Start here. Learn the 45 core terms
+              you'll see everywhere else in this app — Gradle, ViewModel, Intent,
+              Coroutine, and more — in plain language, tested from both directions.
+            </p>
+            <div className="path-tiers">
+              <span className="tier-pip pip-easy">Function</span>
+              <span className="tier-pip pip-mod">ViewModel</span>
+              <span className="tier-pip pip-hard">WorkManager</span>
+            </div>
+          </div>
+        </button>
+
         <button className="path-card" onClick={onSelectChapters}>
           <div className="path-icon">📖</div>
           <div className="path-body">

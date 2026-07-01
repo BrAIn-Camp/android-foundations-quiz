@@ -14,11 +14,18 @@ type AppView = 'home' | 'path' | 'chapters' | 'difficulty' | 'quiz' | 'summary';
 
 export default function App() {
   const [view, setView] = useState<AppView>('home');
-  const { progress, recordSession, recordDifficultySession, isDifficultyUnlocked } = useProgress();
+  const {
+    progress,
+    recordSession,
+    recordDifficultySession,
+    recordVocabularySession,
+    isDifficultyUnlocked,
+  } = useProgress();
   const {
     quizState,
     startChapterQuiz,
     startDifficultyQuiz,
+    startVocabularyQuiz,
     selectAnswer,
     nextQuestion,
     endQuiz,
@@ -35,6 +42,11 @@ export default function App() {
     setView('quiz');
   }
 
+  function handleSelectVocabulary() {
+    startVocabularyQuiz();
+    setView('quiz');
+  }
+
   function handleNext() {
     if (!quizState) return;
     if (quizState.currentIndex + 1 >= quizState.questions.length) {
@@ -43,6 +55,8 @@ export default function App() {
         recordSession(quizState.chapterId, score, quizState.questions.length);
       } else if (quizState.mode === 'difficulty' && quizState.difficulty) {
         recordDifficultySession(quizState.difficulty, score, quizState.questions.length);
+      } else if (quizState.mode === 'vocabulary') {
+        recordVocabularySession(score, quizState.questions.length);
       }
       setView('summary');
     } else {
@@ -60,14 +74,23 @@ export default function App() {
       const d = quizState.difficulty;
       endQuiz();
       startDifficultyQuiz(d);
+    } else if (quizState.mode === 'vocabulary') {
+      endQuiz();
+      startVocabularyQuiz();
     }
     setView('quiz');
   }
 
   function handleChooseNext() {
-    const wasChapterMode = quizState?.mode === 'chapter';
+    const finishedMode = quizState?.mode;
     endQuiz();
-    setView(wasChapterMode ? 'chapters' : 'difficulty');
+    if (finishedMode === 'chapter') {
+      setView('chapters');
+    } else if (finishedMode === 'difficulty') {
+      setView('difficulty');
+    } else {
+      setView('path');
+    }
   }
 
   function goHome() { endQuiz(); setView('home'); }
@@ -113,6 +136,7 @@ export default function App() {
 
         {view === 'path' && (
           <PathSelector
+            onSelectVocabulary={handleSelectVocabulary}
             onSelectChapters={() => setView('chapters')}
             onSelectDifficulty={() => setView('difficulty')}
             onBack={() => setView('home')}

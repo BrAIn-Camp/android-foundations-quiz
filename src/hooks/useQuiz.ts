@@ -19,6 +19,8 @@ import relEasy from '../data/relationships/easy.json';
 import relModerate from '../data/relationships/moderate.json';
 import relDifficult from '../data/relationships/difficult.json';
 
+import vocabulary from '../data/vocabulary/vocabulary.json';
+
 const QUESTIONS_PER_SESSION = 10;
 
 export const chapterQuestions: Record<string, Question[]> = {
@@ -35,6 +37,8 @@ const relationshipQuestions: Record<Difficulty, Question[]> = {
   difficult: relDifficult as Question[],
 };
 
+const vocabularyQuestions: Question[] = vocabulary as Question[];
+
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -45,7 +49,7 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export interface QuizState {
-  mode: 'chapter' | 'difficulty';
+  mode: 'chapter' | 'difficulty' | 'vocabulary';
   chapterId?: string;
   difficulty?: Difficulty;
   questions: Question[];
@@ -73,6 +77,15 @@ export function useQuiz() {
     const selected = shuffle(pool).slice(0, Math.min(QUESTIONS_PER_SESSION, pool.length));
     setQuizState({
       mode: 'difficulty', difficulty, questions: selected,
+      currentIndex: 0, selectedAnswer: null,
+      answers: new Array(selected.length).fill(null), isComplete: false,
+    });
+  }, []);
+
+  const startVocabularyQuiz = useCallback(() => {
+    const selected = shuffle(vocabularyQuestions).slice(0, QUESTIONS_PER_SESSION);
+    setQuizState({
+      mode: 'vocabulary', questions: selected,
       currentIndex: 0, selectedAnswer: null,
       answers: new Array(selected.length).fill(null), isComplete: false,
     });
@@ -107,5 +120,14 @@ export function useQuiz() {
     }, 0);
   }, [quizState]);
 
-  return { quizState, startChapterQuiz, startDifficultyQuiz, selectAnswer, nextQuestion, endQuiz, getScore };
+  return {
+    quizState,
+    startChapterQuiz,
+    startDifficultyQuiz,
+    startVocabularyQuiz,
+    selectAnswer,
+    nextQuestion,
+    endQuiz,
+    getScore,
+  };
 }

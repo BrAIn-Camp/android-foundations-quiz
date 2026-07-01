@@ -619,6 +619,29 @@ code[class*="language-"] { text-shadow: none !important; }
 }
 .path-card:hover { border-color: var(--primary); background: var(--surface-2); transform: translateY(-2px); }
 
+.path-card-recommended {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, rgba(61, 220, 132, 0.08), var(--surface));
+  position: relative;
+}
+.path-card-recommended:hover {
+  background: linear-gradient(135deg, rgba(61, 220, 132, 0.14), var(--surface-2));
+}
+.path-recommended-badge {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  background: var(--primary);
+  color: #06231A;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(61, 220, 132, 0.4);
+}
+
 .path-icon { font-size: 32px; flex-shrink: 0; line-height: 1; padding-top: 2px; }
 .path-body { flex: 1; }
 .path-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }

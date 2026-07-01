@@ -1,0 +1,502 @@
+[
+  {
+    "id": "rel-mod-01",
+    "topic": "Manifest declaration gates whether an explicit launch succeeds",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ AndroidManifest.xml ]\n   declares: MainActivity ✓\n   does NOT declare: SettingsActivity ✗\n\n[ MainActivity ] ──explicit Intent──▶ [ SettingsActivity ]\n                                            │\n                                            ▼\n                                    ❌ ActivityNotFoundException\n                                    (crashes at runtime, even\n                                     though the code compiled fine)",
+    "question": "MainActivity's code compiles perfectly and tries to launch SettingsActivity with an explicit Intent. But SettingsActivity was never added to the Manifest. What happens?",
+    "choices": [
+      "It launches successfully, since explicit Intents don't need a manifest entry",
+      "The app crashes at runtime with ActivityNotFoundException, even though everything compiled without errors",
+      "SettingsActivity gets automatically added to the Manifest at that moment",
+      "MainActivity itself is destroyed instead"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Compiling successfully only means the Kotlin code is syntactically valid — it says nothing about whether the operating system actually knows a component exists. Only the Manifest tells the OS that, and without it, even a perfectly-named explicit Intent has nothing valid to launch.",
+      "lineByLine": [
+        "MainActivity — declared, and is the app's entry point.",
+        "SettingsActivity — exists as a class, but has no <activity> entry in the Manifest.",
+        "The explicit Intent correctly names SettingsActivity — that part isn't the problem.",
+        "The OS looks for a declared component matching that name, finds none, and throws ActivityNotFoundException."
+      ],
+      "tip": "This is one of the most common real bugs for developers new to Android: forgetting to add a new screen to the Manifest. The code looks completely correct — the missing piece is always the declaration, not the logic."
+    }
+  },
+  {
+    "id": "rel-mod-02",
+    "topic": "A button tap flows from UI into a background coroutine",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ MainActivity ]\n   hosts Composable UI (via setContent)\n        │\n[ \"Refresh\" Button ] ──onClick──▶ [ lifecycleScope.launch { } ]\n                                          │\n                                          ▼\n                                [ fetchWeatherFromNetwork() ]\n                                  (runs on Dispatchers.IO,\n                                   doesn't freeze the UI)",
+    "question": "Tapping \"Refresh\" triggers a coroutine that fetches weather data. Why does the app's UI stay responsive (scrollable, tappable) while that network call is happening?",
+    "choices": [
+      "Because Composable buttons are automatically immune to freezing",
+      "Because the network call is wrapped inside a coroutine on lifecycleScope, dispatched to Dispatchers.IO — it pauses without blocking the main thread, which is what keeps the rest of the UI responsive",
+      "Because MainActivity pauses itself entirely until the fetch finishes",
+      "Because tapping a button always creates a brand new Activity"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the direct payoff of pairing Compose's UI events with coroutines: the onClick handler doesn't run the slow network call directly on the main thread. Instead, it launches a coroutine that can pause at the slow part without freezing everything else sharing that same main thread.",
+      "lineByLine": [
+        "`onClick` fires on the main thread, same thread responsible for drawing the screen.",
+        "`lifecycleScope.launch { }` starts a coroutine tied to MainActivity's own lifecycle.",
+        "`Dispatchers.IO` moves the actual network work off the main thread.",
+        "Because of this, the main thread stays free to keep handling scrolls, taps, and redraws the whole time."
+      ],
+      "tip": "Whenever a UI stays responsive during something slow, a coroutine dispatched off the main thread is almost always the reason. A frozen UI usually means that step was skipped."
+    }
+  },
+  {
+    "id": "rel-mod-03",
+    "topic": "Rotation destroys the Activity, but ViewModel survives and reconnects",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ MainActivity (Instance A) ] ── holds a reference to ──▶ [ WeatherViewModel ]\n        │\n   phone is rotated\n        │\n        ▼\n[ MainActivity (Instance A) DESTROYED ]\n        │\n        ▼\n[ MainActivity (Instance B), brand new ] ── reconnects to ──▶ [ SAME WeatherViewModel ]\n                                                                 (never destroyed!)",
+    "question": "After rotating the phone, Instance A of MainActivity is destroyed and replaced by Instance B. What happened to WeatherViewModel and the forecast data it was holding?",
+    "choices": [
+      "WeatherViewModel was destroyed along with Instance A, so the forecast data is gone",
+      "WeatherViewModel was deliberately retained by the OS across the rotation — Instance B reconnects to that exact same instance, so the forecast data is still there with no reloading needed",
+      "A brand new WeatherViewModel is created for Instance B, with completely fresh data",
+      "Instance A and Instance B are actually the same Activity object"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the specific problem ViewModel is built to solve. Rotation causes a full Activity destroy-and-recreate, but a ViewModel tied to that screen is deliberately kept alive by the OS across that exact event — the new Activity instance simply reconnects to it.",
+      "lineByLine": [
+        "Instance A holds a reference to WeatherViewModel — but does not own its actual lifetime.",
+        "Rotation destroys Instance A entirely, per the standard configuration-change behavior.",
+        "WeatherViewModel is NOT destroyed — the OS retains it specifically across this kind of event.",
+        "Instance B, once created, reconnects to that same retained instance, recovering the forecast data automatically."
+      ],
+      "tip": "Any data an Activity holds directly (like a plain variable) is lost on rotation. Data held in a ViewModel survives — this distinction is exactly why ViewModel exists."
+    }
+  },
+  {
+    "id": "rel-mod-04",
+    "topic": "An Intent carries a payload of extras to its target",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ MainActivity ]\n   builds Intent(this, ForecastDetailActivity)\n   .putExtra(\"city\", \"Seattle\")\n   .putExtra(\"day\", \"Monday\")\n        │\n        ▼\n[ ForecastDetailActivity ]\n   reads back \"city\" = \"Seattle\"\n   reads back \"day\" = \"Monday\"",
+    "question": "MainActivity launches ForecastDetailActivity, attaching a city name and a day as extras. What's the relationship between these two Activities regarding that data?",
+    "choices": [
+      "ForecastDetailActivity has no way to access any data from MainActivity",
+      "The Intent carries the extras alongside its addressing information — ForecastDetailActivity can read back exactly \"Seattle\" and \"Monday\" from the same Intent that launched it",
+      "The extras are only visible inside MainActivity, never the target",
+      "ForecastDetailActivity must already know the city and day before being launched"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Intent isn't just an address — it can carry data alongside it. Extras are exactly this: a payload attached to the request, which the target can retrieve once it receives that same Intent.",
+      "lineByLine": [
+        "`putExtra(\"city\", \"Seattle\")` and `putExtra(\"day\", \"Monday\")` attach data to the Intent before it's sent.",
+        "`startActivity(intent)` delivers both the addressing (ForecastDetailActivity) and the payload together.",
+        "ForecastDetailActivity reads the SAME Intent it was launched with to retrieve \"city\" and \"day\".",
+        "Without this mechanism, the target screen would have no way to know which city or day the user was looking at."
+      ],
+      "tip": "Think of an Intent as an envelope: the addressing is the label on the front, and extras are the letter inside — both travel together to the same destination."
+    }
+  },
+  {
+    "id": "rel-mod-05",
+    "topic": "An implicit share Intent matches several apps, so a chooser appears",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ WeatherNow ] ── implicit Intent: \"share this text\" ──▶ [ Android OS ]\n                                                              │\n                                                    checks every installed\n                                                    app's intent-filters\n                                                              │\n                        ┌─────────────────┬────────────────┐\n                        ▼                 ▼                ▼\n                  [ Messages ]      [ Email ]        [ Notes App ]\n                        │                 │                │\n                        └────────┬────────┴────────────────┘\n                                 ▼\n                       [ Chooser dialog shown to user ]\n                                 │\n                                 ▼\n                     [ Whichever app the user taps ]",
+    "question": "WeatherNow sends an implicit \"share this text\" Intent, and three different apps all have matching intent-filters. What determines which one actually receives the shared text?",
+    "choices": [
+      "WeatherNow itself picks one at random",
+      "The OS shows a chooser dialog since multiple apps match equally well, and the user's tap decides which one actually receives it",
+      "All three apps receive and process the shared text simultaneously",
+      "Only the first-installed app is ever allowed to receive it"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "When an implicit Intent matches more than one component equally well, the OS doesn't guess on its own — it surfaces a chooser, handing the final decision to the user rather than resolving the ambiguity automatically.",
+      "lineByLine": [
+        "WeatherNow's implicit Intent describes an action (\"share text\"), not a specific target.",
+        "The OS checks every installed app's declared intent-filters for a match.",
+        "Messages, Email, and Notes App all match — three valid candidates.",
+        "A chooser dialog appears, and only the app the user actually taps receives the shared text."
+      ],
+      "tip": "This chooser is the direct, visible result of an implicit Intent having more than one valid match — it's the same mechanism behind Android's familiar share menu."
+    }
+  },
+  {
+    "id": "rel-mod-06",
+    "topic": "A tapped notification fires a wrapped Intent back into the app",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ Notification: \"Sync complete\" ]\n   built with a PendingIntent\n   wrapping Intent(context, MainActivity::class.java)\n        │\n   user taps the notification\n        ▼\n[ PendingIntent fires ] ──▶ [ Explicit Intent runs ] ──▶ [ MainActivity opens ]",
+    "question": "The user taps a \"Sync complete\" notification, and MainActivity opens. What's actually happening underneath that tap?",
+    "choices": [
+      "Notifications have their own special mechanism, unrelated to Intents entirely",
+      "The notification was holding a PendingIntent, which wraps an ordinary explicit Intent targeting MainActivity — tapping the notification simply triggers that already-prepared Intent",
+      "The tap directly rebuilds MainActivity from scratch with no Intent involved",
+      "PendingIntent and Intent are two completely unrelated concepts"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A notification tap isn't a separate, mysterious system — it's the same explicit-Intent mechanism used everywhere else in the app, just wrapped in a PendingIntent so the notification system (running outside the app itself) can trigger it later, on the app's behalf.",
+      "lineByLine": [
+        "`Intent(context, MainActivity::class.java)` — an ordinary explicit Intent, same as any other screen launch.",
+        "`PendingIntent.getActivity(...)` wraps it, granting the notification system permission to fire it later.",
+        "The notification is built with that PendingIntent attached as its tap action.",
+        "Tapping the notification triggers the wrapped Intent, and MainActivity opens exactly as if it had been launched directly."
+      ],
+      "tip": "Whenever tapping something in Android opens a specific screen, there's very likely a PendingIntent wrapping a normal Intent underneath — notifications are one of the most common places you'll see this pattern."
+    }
+  },
+  {
+    "id": "rel-mod-07",
+    "topic": "A foreground Service requires a notification through a declared channel",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ WeatherSyncService ] ── promotes itself to ──▶ [ Foreground Service ]\n                                                        │\n                                              requires posting through\n                                                        │\n                                                        ▼\n                                            [ A pre-declared Notification\n                                              Channel, via NotificationManager ]\n                                                        │\n                                                        ▼\n                                         [ Persistent notification appears,\n                                           cannot be swiped away while active ]",
+    "question": "WeatherSyncService promotes itself to a foreground Service to do a large sync. What must already exist before its notification can successfully appear?",
+    "choices": [
+      "Nothing extra is needed — foreground Services can show any notification instantly",
+      "A Notification Channel must already be declared and registered with NotificationManager — without it, the notification won't be able to appear at all",
+      "The user must manually create the notification themselves",
+      "MainActivity must be visible on screen at the same time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "On modern Android, individual notifications depend on a channel existing first — this mirrors the Manifest's 'must be declared before it can be used' relationship, just applied to notification categories instead of components.",
+      "lineByLine": [
+        "WeatherSyncService promotes itself to foreground, which comes with a notification requirement.",
+        "`NotificationManager` (obtained via getSystemService) is the tool used to actually post it.",
+        "That notification must belong to an already-created Notification Channel, or it won't display.",
+        "Once posted through a valid channel, the persistent notification appears and can't be dismissed while the foreground Service remains active."
+      ],
+      "tip": "Whenever a notification seems to silently 'not show up,' a missing or misconfigured channel is one of the most common causes on modern Android."
+    }
+  },
+  {
+    "id": "rel-mod-08",
+    "topic": "A broadcast reaction quickly delegates real work to a Service",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ OS broadcasts: CONNECTIVITY_CHANGE ]\n        │\n        ▼\n[ Dynamically-registered Receiver, tied to MainActivity's onStart/onStop ]\n        │\n   onReceive() fires — must stay brief!\n        │\n        ▼\n[ Immediately starts WeatherSyncService ] ── does the real, longer work",
+    "question": "The OS broadcasts that network connectivity changed. WeatherNow's receiver reacts by immediately starting a Service, rather than doing the actual sync work itself inside onReceive. Why?",
+    "choices": [
+      "onReceive() could easily do the whole sync itself; starting a Service is just an unnecessary extra step",
+      "onReceive() is only given a brief execution window and isn't built for sustained work — starting a Service hands the real, longer-running task to a component actually designed for it",
+      "BroadcastReceivers are not allowed to start Services under any circumstances",
+      "This pattern only works if MainActivity is currently visible on screen"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A BroadcastReceiver's onReceive is meant for a quick reaction, not sustained execution — the OS may consider it unresponsive if it runs too long. The correct pattern is exactly what's shown here: notice the event quickly, then delegate any real work to a Service built for longer execution.",
+      "lineByLine": [
+        "The broadcast fires the moment connectivity changes — a system-wide announcement.",
+        "The dynamically-registered receiver's lifetime is tied to MainActivity's onStart/onStop, echoing lifecycle-scoped relationships elsewhere in the app.",
+        "onReceive() briefly recognizes the event, then immediately hands off to WeatherSyncService.",
+        "The Service, not bound by onReceive's short time window, can safely perform the actual sync."
+      ],
+      "tip": "Whenever you see a receiver immediately starting a Service instead of doing work directly, that's this exact pattern — quick reaction, then delegate to something built for sustained execution."
+    }
+  },
+  {
+    "id": "rel-mod-09",
+    "topic": "A full data pipeline: Service writes, Room stores, Flow notifies, UI updates",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ WeatherSyncService ] ── suspend fun, on Dispatchers.IO ──▶ [ Writes new forecasts into Room ]\n                                                                    │\n                                                          Room's Flow<List<ForecastRecord>>\n                                                          automatically emits the update\n                                                                    │\n                                                                    ▼\n                                                    [ ViewModel exposes that same Flow ]\n                                                                    │\n                                                     collectAsState() in a Composable\n                                                                    │\n                                                                    ▼\n                                                    [ LazyColumn recomposes with new data ]",
+    "question": "After WeatherSyncService writes new forecasts to Room, the on-screen LazyColumn updates automatically, with no extra code manually refreshing it. What connects these two things?",
+    "choices": [
+      "There's no real connection; the LazyColumn just happens to refresh on its own on a timer",
+      "A continuous chain: Room's Flow automatically emits whenever the table changes, the ViewModel exposes that Flow, collectAsState() turns it into Compose state, and that state change triggers recomposition of the LazyColumn",
+      "The Service directly modifies the LazyColumn's contents itself",
+      "This only works if the app is completely restarted after the Service finishes"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This chains together several relationships into one continuous pipeline: a database change automatically flows all the way to a visual UI update, through a Flow, a ViewModel, and Compose's own state-observation tools — with no manual refresh call anywhere in the chain.",
+      "lineByLine": [
+        "WeatherSyncService writes to Room using a suspend function, safely off the main thread.",
+        "Room's Flow<List<ForecastRecord>> automatically emits a new value the moment the underlying table changes.",
+        "The ViewModel simply passes that Flow along, without needing to manually re-fetch anything.",
+        "collectAsState() bridges the Flow into Compose state, and Compose automatically recomposes the LazyColumn to reflect it."
+      ],
+      "tip": "This end-to-end pipeline — database change to UI update, entirely automatic — is one of the most common and powerful patterns in real Android apps. Each individual link is simple; the power comes from chaining them together."
+    }
+  },
+  {
+    "id": "rel-mod-10",
+    "topic": "A denial changes what the app should do on the next request",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ First request for CAMERA ] ──▶ [ User taps Deny ]\n\n[ Second request attempt ]\n        │\n        ▼\n[ shouldShowRequestPermissionRationale() ] ──▶ now returns TRUE\n        │\n        ▼\n[ App shows an explanation screen FIRST ] ──▶ then requests again",
+    "question": "After the user denies CAMERA once, shouldShowRequestPermissionRationale() starts returning true. What should the app do differently because of that change?",
+    "choices": [
+      "Nothing — the app should just immediately request the permission again with no changes",
+      "The app should show an explanatory screen first, giving the user more context about why the permission matters, before asking again",
+      "The app should stop trying to request CAMERA forever after just one denial",
+      "This return value has no real effect on what the app should do"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This function's return value directly reflects the app's interaction history with this specific permission. A true result is a signal: a bare request already failed once, so providing more context before asking again is likely to produce a better outcome.",
+      "lineByLine": [
+        "First request: no prior history, so the OS shows its standard dialog with no special rationale needed.",
+        "User denies — this is now part of the permission's interaction history.",
+        "Second attempt: shouldShowRequestPermissionRationale() returns true, reflecting that one denial.",
+        "The app responds by showing its own explanation UI first, THEN requesting again — a more thoughtful approach than blindly repeating the exact same request."
+      ],
+      "tip": "This function isn't just a technical check — it's a cue for better UX. True generally means 'the user already said no once without much context; give them a reason this time.'"
+    }
+  },
+  {
+    "id": "rel-mod-11",
+    "topic": "Permanent denial changes the relationship entirely",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ First denial ] ──▶ [ Second denial + \"Don't ask again\" checked ]\n                                    │\n                                    ▼\n[ Third request attempt ]\n        │\n        ▼\n❌ No dialog shown at all — instant denial\n        │\n        ▼\n[ App must redirect user to Settings manually ]",
+    "question": "After the user checks \"Don't ask again\" on a second denial, the app tries requesting CAMERA a third time. What happens?",
+    "choices": [
+      "The exact same dialog appears again, just like the first two times",
+      "No dialog appears at all — the OS immediately reports denial without involving the user, since a real dialog request would be pointless now",
+      "CAMERA is automatically granted on the third attempt",
+      "The app crashes when attempting a third request"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "\"Don't ask again\" is a genuine turning point in the relationship between the app and this permission. Once triggered, the OS stops offering its normal ask-and-respond dialog entirely — the app's only remaining path is guiding the user to the device's Settings screen.",
+      "lineByLine": [
+        "First denial: normal, standard dialog flow.",
+        "Second denial, with \"Don't ask again\" checked: a permanent state change.",
+        "Third attempt: requestPermissions() is called, but the OS skips the dialog and reports denial immediately.",
+        "The app's UI must now detect this state and offer to open Settings, since repeating the request is no longer useful."
+      ],
+      "tip": "A well-built app checks for this state and stops calling requestPermissions() blindly — instead showing a message like \"Please enable Camera access in Settings\" once it detects this permanent denial."
+    }
+  },
+  {
+    "id": "rel-mod-12",
+    "topic": "Process death erases in-memory data but not persisted data",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ App backgrounded ] ──▶ [ MainActivity stopped ] ──▶ [ OS kills the process for memory ]\n\n[ In-memory tapCount ] ──▶ 💥 GONE, lost forever\n\n[ Data saved earlier via DataStore ] ──▶ 📓 still there,\n                                           completely unaffected",
+    "question": "After the app's process is killed by the OS, what's the difference between the in-memory tapCount and the setting saved earlier via DataStore?",
+    "choices": [
+      "Both are lost equally; process death erases everything the app was holding",
+      "tapCount, held only in memory, is lost completely; the DataStore setting was actually written to disk earlier, so it survives the process death entirely unaffected",
+      "DataStore data is also lost, since it depends on the process staying alive",
+      "tapCount survives because it was displayed on screen recently"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the core distinction between temporary, in-memory state and genuine persistence. A killed process erases everything that was only ever held in memory — but data already written to disk through a tool like DataStore has no dependency on that process staying alive at all.",
+      "lineByLine": [
+        "tapCount lived only in the Activity's (or ViewModel's) memory — process death wipes it out completely.",
+        "The DataStore write happened earlier, actually saving the value to disk.",
+        "Process death has zero effect on data already committed to disk.",
+        "When the app reopens (even as a brand new process), it can read that DataStore value right back out, unaffected by everything that happened in between."
+      ],
+      "tip": "The test for whether something survives process death: was it ever actually written to disk, or was it only ever sitting in memory? Only genuine persistence crosses that boundary safely."
+    }
+  },
+  {
+    "id": "rel-mod-13",
+    "topic": "WorkManager waits for a constraint before running",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ PeriodicWorkRequest enqueued ]\n   constraint: NetworkType.CONNECTED required\n\n[ Device currently has NO network ]\n        │\n        ▼\n[ Work waits, not yet run ]\n        │\n   (hours pass, network eventually returns)\n        │\n        ▼\n[ Constraint now satisfied ] ──▶ [ Work finally runs ]",
+    "question": "A PeriodicWorkRequest with a network constraint is enqueued while the device has no connection. What happens to the request while offline?",
+    "choices": [
+      "It fails immediately and must be manually re-enqueued once network returns",
+      "It simply waits — WorkManager holds onto the scheduled request until the network constraint is actually satisfied, then runs it",
+      "It runs anyway, ignoring the constraint entirely",
+      "The constraint is removed automatically after 10 minutes of waiting"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Constraints genuinely gate execution rather than just being advisory. WorkManager holds the scheduled work back until every specified condition is actually true, rather than failing outright or ignoring the requirement.",
+      "lineByLine": [
+        "The request is enqueued successfully, constraint included, even while offline.",
+        "WorkManager persists this scheduling information (surviving process death, per earlier lessons) while waiting.",
+        "No network means the constraint isn't satisfied, so execution is held back.",
+        "Once network returns and the constraint is finally true, WorkManager runs the work — exactly as originally requested, without needing to be re-enqueued."
+      ],
+      "tip": "This is precisely why WorkManager fits 'flexible timing' tasks so well: the request itself never needs to be repeated — it just patiently waits for the right conditions."
+    }
+  },
+  {
+    "id": "rel-mod-14",
+    "topic": "Bound connection vs. the Service's own independent lifetime",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ MainActivity ] ──bindService()──▶ [ MusicPlayerService ]\n      (ongoing two-way connection, like holding a\n       reference and calling its methods directly)\n\n[ MainActivity ] ──unbindService()──▶\n      (connection ends)\n\n[ MusicPlayerService ] ── was ALSO independently started earlier ──▶\n      keeps playing music regardless of the unbind",
+    "question": "MainActivity binds to MusicPlayerService, then later unbinds. But the Service was ALSO started independently earlier with startService(). What happens to the music after the unbind?",
+    "choices": [
+      "The music stops immediately, since the bound connection ended",
+      "The music keeps playing — the Service's own independent lifetime (from being started) is separate from the temporary bound connection, which simply ends without affecting that ongoing lifetime",
+      "MusicPlayerService is destroyed the moment any single client unbinds",
+      "Unbinding is not a real operation and has no effect either way"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This distinguishes two separate relationships a component can have with a Service. A bound connection is a two-way, ongoing link that can start and end independently of the Service's own started lifetime — and here, since it was ALSO started, ending the bound connection alone doesn't stop it.",
+      "lineByLine": [
+        "`bindService()` — establishes a direct, ongoing connection, letting MainActivity call the Service's methods.",
+        "`unbindService()` — ends that specific connection only.",
+        "Because MusicPlayerService was ALSO started (a separate relationship), its lifetime doesn't depend on any bound client remaining connected.",
+        "The music keeps playing, entirely unaffected by the bind/unbind cycle."
+      ],
+      "tip": "A Service can be started, bound, or both at once — and each relationship has its own separate rules for what keeps the Service alive. A Service that's only bound (never started) would stop once its last client unbinds; one that's also started continues regardless."
+    }
+  },
+  {
+    "id": "rel-mod-15",
+    "topic": "Structured concurrency — destroying the parent cancels every child",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ MainActivity's lifecycleScope.launch { ] ── parent coroutine\n    launch { fetchWeatherFromNetwork() }   ── child 1\n    launch { fetchUserPreferences() }      ── child 2\n} ]\n\n[ MainActivity destroyed (rotation) ]\n        │\n        ▼\n[ Parent coroutine cancelled ] ──▶ [ Child 1 cancelled ] + [ Child 2 cancelled ]",
+    "question": "MainActivity is destroyed by rotation while both child coroutines are still in progress. What happens to child 1 and child 2?",
+    "choices": [
+      "They're entirely unaffected and keep running to completion regardless of MainActivity's destruction",
+      "Both are automatically cancelled — they're nested inside the parent coroutine tied to lifecycleScope, and cancelling that scope cascades down through the whole structured hierarchy",
+      "Only child 1 gets cancelled; child 2 continues unaffected",
+      "Cancelling the parent has no effect on any children at all"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is structured concurrency's central relationship: coroutines launched inside another coroutine become children within the same overall scope. Cancelling that shared scope cascades automatically through every nested child, with no need to track and cancel each one individually.",
+      "lineByLine": [
+        "The outer `launch` is tied to lifecycleScope, itself tied to MainActivity's lifecycle.",
+        "Both inner `launch` calls are children, nested within that same outer coroutine.",
+        "MainActivity's destruction cancels lifecycleScope, cancelling the parent coroutine.",
+        "Because both children are part of that same structured hierarchy, they're automatically cancelled too — neither one is left running orphaned."
+      ],
+      "tip": "This automatic cascade is exactly why structured concurrency is considered safer than manually managing individual background threads — one well-placed cancellation reliably cleans up everything nested inside it."
+    }
+  },
+  {
+    "id": "rel-mod-16",
+    "topic": "PackageManager reveals the mechanism behind implicit intent resolution",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ Implicit Intent: ACTION_VIEW, a weather-forecast URL ]\n        │\n        ▼\n[ packageManager.queryIntentActivities(intent, 0) ]\n        │\n   searches every installed app's declared intent-filters\n        │\n        ▼\n[ Returns a list of every matching component found ]",
+    "question": "Calling queryIntentActivities() with this implicit Intent returns a list of matching components. What is this method actually doing?",
+    "choices": [
+      "Randomly picking one app to associate with this Intent",
+      "Performing the exact same matching search the OS itself runs internally to resolve any implicit Intent — checking every installed app's declared intent-filters for a match",
+      "Only checking the current app's own manifest, ignoring every other installed app",
+      "Permanently installing new components based on the Intent's action"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This reveals the concrete mechanism behind implicit Intent resolution: it isn't invisible magic performed only by the OS — it's PackageManager doing this exact search, callable directly by an app's own code to preview matches before ever sending the Intent.",
+      "lineByLine": [
+        "The implicit Intent describes an action and data, naming no specific target.",
+        "`queryIntentActivities(intent, 0)` searches across every installed app's declared intent-filters.",
+        "The returned list represents every component that COULD handle this Intent.",
+        "This is genuinely the same search the OS performs when actually resolving and launching an implicit Intent — just exposed directly for an app to call ahead of time."
+      ],
+      "tip": "Calling this method yourself is useful for previewing what would happen — for example, checking whether ANY app can handle a URL before showing a 'share' button for it at all."
+    }
+  },
+  {
+    "id": "rel-mod-17",
+    "topic": "Chained WorkManager requests — one triggers the next",
+    "difficulty": "moderate",
+    "snippetLang": "diagram",
+    "snippet": "[ CompressLogsWorker ] ──succeeds──▶ [ UploadLogsWorker ]\n\nWorkManager.getInstance(context)\n    .beginWith(compressWork)\n    .then(uploadWork)\n    .enqueue()\n\nIf CompressLogsWorker FAILS instead:\n[ CompressLogsWorker ] ──fails──▶ ❌ UploadLogsWorker never runs",
+    "question": "CompressLogsWorker and UploadLogsWorker are chained together with beginWith().then(). What's the relationship between them if CompressLogsWorker fails?",
+    "choices": [
+      "UploadLogsWorker runs anyway, completely independent of whether compression succeeded",
+      "UploadLogsWorker will not run at all — chaining creates a genuine dependency, and a failure earlier in the chain prevents later steps from starting",
+      "Both Workers always run at the exact same time regardless of chaining",
+      "Chaining has no real effect on execution order or dependency"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Chaining establishes a genuine sequential dependency, not just a suggestion about ordering. If an earlier step in the chain fails, later steps that depend on it are not executed — this is very different from simply enqueueing two unrelated requests independently.",
+      "lineByLine": [
+        "`beginWith(compressWork)` establishes compressWork as the first step.",
+        "`.then(uploadWork)` establishes uploadWork as dependent on compressWork's successful completion.",
+        "If compressWork fails, the chain is broken — uploadWork never starts.",
+        "This ordering and dependency guarantee wouldn't exist if both were simply enqueued as two separate, unrelated requests."
+      ],
+      "tip": "Chaining is the right tool whenever one task's output feeds into another, or when strict success-dependent ordering matters — like compressing data before it's safe to upload."
+    }
+  },
+  {
+    "id": "rel-mod-18",
+    "topic": "Judgment: choosing the tool that actually survives what's needed",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "Requirement: this data must still be there even after\nthe user fully closes the app and reopens it next week.\n\nOption A: [ ViewModel ] ── survives rotation only\nOption B: [ Room / DataStore ] ── survives process death,\n                                    app close, even reboot",
+    "question": "Given the requirement that data must survive a full app close and reopening a week later, which option correctly satisfies it, and why?",
+    "choices": [
+      "Option A (ViewModel), since it's specifically designed to hold app data reliably",
+      "Option B (Room/DataStore), since ViewModel only survives configuration changes like rotation — it does NOT survive the process being killed and the app reopened much later, while genuine persistence tools are built exactly for that longer timeframe",
+      "Both options are equally correct for this requirement",
+      "Neither option can satisfy this requirement; it's technically impossible"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a genuine architectural decision point: ViewModel solves a narrower problem (surviving rotation) than persistence tools do (surviving process death, app close, and even device restarts). Choosing the wrong one here means data that appears to work fine during testing but is unexpectedly lost in real usage.",
+      "lineByLine": [
+        "ViewModel is retained across configuration changes (like rotation) specifically — a narrower guarantee.",
+        "A full app close followed by reopening much later goes well beyond that guarantee; a fresh ViewModel would simply be created with no memory of before.",
+        "Room and DataStore write data to disk, making it durable across process death, app closure, and even device restarts.",
+        "The correct choice depends entirely on matching the tool's actual guarantee to the real requirement — not just picking whichever tool holds data \"in the app.\""
+      ],
+      "tip": "Whenever a requirement mentions surviving beyond a single app session (closing and reopening later), that's an immediate signal that genuine persistence is needed — ViewModel alone is never sufficient for that timeframe."
+    }
+  },
+  {
+    "id": "rel-mod-19",
+    "topic": "Judgment: immediate visible work vs. flexible deferred work",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "Task: Upload a large batch of analytics logs sometime in\nthe next few hours, whenever the device happens to have\na stable connection — exact timing doesn't matter to the user.\n\nOption A: [ Foreground Service ] ── runs immediately,\n                                      requires a persistent\n                                      visible notification\nOption B: [ WorkManager ] ── flexible timing, waits for\n                                the right conditions,\n                                survives process death",
+    "question": "Given this specific task description, which tool fits better, and why?",
+    "choices": [
+      "Option A (Foreground Service), since all background work should always use a Service",
+      "Option B (WorkManager), since the task explicitly doesn't need to run immediately or visibly — it just needs to reliably happen eventually under good conditions, which is exactly what WorkManager is designed for",
+      "Both options are functionally identical for this specific task",
+      "Neither tool is appropriate; this task requires a BroadcastReceiver instead"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a direct test of matching a tool to its actual intended relationship with time. A foreground Service is built for work that needs to happen right now, visibly. This task explicitly has flexible timing and no immediate user relevance — a poor match for a Service's always-on, notification-requiring relationship.",
+      "lineByLine": [
+        "The task's own description says timing is flexible and conditions-dependent — a strong signal pointing away from immediate execution.",
+        "A foreground Service would force an unnecessary persistent notification for work the user doesn't need to watch happen live.",
+        "WorkManager's constraint system (like requiring network) and durability (surviving process death) are built specifically for exactly this kind of task.",
+        "Choosing the Service here would work, but would be a mismatch — using more overhead and user-facing intrusion than the task actually calls for."
+      ],
+      "tip": "A reliable test: does the work need to happen immediately, with the user aware it's happening right now? Lean Service. Is the timing flexible, with the work just needing to reliably happen eventually? Lean WorkManager."
+    }
+  },
+  {
+    "id": "rel-mod-20",
+    "topic": "Capstone: a full sync chain from Service to notification and back",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "[ WeatherSyncService, foreground ]\n        │\n   writes new data via Room (suspend, Dispatchers.IO)\n        │\n        ▼\n[ Sends a custom broadcast: \"SYNC_DONE\" ]\n        │\n        ▼\n[ Dynamically-registered Receiver reacts ]\n        │\n   starts a second, small Service to update\n   a \"last synced\" timestamp via DataStore\n        │\n        ▼\n[ That Service posts a notification, with a\n  PendingIntent wrapping an explicit Intent\n  back to MainActivity ]\n        │\n   user taps the notification\n        ▼\n[ MainActivity opens ]",
+    "question": "Which statement correctly traces every relationship in this chain, from the Service's initial write all the way to the user tapping the final notification?",
+    "choices": [
+      "Each step in this chain is actually unrelated to the others and happens purely by coincidence",
+      "A Room write triggers a custom broadcast; a dynamically-registered receiver reacts by starting a second Service; that Service posts a notification using a PendingIntent-wrapped explicit Intent; tapping it finally opens MainActivity — each link uses a distinct, well-defined relationship chained into one coherent flow",
+      "The entire chain could be replaced by a single Activity with no other components involved",
+      "Notifications in this chain have no real connection to Intents at all"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This capstone scenario chains together nearly every relationship covered across this tier: persistence writes, custom broadcasts, receiver-to-Service delegation, foreground notification requirements, and PendingIntent-wrapped navigation — each one a distinct, previously-established relationship, now combined into one realistic flow.",
+      "lineByLine": [
+        "The Room write completes the sync's core data work, safely off the main thread.",
+        "A custom broadcast (same mechanism as any system broadcast) announces completion to any interested listener.",
+        "The receiver, reacting briefly, delegates the remaining small task to a second Service rather than doing it directly.",
+        "That Service's notification, tapped by the user, fires a PendingIntent-wrapped explicit Intent — landing back on MainActivity, closing the loop."
+      ],
+      "tip": "Real Android app behavior is almost always a chain like this: several individually-simple relationships, connected together. Reading it well means recognizing each familiar link, one at a time, rather than treating the whole chain as one big mystery."
+    }
+  }
+]

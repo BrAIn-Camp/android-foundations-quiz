@@ -1,19 +1,30 @@
 import { useState, useCallback } from 'react';
-import type { Progress, ChapterProgress } from '../types/question';
+import type { Progress, ChapterProgress, DifficultyProgress, Difficulty } from '../types/question';
 
 const STORAGE_KEY = 'android-foundations-quiz-progress';
 
 const defaultChapter = (): ChapterProgress => ({ bestScore: 0, totalSeen: 0, attempts: 0 });
+const defaultTier = (): DifficultyProgress => ({ bestScore: 0, totalSeen: 0, attempts: 0 });
+
+const initialProgress = (): Progress => ({
+  chapters: {},
+  easy: defaultTier(),
+  moderate: defaultTier(),
+  difficult: defaultTier(),
+});
 
 function loadProgress(): Progress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { chapters: {} };
+    if (!raw) return initialProgress();
     const parsed = JSON.parse(raw) as Progress;
     if (!parsed.chapters) parsed.chapters = {};
+    if (!parsed.easy) parsed.easy = defaultTier();
+    if (!parsed.moderate) parsed.moderate = defaultTier();
+    if (!parsed.difficult) parsed.difficult = defaultTier();
     return parsed;
   } catch {
-    return { chapters: {} };
+    return initialProgress();
   }
 }
 
@@ -30,6 +41,7 @@ export function useProgress() {
     setProgress(prev => {
       const tier = prev.chapters[chapterId] ?? defaultChapter();
       const updated: Progress = {
+        ...prev,
         chapters: {
           ...prev.chapters,
           [chapterId]: {
@@ -44,11 +56,40 @@ export function useProgress() {
     });
   }, []);
 
+  const recordDifficultySession = useCallback((difficulty: Difficulty, score: number, total: number) => {
+    setProgress(prev => {
+      const tier = prev[difficulty];
+      const updated: Progress = {
+        ...prev,
+        [difficulty]: {
+          bestScore: Math.max(tier.bestScore, score),
+          totalSeen: total,
+          attempts: tier.attempts + 1,
+        },
+      };
+      saveProgress(updated);
+      return updated;
+    });
+  }, []);
+
   const resetProgress = useCallback(() => {
-    const fresh: Progress = { chapters: {} };
+    const fresh = initialProgress();
     saveProgress(fresh);
     setProgress(fresh);
   }, []);
 
-  return { progress, recordSession, resetProgress };
+  const isDifficultyUnlocked = useCallback(
+    (difficulty: Difficulty): boolean => {
+      if (difficulty === 'easy') return true;
+      if (difficulty === 'moderate') {
+        const { bestScore, totalSeen } = progress.easy;
+        return totalSeen > 0 && bestScore / totalSeen >= 0.7;
+      }
+      const { bestScore, totalSeen } = progress.moderate;
+      return totalSeen > 0 && bestScore / totalSeen >= 0.7;
+    },
+    [progress]
+  );
+
+  return { progress, recordSession, recordDifficultySession, resetProgress, isDifficultyUnlocked };
 }

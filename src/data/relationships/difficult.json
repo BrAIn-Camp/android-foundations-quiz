@@ -1,0 +1,501 @@
+[
+  {
+    "id": "rel-hard-01",
+    "topic": "Sealed UiState pattern flowing from Repository to Compose",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "sealed class ForecastUiState\ndata object Loading : ForecastUiState()\ndata class Success(val days: List<ForecastRecord>) : ForecastUiState()\ndata class Error(val message: String) : ForecastUiState()\n\n[ ForecastRepository.getForecasts() ]\n   suspend fun, tries Room first, then network\n        │\n        ▼\n[ ForecastViewModel ]\n   private val _uiState = MutableStateFlow<ForecastUiState>(Loading)\n   val uiState: StateFlow<ForecastUiState> = _uiState\n        │\n        ▼\n[ Composable ] ── collectAsState() ──▶\n   when (uiState) {\n       is Loading  -> CircularProgressIndicator()\n       is Success  -> LazyColumn { ... }\n       is Error    -> Text(uiState.message)\n   }",
+    "question": "The ViewModel exposes a StateFlow<ForecastUiState>, and the Composable branches on it with a `when`. Why is `ForecastUiState` declared as a sealed class rather than, say, three separate unrelated Boolean flags (isLoading, hasError, data)?",
+    "choices": [
+      "Sealed classes run faster than Boolean flags at runtime",
+      "A sealed class makes the `when` exhaustive at compile time and guarantees the UI can only ever be in exactly ONE of these states at once — three separate Booleans could accidentally be set to invalid combinations, like isLoading=true AND hasError=true simultaneously",
+      "Boolean flags cannot be observed with StateFlow at all",
+      "Sealed classes are required before a ViewModel can be created"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a real, common AI-generated pattern: a sealed class models 'exactly one of these possibilities, with each one carrying only the data relevant to it.' Three independent Booleans can't express that guarantee — they can contradict each other, and the compiler can't catch it.",
+      "lineByLine": [
+        "`sealed class ForecastUiState` — restricts the possible states to Loading, Success, or Error, nothing else.",
+        "`Success(val days: ...)` carries data ONLY relevant to that state — Loading and Error don't need a days list at all.",
+        "The `when` in the Composable is exhaustive — the compiler ensures every possible state is handled, with no `else` branch hiding a forgotten case.",
+        "Three separate Booleans, by contrast, could be set inconsistently (e.g., isLoading=true and hasError=true together), a bug that compiles fine but represents a nonsensical UI state."
+      ],
+      "tip": "Whenever you see a sealed class feeding a `when` inside a Composable, recognize the pattern: it's modeling 'the UI is in exactly one of these situations' safely, with the compiler enforcing that every situation is actually handled."
+    }
+  },
+  {
+    "id": "rel-hard-02",
+    "topic": "Diagnose: a Service blocking the main thread inside onStartCommand",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "class WeatherSyncService : Service() {\n    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {\n        val response = OkHttpClient().newCall(request).execute()  // BLOCKING call\n        val body = response.body?.string()\n        saveToDatabase(body)\n        return START_STICKY\n    }\n}\n\n[ Service started ] ──▶ [ onStartCommand runs on the MAIN thread by default ]\n                                          │\n                              network call blocks it directly",
+    "question": "This Service performs a blocking network call directly inside onStartCommand, with no coroutine involved. What's the real-world consequence?",
+    "choices": [
+      "None — Services automatically run all their code off the main thread",
+      "This risks freezing the entire app's UI (and potentially triggering an ANR — Application Not Responding) because onStartCommand runs on the main thread by default, and this blocking call occupies that same thread the whole time",
+      "The call will simply be ignored by the OS since Services can't make network calls",
+      "This only affects other Services, never the visible UI"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a genuine, common bug pattern: a Service having no visible UI does NOT mean its callbacks run off the main thread. onStartCommand executes on the main thread by default, exactly like an Activity's onCreate — a blocking call here recreates the classic frozen-UI problem, just from a less obvious location.",
+      "lineByLine": [
+        "`onStartCommand` — runs on the main thread unless explicitly moved elsewhere.",
+        "`.execute()` — a synchronous, blocking network call (as opposed to an async/suspend-based one).",
+        "While this blocks, the main thread can't process touches, redraws, or any other UI work — even though this code lives inside a Service, not an Activity.",
+        "The fix: wrap this in a CoroutineWorker or a coroutine dispatched to Dispatchers.IO, so the blocking work happens off the main thread entirely."
+      ],
+      "tip": "This exact bug shows up in real AI-generated code surprisingly often — a Service 'having no UI' gets mistakenly assumed to also mean 'automatically off the main thread,' which isn't true at all."
+    }
+  },
+  {
+    "id": "rel-hard-03",
+    "topic": "Repository pattern — Room as cache, network as source of truth refresh",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "class ForecastRepository(\n    private val dao: ForecastDao,\n    private val api: WeatherApi\n) {\n    fun getForecasts(): Flow<List<ForecastRecord>> = dao.observeAllForecasts()\n\n    suspend fun refresh() {\n        val fresh = api.fetchLatestForecasts()   // suspend network call\n        dao.insertAll(fresh)                     // writes to Room\n        // no direct UI update here — Room's Flow (above) handles that\n    }\n}\n\n[ ViewModel.init { repository.refresh() } ]\n        │\n        ▼\n[ UI immediately shows cached Room data via the Flow, THEN\n  automatically updates again once refresh() finishes writing ]",
+    "question": "The UI is wired to `dao.observeAllForecasts()`, while a completely separate `refresh()` function fetches new data and writes it to Room. Why does the UI update correctly even though `refresh()` never directly touches the UI?",
+    "choices": [
+      "It doesn't update correctly — this is a bug, since refresh() should call the UI directly",
+      "The UI observes Room's Flow, which automatically emits a new list the instant refresh() writes fresh data into the table — the UI update happens as a side effect of the Flow relationship, not because refresh() explicitly triggers it",
+      "refresh() must be manually connected to the Composable through a separate callback for anything to update",
+      "This pattern only works if refresh() is called from inside the Composable itself"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the 'single source of truth' repository pattern, extremely common in real Android apps: the UI never asks 'do you have new data?' — it just observes an ongoing Flow from Room, and refresh() simply writes new data into that same table, letting the Flow relationship handle notifying the UI automatically.",
+      "lineByLine": [
+        "`getForecasts()` returns Room's own Flow directly — the UI's only real dependency.",
+        "`refresh()` is a completely separate suspend function whose only job is fetching and writing new data — it has no awareness of the UI at all.",
+        "The moment `dao.insertAll(fresh)` runs, Room's underlying Flow emits automatically.",
+        "The UI, already observing that Flow, recomposes with the new data — with zero direct coupling between refresh() and the UI layer."
+      ],
+      "tip": "This decoupling is a hallmark of well-structured Android code: the function that FETCHES data and the mechanism that DISPLAYS data are connected only through the database's own Flow, never directly calling each other."
+    }
+  },
+  {
+    "id": "rel-hard-04",
+    "topic": "Foreground Service paired with WorkManager for retry-safety",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "[ User taps \"Sync Now\" ]\n        │\n        ▼\n[ Foreground Service starts ] ── shows persistent notification\n        │                          immediate, visible progress\n        ▼\n[ Large sync begins... ]\n        │\n   (device suddenly loses power / process is killed mid-sync)\n        │\n        ▼\n[ Foreground Service is gone — sync incomplete ]\n\nSEPARATELY, at the same time as starting the Service:\n[ A WorkManager request was ALSO enqueued as a safety net,\n  with constraint: NetworkType.CONNECTED ]\n        │\n   persists through the process death\n        │\n        ▼\n[ Once network returns, WorkManager runs and completes the sync\n  the Service didn't finish ]",
+    "question": "This app starts a foreground Service for the immediate, visible sync, AND separately enqueues a WorkManager request as a backup. Why combine both instead of relying on just the Service alone?",
+    "choices": [
+      "This is redundant and unnecessary; the Service alone is always sufficient",
+      "The foreground Service provides immediate, visible progress, but doesn't survive a sudden process kill mid-task; the WorkManager request acts as a durable safety net that persists through process death and guarantees the sync eventually completes, even if the Service itself was interrupted",
+      "WorkManager and Services can never be used together in the same app",
+      "The WorkManager request is only for cosmetic purposes and does no real work"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a realistic, sophisticated pattern combining two tools for their complementary strengths: a foreground Service for immediate, visible execution, and WorkManager as a durable guarantee that survives failures the Service itself can't recover from.",
+      "lineByLine": [
+        "The foreground Service gives the user immediate feedback (a visible notification) that syncing is happening right now.",
+        "If the process is killed mid-sync (low battery, OS memory pressure), the Service's progress is lost.",
+        "The separately-enqueued WorkManager request, however, persists its scheduling information to disk and survives that same process death.",
+        "Once its constraint (network) is satisfied again, WorkManager runs and completes the sync — a safety net the Service alone couldn't provide."
+      ],
+      "tip": "Combining an immediate-feedback tool (Service) with a durable-guarantee tool (WorkManager) is a common professional pattern for critical sync operations — each tool covers a gap the other one has."
+    }
+  },
+  {
+    "id": "rel-hard-05",
+    "topic": "Full permission chain with branching to Settings on permanent denial",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "[ User taps \"Find nearby weather stations\" ]\n        │\n        ▼\n[ checkSelfPermission(ACCESS_FINE_LOCATION) ]\n   ┌────────────┴────────────┐\n   ▼ granted                 ▼ not granted\n[ locationManager           [ shouldShowRequestPermissionRationale ]\n  .getLastKnownLocation() ]     ┌────────┴────────┐\n   │                            ▼ true             ▼ false\n   ▼                     [ show rationale,   [ request directly ]\n[ Show nearby            then request ]              │\n  stations ]                    │                     ▼\n                                 ▼              ┌──────┴──────┐\n                          [ request result ] ◀──┘              │\n                                 │                              │\n                        ┌────────┴────────┐                    │\n                        ▼ granted          ▼ denied permanently │\n                 [ Use location ]   [ Redirect to Settings via\n                                       ACTION_APPLICATION_DETAILS_SETTINGS ]",
+    "question": "This diagram shows a full permission-handling flow with multiple branches. If the user has PREVIOUSLY denied this permission with \"Don't ask again\" checked, which path does a NEW request attempt take?",
+    "choices": [
+      "It goes through the normal \"request result\" branch, showing the standard dialog again",
+      "It results in immediate denial with no dialog at all, and the correct handling is the Settings-redirect branch, since permanent denial means the OS no longer offers the standard request dialog",
+      "It automatically routes to \"granted\" regardless of history",
+      "It crashes the app, since permanent denial is not a valid state to check for"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This diagram combines the full permission decision tree: checking current status, checking rationale history, requesting, and handling BOTH possible outcomes of that request — including the permanent-denial case that bypasses the dialog entirely and requires a Settings redirect.",
+      "lineByLine": [
+        "`checkSelfPermission` — the first branch point: is it already granted?",
+        "If not granted, `shouldShowRequestPermissionRationale` branches again based on prior denial history.",
+        "The actual request follows, itself branching into granted vs. denied.",
+        "Critically, if the user previously chose \"Don't ask again,\" this new request attempt skips the dialog entirely, and the app must detect this and route to the Settings-redirect branch instead — the only remaining path forward."
+      ],
+      "tip": "A production-quality permission flow needs to handle ALL of these branches correctly, not just the simple granted/denied case — the permanent-denial branch is easy to forget but essential for a good user experience."
+    }
+  },
+  {
+    "id": "rel-hard-06",
+    "topic": "Diagnose: a ViewModel holding a direct reference to an Activity",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "class WeatherViewModel(\n    private val activity: MainActivity   // ⚠️ stored directly\n) : ViewModel() {\n    fun showToast(msg: String) {\n        Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show()\n    }\n}\n\n[ MainActivity (Instance A) ] ── creates ──▶ [ WeatherViewModel ]\n                                                    │\n                                          holds reference to Instance A\n        │\n   rotation occurs\n        │\n        ▼\n[ MainActivity (Instance A) DESTROYED ] ── but WeatherViewModel\n                                             SURVIVES rotation and\n                                             still holds a reference\n                                             to the now-destroyed Instance A!",
+    "question": "WeatherViewModel stores a direct reference to the Activity that created it. After rotation, the ViewModel survives (as expected) but still holds a reference to the now-destroyed Instance A. What's the problem here?",
+    "choices": [
+      "There's no real problem; ViewModel is supposed to hold Activity references",
+      "This is a memory leak — the destroyed Activity instance can't be properly garbage-collected because the still-alive ViewModel keeps a reference to it, and using that stale reference (like calling showToast) can also cause crashes or unexpected behavior",
+      "This makes the ViewModel automatically survive process death too, as a side benefit",
+      "The Activity reference is automatically updated to Instance B once it's created"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is one of the most common real bugs when ViewModel is introduced without fully understanding the Activity-destruction relationship: because ViewModel deliberately outlives the Activity across rotation, storing a direct reference to that Activity creates a dangling pointer to something that no longer legitimately exists.",
+      "lineByLine": [
+        "ViewModel is designed to survive exactly the kind of destroy/recreate cycle rotation causes.",
+        "The Activity reference stored inside it does NOT automatically update to the new instance — it's stuck pointing at the destroyed Instance A.",
+        "The destroyed Activity can't be garbage-collected as long as something (this ViewModel) still holds a reference to it — a memory leak.",
+        "Calling a method like `showToast` using that stale reference risks crashing or behaving unpredictably, since Instance A is no longer a valid, attached Activity."
+      ],
+      "tip": "The fix: ViewModel should never hold a direct reference to an Activity or View. Use Application context if a Context is truly needed, or better, communicate through observable state (like StateFlow) that the CURRENT Activity instance observes — never store the Activity itself."
+    }
+  },
+  {
+    "id": "rel-hard-07",
+    "topic": "Implicit intent, chooser, and a result contract feeding back into the ViewModel",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "[ User taps \"Set weather background photo\" ]\n        │\n        ▼\n[ Implicit Intent: ACTION_PICK, image/* ]\n        │\n        ▼\n[ Multiple gallery apps match ] ──▶ [ Chooser shown ]\n        │\n   user picks one, selects a photo\n        ▼\n[ registerForActivityResult callback fires ]\n   with the chosen image's Uri\n        │\n        ▼\n[ viewModel.setBackgroundPhoto(uri) ]\n        │\n        ▼\n[ Saved via DataStore ] ──▶ [ Composable recomposes\n                               with the new background ]",
+    "question": "This flow starts with an implicit Intent and ends with the ViewModel receiving a photo Uri. What's the relationship between the chooser step and what the ViewModel eventually receives?",
+    "choices": [
+      "The ViewModel receives data from ALL the apps that matched, combined together",
+      "Only the specific app the user picked in the chooser actually returns a result — that single choice is what flows through registerForActivityResult's callback and into the ViewModel, with every other matching app having no further involvement",
+      "The chooser has no real effect on what data the ViewModel eventually gets",
+      "The ViewModel is bypassed entirely; DataStore is written to directly by the gallery app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This weaves together the implicit-Intent chooser (which app handles it) with the result-callback mechanism (getting data back from whichever app was chosen), a very common real pattern for anything involving picking external content like photos.",
+      "lineByLine": [
+        "The implicit Intent describes 'pick an image,' matching multiple gallery apps.",
+        "The chooser narrows this down to exactly ONE app, based on the user's tap.",
+        "Only that chosen app's result — the selected photo's Uri — is what gets delivered back through the registerForActivityResult callback.",
+        "From there, it flows into the ViewModel exactly like any other piece of data, eventually reaching persistence (DataStore) and triggering a UI update."
+      ],
+      "tip": "Whenever you see registerForActivityResult paired with an implicit Intent, recognize the full relationship: chooser narrows to one app, and only that one app's outcome is what comes back through the result callback."
+    }
+  },
+  {
+    "id": "rel-hard-08",
+    "topic": "Boot broadcast correctly delegates to WorkManager, not a Service directly",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "[ Device finishes booting ] ──▶ [ OS broadcasts BOOT_COMPLETED ]\n        │\n        ▼\n[ BootReceiver.onReceive() ]\n   (brief execution window, app itself is\n    not yet actively running in the foreground)\n        │\n        ▼\n❌ Directly calling startService() here risks\n   hitting modern Android's background-Service\n   start restrictions (the whole app is currently\n   in the background at boot time)\n\n✓ Correct approach:\n[ BootReceiver ] ──▶ [ Enqueues a WorkManager request instead ]\n                        (not subject to the same restriction,\n                         and durably scheduled regardless)",
+    "question": "Why does this BootReceiver enqueue a WorkManager request instead of directly calling startService() to kick off a background sync?",
+    "choices": [
+      "There's no real difference; either approach works identically at boot time",
+      "Starting a new background Service directly from a receiver reacting to a system broadcast — with the whole app still in the background at boot — risks the same modern background-start restrictions covered earlier; WorkManager isn't subject to that same restriction and reliably schedules the work regardless",
+      "WorkManager cannot be used from inside a BroadcastReceiver at all",
+      "startService() is always the correct choice, and this diagram represents a mistake"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a genuinely advanced, correct architectural decision: a boot-time broadcast receiver reacts while the app has no foreground presence at all, making a direct background Service start risky under modern Android's restrictions. Delegating to WorkManager sidesteps that problem entirely.",
+      "lineByLine": [
+        "`BOOT_COMPLETED` fires with the app not actively running in any foreground capacity.",
+        "Directly calling `startService()` here is exactly the kind of background-Service-start scenario that's restricted on modern Android.",
+        "Enqueuing a WorkManager request instead doesn't require the same foreground presence, and is durably scheduled regardless of the app's current state.",
+        "This combines two earlier lessons: background start restrictions, and WorkManager's role as the tool built specifically for exactly this kind of flexible, no-foreground-required scheduling."
+      ],
+      "tip": "Boot receivers are one of the most common real places this exact tradeoff shows up — reacting to system startup, but needing to schedule work in a way that respects modern background restrictions, rather than assuming a direct Service start will always succeed."
+    }
+  },
+  {
+    "id": "rel-hard-09",
+    "topic": "Choosing the right observation tool for the right lifetime",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "Scenario A: [ dao.observeAllForecasts(): Flow<List<ForecastRecord>> ]\n            — an ONGOING stream, keeps emitting as data changes\n\nScenario B: [ suspend fun getForecastById(id: Int): ForecastRecord? ]\n            — a ONE-TIME fetch, called once, returns once\n\nScenario C: [ val uiState: StateFlow<ForecastUiState> ]\n            — an ongoing stream that ALWAYS has a current value,\n              even before anything is collected",
+    "question": "Given these three different data-access approaches, which statement correctly matches each to its appropriate use?",
+    "choices": [
+      "All three are interchangeable and can be used for any of these purposes",
+      "Scenario A fits ongoing UI lists that should auto-update as data changes; Scenario B fits a single, one-off lookup with no ongoing observation needed; Scenario C fits UI state that must always have SOME current value available immediately, even before the first real update arrives",
+      "Scenario B should always be used for UI state, since suspend functions are simpler",
+      "Scenario C is only usable inside a BroadcastReceiver, never in a ViewModel"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This tests whether the different reactive/one-shot tools are correctly matched to their appropriate relationship with data over time — a genuine architectural decision that comes up constantly in real ViewModel design.",
+      "lineByLine": [
+        "Flow (Scenario A) is ideal for an ongoing list that should reflect live database changes — like a LazyColumn of forecasts.",
+        "A plain suspend function (Scenario B) fits a single, one-time need — like looking up one specific record when a specific screen opens, with no need to keep watching for future changes.",
+        "StateFlow (Scenario C) is specifically built to always hold a current value, which is exactly what UI state needs — Compose can always read SOME value immediately, even before the very first real update arrives, unlike a plain Flow which has no 'starting' value guarantee."
+      ],
+      "tip": "A useful mental checklist: do I need this value once, or do I need to keep watching it change over time? If watching, does the UI need a guaranteed starting value immediately? These questions point toward suspend function, Flow, or StateFlow respectively."
+    }
+  },
+  {
+    "id": "rel-hard-10",
+    "topic": "CoroutineWorker branching between retry and permanent failure",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "class SyncWorker(context: Context, params: WorkerParameters) :\n    CoroutineWorker(context, params) {\n    override suspend fun doWork(): Result {\n        return try {\n            api.uploadLogs()\n            Result.success()\n        } catch (e: IOException) {\n            Result.retry()          // temporary/network issue\n        } catch (e: IllegalStateException) {\n            Result.failure()        // permanent, unrecoverable issue\n        }\n    }\n}\n\n[ Result.retry() ] ──▶ [ WorkManager reschedules with backoff delay ]\n[ Result.failure() ] ──▶ [ WorkManager gives up permanently, no more attempts ]",
+    "question": "This Worker distinguishes between IOException (network-related) and IllegalStateException (a logic error), returning Result.retry() for one and Result.failure() for the other. Why does this distinction matter?",
+    "choices": [
+      "It doesn't matter; both exception types should always return the exact same Result",
+      "This distinction lets WorkManager behave appropriately for each kind of failure — a temporary network problem is worth automatically retrying later with backoff, while a genuine logic error will simply fail the exact same way every time, so retrying it endlessly would be pointless",
+      "Result.retry() means the work will never be attempted again",
+      "IllegalStateException should always trigger Result.success() instead"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a sophisticated, correct pattern: not all failures deserve the same response. WorkManager's retry mechanism is genuinely useful for transient problems (like a temporarily unavailable network) but wasteful for permanent logic errors that would fail identically on every attempt.",
+      "lineByLine": [
+        "`IOException` typically represents a temporary, environment-related failure — worth trying again once conditions might have improved.",
+        "`Result.retry()` tells WorkManager to reschedule this work, respecting whatever backoff policy was configured when the request was built.",
+        "`IllegalStateException` represents a logic error in the code itself — retrying would just fail again in exactly the same way, since nothing about the environment caused it.",
+        "`Result.failure()` tells WorkManager to stop trying entirely, since further attempts wouldn't help."
+      ],
+      "tip": "Thoughtfully distinguishing between 'this might work if I try again later' and 'this will never work no matter how many times I try' is a hallmark of well-designed background work — blindly retrying everything wastes battery and resources on failures that can't be fixed by retrying."
+    }
+  },
+  {
+    "id": "rel-hard-11",
+    "topic": "Diagnose: GlobalScope leaking a coroutine past Activity destruction",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "class MainActivity : ComponentActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        GlobalScope.launch {          // ⚠️ not tied to this Activity at all\n            val data = fetchWeatherFromNetwork()\n            updateUi(data)             // touches this specific Activity's UI\n        }\n    }\n}\n\n[ MainActivity destroyed (rotation) ] ──▶ [ GlobalScope coroutine\n                                             KEEPS RUNNING, completely\n                                             unaffected by the destruction ]\n        │\n   coroutine eventually finishes\n        ▼\n[ Tries to call updateUi() on an Activity instance\n  that no longer exists — crash or silent failure ]",
+    "question": "Comparing this to lifecycleScope's behavior, what's the problem with launching this coroutine on GlobalScope from inside an Activity?",
+    "choices": [
+      "There's no problem; GlobalScope is the recommended way to launch coroutines from an Activity",
+      "GlobalScope coroutines have no tie to any component's lifecycle at all — this one keeps running even after the Activity that started it is destroyed, and it will eventually try to update UI on an Activity instance that no longer validly exists",
+      "GlobalScope coroutines are automatically cancelled the instant the app is backgrounded",
+      "This code would fail to compile, since GlobalScope cannot be used inside onCreate"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a genuine, common mistake: GlobalScope coroutines live for the entire application process's lifetime, with zero automatic connection to any specific component's destruction. Unlike lifecycleScope (deliberately tied to an Activity), a GlobalScope coroutine simply doesn't know or care that its originating Activity is gone.",
+      "lineByLine": [
+        "`GlobalScope.launch { }` — starts a coroutine with no lifecycle association whatsoever.",
+        "Rotation destroys MainActivity, but this coroutine has no relationship to that event and keeps running regardless.",
+        "Once the network call finishes, the coroutine attempts `updateUi()` against the ORIGINAL Activity instance — which no longer represents anything valid on screen.",
+        "The correct fix is exactly what earlier lessons established: use `lifecycleScope.launch { }` instead, so the coroutine is automatically cancelled when its Activity is destroyed."
+      ],
+      "tip": "GlobalScope is almost never the right choice inside an Activity or Fragment. It's a genuine code smell that shows up surprisingly often in quickly-written or AI-generated code that doesn't fully account for lifecycle relationships."
+    }
+  },
+  {
+    "id": "rel-hard-12",
+    "topic": "A notification with two different PendingIntents for two different actions",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "val openAppIntent = PendingIntent.getActivity(\n    context, 0, Intent(context, MainActivity::class.java), FLAG_IMMUTABLE\n)\n\nval markDoneIntent = PendingIntent.getBroadcast(\n    context, 1, Intent(context, MarkSyncDoneReceiver::class.java), FLAG_IMMUTABLE\n)\n\nNotificationCompat.Builder(context, channelId)\n    .setContentTitle(\"Sync complete\")\n    .setContentIntent(openAppIntent)          // tapping the notification body\n    .addAction(R.drawable.ic_check, \"Mark as reviewed\", markDoneIntent)  // tapping the action button\n    .build()",
+    "question": "This single notification has two separate PendingIntents targeting two different KINDS of components. What's the relationship between them?",
+    "choices": [
+      "Both PendingIntents do the exact same thing; having two is purely redundant",
+      "Tapping the notification body triggers openAppIntent, launching MainActivity (an Activity target via getActivity); tapping the separate action button triggers markDoneIntent, which instead notifies MarkSyncDoneReceiver directly (a BroadcastReceiver target via getBroadcast) without ever opening the app's UI at all",
+      "Only one PendingIntent can ever be attached to a single notification",
+      "markDoneIntent will also open MainActivity, just with different extras"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This shows PendingIntent's flexibility: it's not limited to launching Activities. Depending on which factory method is used (getActivity vs. getBroadcast), the exact same wrapping mechanism can trigger completely different kinds of components, letting a single notification offer multiple distinct actions.",
+      "lineByLine": [
+        "`PendingIntent.getActivity(...)` wraps an explicit Intent targeting MainActivity — tapping this opens the app's UI.",
+        "`PendingIntent.getBroadcast(...)` wraps an Intent targeting a BroadcastReceiver instead — tapping this triggers that receiver directly, with no Activity or UI involved at all.",
+        "`.setContentIntent(openAppIntent)` — the main tap target for the notification's body.",
+        "`.addAction(..., markDoneIntent)` — a separate, secondary action button with its own distinct PendingIntent and target type."
+      ],
+      "tip": "This 'mark as done without opening the app' pattern (common in real notification-heavy apps like to-do lists or messaging apps) relies specifically on PendingIntent's ability to target a BroadcastReceiver directly — not every notification action needs to open the app's UI."
+    }
+  },
+  {
+    "id": "rel-hard-13",
+    "topic": "TaskStackBuilder creates a synthetic back stack for deep links",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "Without TaskStackBuilder:\n[ Deep link opens ForecastDetailActivity directly ]\n        │\n   user presses back\n        ▼\n[ Empty — goes straight to home screen, since there's\n  no MainActivity underneath it in the stack ]\n\nWith TaskStackBuilder:\nval pendingIntent = TaskStackBuilder.create(context)\n    .addNextIntentWithParentStack(Intent(context, ForecastDetailActivity::class.java))\n    .getPendingIntent(0, FLAG_IMMUTABLE)\n\n[ Deep link opens, but the stack is built as: ]\n   [ MainActivity ]  (synthetically inserted underneath)\n   [ ForecastDetailActivity ]  (on top, visible)\n        │\n   user presses back\n        ▼\n[ Lands on MainActivity, a sensible parent screen ]",
+    "question": "Why does adding TaskStackBuilder change what happens when the user presses back after opening a deep link directly to ForecastDetailActivity?",
+    "choices": [
+      "It has no real effect; pressing back behaves identically either way",
+      "Without it, ForecastDetailActivity is the ONLY entry in the back stack, so pressing back exits straight to the home screen; TaskStackBuilder synthetically inserts MainActivity underneath it first, so pressing back lands on a sensible parent screen instead of exiting abruptly",
+      "TaskStackBuilder prevents the back button from working at all",
+      "TaskStackBuilder is required before any deep link can function"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This addresses a real UX problem with deep links: jumping directly into a detail screen (bypassing the normal navigation path) leaves an oddly empty back stack. TaskStackBuilder synthetically constructs a sensible parent hierarchy underneath the deep-linked screen, so backward navigation still feels natural.",
+      "lineByLine": [
+        "Without TaskStackBuilder: the deep link creates a back stack containing ONLY ForecastDetailActivity — nothing beneath it.",
+        "Pressing back with an empty stack beneath the current screen exits directly to the home screen, which can feel jarring.",
+        "`addNextIntentWithParentStack(...)` synthetically inserts MainActivity underneath, even though the user never actually visited it in this session.",
+        "Pressing back now reveals that synthetic MainActivity entry — a much more natural navigation experience."
+      ],
+      "tip": "This pattern matters most for apps that support deep linking directly into detail screens (from notifications, web links, or other apps) — without it, back-button behavior can feel broken even though nothing is technically wrong."
+    }
+  },
+  {
+    "id": "rel-hard-14",
+    "topic": "Custom permission protecting an exported component from other apps",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "Unprotected:\n<activity android:name=\".ShareResultActivity\" android:exported=\"true\" />\n   any other app on the device can freely launch this component\n\nProtected with a custom permission:\n<permission android:name=\"com.example.weathernow.permission.INTERNAL_ACCESS\"\n    android:protectionLevel=\"signature\" />\n<activity\n    android:name=\".ShareResultActivity\"\n    android:exported=\"true\"\n    android:permission=\"com.example.weathernow.permission.INTERNAL_ACCESS\" />\n   only apps signed with the SAME certificate can successfully launch this",
+    "question": "Both versions have `android:exported=\"true\"`. What's the difference in what other apps can actually do with ShareResultActivity between these two versions?",
+    "choices": [
+      "There's no real difference; exported=\"true\" alone determines everything",
+      "In the unprotected version, ANY app can freely launch ShareResultActivity; in the protected version, a custom signature-level permission additionally requires the calling app to be signed with the same certificate, meaning only trusted, related apps (not just any random app) can successfully launch it",
+      "The protected version can no longer be launched by anything, including this app's own code",
+      "android:permission has no actual enforcement effect at runtime"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This extends the exported attribute's relationship with a finer-grained control: exported determines WHETHER outside components can attempt to launch something at all, while a custom permission (especially signature-level) further restricts WHO among those outside components is actually allowed to succeed.",
+      "lineByLine": [
+        "`exported=\"true\"` alone — any app on the device can attempt (and succeed) at launching this component.",
+        "Adding `android:permission=\"...INTERNAL_ACCESS\"` requires the calling app to hold that specific permission.",
+        "`protectionLevel=\"signature\"` means only apps signed with the SAME certificate as this app can be granted that permission — effectively restricting access to other apps you also control.",
+        "This is commonly used for suites of related apps (from the same developer) that need to interact with each other, without opening that access up to every other app on the device."
+      ],
+      "tip": "Exported plus a signature-level custom permission is the standard pattern for 'exported, but only to apps I trust' — broader than fully private (exported=false), but far more restrictive than fully open (exported=true with no permission at all)."
+    }
+  },
+  {
+    "id": "rel-hard-15",
+    "topic": "Choosing DataStore vs Room for a richer, mixed data scenario",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "Data needed by the app:\n1. \"has completed onboarding\" — one true/false flag\n2. \"preferred temperature unit\" — one small setting (C or F)\n3. 500+ historical forecast records, each with city, date,\n   high/low temp, condition — needs filtering and sorting later\n4. \"last successful sync timestamp\" — one single value",
+    "question": "Given these four pieces of data, which combination of tools is the most appropriate?",
+    "choices": [
+      "All four should be stored in Room, since it's the more powerful tool",
+      "Items 1, 2, and 4 — simple individual values — fit DataStore's key-value relationship well; item 3 — many structured, filterable/sortable records — fits Room's relational-database relationship much better",
+      "All four should be stored in DataStore, since it's simpler to set up",
+      "Item 3 should be split across both tools evenly"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a realistic, slightly more complex version of the DataStore-vs-Room decision: most of the data here is simple, individual values (a natural fit for DataStore), while one item is a genuinely large, structured, queryable dataset (a natural fit for Room) — the correct answer requires sorting each piece by its actual shape, not applying one tool to everything.",
+      "lineByLine": [
+        "Onboarding flag, preferred unit, and last sync timestamp are each a single, simple value — DataStore's key-value relationship handles these cleanly and with minimal overhead.",
+        "500+ forecast records, needing filtering and sorting, is exactly the kind of structured, queryable data Room is built for.",
+        "Using Room for the three simple values would be unnecessary overhead; using DataStore for the large structured dataset would be awkward, since it has no real querying capability.",
+        "A well-designed app uses BOTH tools together, each for the kind of data it actually fits."
+      ],
+      "tip": "Real apps very often use DataStore and Room side by side — the decision isn't 'pick one tool for the whole app,' but 'match each specific piece of data to the tool whose relationship actually fits its shape.'"
+    }
+  },
+  {
+    "id": "rel-hard-16",
+    "topic": "Doze-mode-aware scheduling: expedited work vs plain request vs foreground Service",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "Need: sync should happen \"pretty soon\" after being triggered,\nideally within a couple minutes, WITHOUT a persistent\nnotification, and should work even if the OS is being\nfairly restrictive about battery usage at the moment.\n\nOption A: [ Foreground Service ] — immediate, but requires\n                                    a persistent notification\nOption B: [ Plain OneTimeWorkRequest ] — flexible timing,\n                                          could be delayed\n                                          significantly by Doze\nOption C: [ OneTimeWorkRequest.setExpedited() ] — requests\n                                                   faster execution,\n                                                   still no persistent\n                                                   notification required\n                                                   in most cases",
+    "question": "Given this specific need (soon, but not necessarily instant, no persistent notification, resilient to battery restrictions), which option fits best?",
+    "choices": [
+      "Option A, since immediate execution is always the safest choice",
+      "Option C — expedited WorkManager requests are specifically designed for exactly this middle ground: faster-than-normal execution without requiring the persistent notification a foreground Service demands",
+      "Option B, since plain requests always run within a few seconds regardless of Doze",
+      "None of these options can satisfy this requirement"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This tests a nuanced, realistic scheduling decision: the requirement sits between 'needs to happen instantly and visibly' (Service) and 'flexible, whenever' (plain WorkManager request) — expedited work requests exist specifically to serve this middle ground.",
+      "lineByLine": [
+        "Option A satisfies the timing need but forces an unwanted persistent notification, which the requirement explicitly rules out.",
+        "Option B respects the no-notification requirement but may be delayed longer than desired under battery-restrictive conditions.",
+        "Option C (`setExpedited()`) requests that the system treat this work with higher priority, aiming for faster execution than a plain request, while still generally avoiding the need for a persistent foreground notification.",
+        "The correct choice depends on matching the SPECIFIC nuance of the requirement (fast-ish, not-quite-instant, no notification) to the tool actually built for that middle ground."
+      ],
+      "tip": "Real scheduling decisions are rarely a simple binary between 'right now' and 'whenever' — recognizing finer-grained tools like expedited work requests is part of making genuinely well-tuned architectural decisions."
+    }
+  },
+  {
+    "id": "rel-hard-17",
+    "topic": "Diagnose: a dynamically registered receiver that's never unregistered",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "class MainActivity : ComponentActivity() {\n    private val receiver = NetworkChangeReceiver()\n\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        registerReceiver(receiver, IntentFilter(CONNECTIVITY_ACTION))\n        // ⚠️ no matching unregisterReceiver() call anywhere in this class\n    }\n}\n\n[ MainActivity destroyed ] ──▶ [ receiver is STILL registered,\n                                  now referencing a destroyed Activity ]\n        │\n   later: MainActivity created again (e.g., after rotation)\n        │\n        ▼\n[ Attempting to register the SAME receiver again ]\n   ⚠️ can throw an exception, or result in duplicate\n      registrations silently reacting multiple times",
+    "question": "This receiver is dynamically registered in onCreate, but there's no matching unregisterReceiver() call anywhere. What's the consequence?",
+    "choices": [
+      "None — dynamically registered receivers automatically unregister themselves when the Activity is destroyed",
+      "This leaks the receiver's registration — it keeps referencing a destroyed Activity, and can cause exceptions or duplicated, unexpected reactions on subsequent registration attempts, since the old registration was never properly cleaned up",
+      "This receiver will simply stop working silently, with no other consequences",
+      "This code would fail to compile without a matching unregister call"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a genuine, common oversight: dynamic registration and unregistration must be paired symmetrically (recall the acquire/release symmetry idea from lifecycle management), typically registering in onStart and unregistering in onStop. Forgetting the unregister half leaves a dangling registration that outlives its intended scope.",
+      "lineByLine": [
+        "`registerReceiver(receiver, ...)` in onCreate — establishes the registration, but with no corresponding cleanup anywhere.",
+        "MainActivity is destroyed, but the receiver's registration isn't tied to that destruction at all, since nothing explicitly unregistered it.",
+        "A later attempt to register the same receiver instance again (e.g., after rotation creates a new Activity that also tries to register) can throw an exception or result in it being registered multiple times.",
+        "The correct fix: register in onStart and unregister in the matching onStop, ensuring the registration's lifetime is properly symmetric with the Activity's own visible lifetime."
+      ],
+      "tip": "Any dynamic registration (receivers, listeners, callbacks) needs a matching cleanup call, paired with the right lifecycle moment — this exact 'forgot to unregister' mistake is one of the most common sources of subtle bugs and leaks in real Android code."
+    }
+  },
+  {
+    "id": "rel-hard-18",
+    "topic": "Background location requires a separate follow-up permission request",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "Step 1: Request ACCESS_FINE_LOCATION (foreground only)\n        │\n        ▼\n[ Granted — app can access location WHILE actively in use ]\n\nStep 2 (SEPARATE, later request):\n[ Request ACCESS_BACKGROUND_LOCATION ]\n   On Android 10+, this CANNOT be requested at the same\n   time as foreground location — it must be requested\n   afterward, once foreground access is already granted\n        │\n        ▼\n[ Often routes to a dedicated Settings screen, not a\n  simple Allow/Deny dialog, for this specific permission ]",
+    "question": "Why can't this app simply request both ACCESS_FINE_LOCATION and ACCESS_BACKGROUND_LOCATION together, in a single combined request?",
+    "choices": [
+      "It actually can request them together; this restriction doesn't exist",
+      "On modern Android, background location access must be requested as a genuinely separate, follow-up step — only after foreground location has already been granted — reflecting how much more sensitive continuous background tracking is compared to foreground-only access",
+      "ACCESS_BACKGROUND_LOCATION replaces the need for ACCESS_FINE_LOCATION entirely",
+      "Background location can only ever be granted through a foreground Service's notification"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This extends the standard permission flow with a genuinely more advanced rule: because background location access is significantly more sensitive than foreground-only access, modern Android requires it to be requested as its own distinct, later step, rather than bundled into the initial request.",
+      "lineByLine": [
+        "Foreground location (`ACCESS_FINE_LOCATION`) follows the standard dangerous-permission dialog flow.",
+        "Background location (`ACCESS_BACKGROUND_LOCATION`) cannot be requested at the same time — the OS requires foreground access to already be granted first.",
+        "The follow-up request for background access often routes through a dedicated system Settings experience, rather than a simple in-app Allow/Deny dialog, reflecting extra caution around this more invasive capability.",
+        "This staged approach gives users a chance to understand and approve foreground access first, before facing a decision about the more sensitive background capability."
+      ],
+      "tip": "Whenever an app needs continuous location access even while not actively being used, expect this two-stage relationship: foreground access first, background access as a distinct, separate follow-up — never combined into a single request."
+    }
+  },
+  {
+    "id": "rel-hard-19",
+    "topic": "Comparative capstone: exact timing vs approximate periodic vs manual loop",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "Need A: \"Sound an alarm at EXACTLY 7:00 AM, every single day,\n          down to the minute — timing precision matters a lot.\"\n\nNeed B: \"Sync weather data roughly every 15 minutes, but exact\n          timing doesn't matter — being a few minutes early or\n          late is completely fine.\"\n\nOption 1: [ AlarmManager.setExactAndAllowWhileIdle() ] — precise\n                                                           timing, even in Doze\nOption 2: [ WorkManager.PeriodicWorkRequest ] — approximate,\n                                                  battery-friendly recurring work\nOption 3: [ Foreground Service with an internal delay loop ] —\n            keeps running continuously, checking time manually",
+    "question": "Matching each option to the need it fits best, which pairing is correct?",
+    "choices": [
+      "Option 3 fits both needs equally well, making Options 1 and 2 unnecessary",
+      "Option 1 (AlarmManager, exact timing) fits Need A, where precision genuinely matters; Option 2 (WorkManager periodic) fits Need B, where approximate, battery-friendly recurrence is perfectly acceptable; Option 3 would work but wastes significant battery keeping a Service continuously alive just to check the time",
+      "Option 2 should be used for Need A, since periodic work is always more precise than an alarm",
+      "Option 1 should be used for Need B, since exact alarms are always the safest choice for any recurring task"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a genuine three-way architectural comparison: exact alarms serve precision-critical needs (at real battery cost, since they can wake the device even from Doze), periodic WorkManager requests serve approximate, flexible recurrence efficiently, and a manually-looping Service is rarely the right choice for either, wasting resources unnecessarily.",
+      "lineByLine": [
+        "Need A explicitly demands precision ('exactly 7:00 AM') — a case where AlarmManager's exact-alarm capability is genuinely appropriate, despite its higher battery cost, because the requirement justifies it.",
+        "Need B explicitly tolerates imprecision ('roughly every 15 minutes') — exactly the kind of relaxed timing WorkManager's periodic requests are optimized for, respecting battery life.",
+        "A continuously-running foreground Service manually checking the time would technically work for either need, but wastes battery keeping a whole component alive indefinitely just to periodically check a clock.",
+        "Choosing the right tool means matching how STRICT the timing requirement genuinely is to the tool whose tradeoffs fit that strictness."
+      ],
+      "tip": "Precision costs battery; approximate/flexible timing saves it. A well-architected app reserves exact alarms for cases that genuinely require precision, and uses WorkManager's periodic requests for everything where 'close enough, eventually' is truly acceptable."
+    }
+  },
+  {
+    "id": "rel-hard-20",
+    "topic": "MEGA capstone: a realistic, full end-to-end AI-generated-style flow",
+    "difficulty": "difficult",
+    "snippetLang": "diagram",
+    "snippet": "[ User taps \"Enable auto-sync\" toggle in Compose UI ]\n        │\n        ▼\n[ ViewModel checks ACCESS_FINE_LOCATION permission ]\n   ┌────────────┴────────────┐\n   ▼ granted                 ▼ denied\n[ Enqueues a PeriodicWorkRequest    [ Shows rationale UI,\n  with constraints: NetworkType.\n  CONNECTED, requiresBatteryNotLow ]  re-requests permission ]\n        │\n        ▼\n[ Time passes. Constraints satisfied. SyncWorker.doWork() runs ]\n   suspend fun, uses locationManager + weatherApi (Dispatchers.IO)\n        │\n   ┌────┴─────┐\n   ▼ success   ▼ IOException\n[ Room.insertAll() ]   [ Result.retry() ]\n   │\n   ▼\n[ Sends a custom broadcast: \"SYNC_COMPLETE\" ]\n   │\n   ▼\n[ Dynamically-registered Receiver reacts, starts a small\n  Service to post a notification via NotificationManager ]\n   │\n   ▼\n[ Notification's PendingIntent wraps an explicit Intent\n  back to MainActivity, built via TaskStackBuilder ]\n   │\n   user taps notification\n   ▼\n[ MainActivity opens, with a proper back stack already\n  in place beneath it ]",
+    "question": "Which statement correctly identifies EVERY relationship represented in this full flow, from the initial toggle tap to the final notification tap?",
+    "choices": [
+      "This flow is unrealistic and represents a level of complexity that doesn't actually occur in real apps",
+      "This flow correctly combines: permission checking with branching, constrained periodic WorkManager scheduling, a CoroutineWorker with success/retry branching, a Room write triggering a custom broadcast, receiver-to-Service delegation, a foreground-style notification with a TaskStackBuilder-constructed back stack, and a final PendingIntent-triggered return to the app — each link a distinct, previously-established relationship, chained into one coherent, realistic feature",
+      "Only the WorkManager and Room portions of this flow are real; the rest is fabricated",
+      "This entire flow could be replaced by a single onClick handler with no other components involved"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is exactly the kind of multi-system flow you'd find in a real, professionally built Android feature — auto-sync toggles with permission checks, constrained background scheduling, retry-aware workers, database-triggered broadcasts, and notification-based re-entry are all genuine, commonly-combined patterns, not exaggerated complexity.",
+      "lineByLine": [
+        "Permission branching (granted/denied) gates whether the feature can proceed at all.",
+        "The PeriodicWorkRequest's constraints (network, battery) reflect realistic production concerns, not just simple examples.",
+        "SyncWorker's success/IOException branching mirrors real-world retry logic for genuinely transient failures.",
+        "The Room-write-to-broadcast-to-Service-to-notification chain mirrors the moderate tier's capstone, now with an added TaskStackBuilder step ensuring sensible back-navigation once the user re-enters the app."
+      ],
+      "tip": "This is what reading real, professionally-written (or well-generated AI) Android code actually looks like: not one exotic technique, but many individually-simple, well-understood relationships, layered together to build one coherent, production-quality feature."
+    }
+  }
+]

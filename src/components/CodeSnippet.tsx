@@ -5,31 +5,40 @@ import 'prismjs/components/prism-markup';
 
 interface CodeSnippetProps {
   code: string;
-  lang?: 'kotlin' | 'xml' | 'markup';
+  lang?: 'kotlin' | 'xml' | 'markup' | 'diagram';
 }
 
 export default function CodeSnippet({ code, lang = 'kotlin' }: CodeSnippetProps) {
   const codeRef = useRef<HTMLElement>(null);
+  const isDiagram = lang === 'diagram';
   const prismLang = lang === 'xml' ? 'markup' : lang;
 
   useEffect(() => {
-    if (codeRef.current) {
+    if (codeRef.current && !isDiagram) {
       Prism.highlightElement(codeRef.current);
     }
-  }, [code, lang]);
+  }, [code, lang, isDiagram]);
+
+  const headerLabel = isDiagram ? 'Relationship Diagram' : (lang === 'markup' || lang === 'xml') ? 'Structure' : 'Kotlin';
 
   return (
-    <div className="code-block">
+    <div className={`code-block ${isDiagram ? 'diagram-block' : ''}`}>
       <div className="code-header">
-        <span className="code-lang">{lang === 'markup' || lang === 'xml' ? 'Structure' : 'Kotlin'}</span>
-        <span className="code-dots">
-          <span /><span /><span />
-        </span>
+        <span className="code-lang">{isDiagram ? '🕸️ ' : ''}{headerLabel}</span>
+        {!isDiagram && (
+          <span className="code-dots">
+            <span /><span /><span />
+          </span>
+        )}
       </div>
       <pre className="code-pre">
-        <code ref={codeRef} className={`language-${prismLang}`}>
-          {code}
-        </code>
+        {isDiagram ? (
+          <code>{code}</code>
+        ) : (
+          <code ref={codeRef} className={`language-${prismLang}`}>
+            {code}
+          </code>
+        )}
       </pre>
     </div>
   );

@@ -10,9 +10,9 @@ export interface Question {
   id: string;
   topic: string;
   difficulty: Difficulty;
-  chapter: string;
+  chapter?: string;
   snippet?: string;
-  snippetLang?: 'kotlin' | 'xml' | 'markup';
+  snippetLang?: 'kotlin' | 'xml' | 'markup' | 'diagram';
   question: string;
   choices: string[];
   correctIndex: number;
@@ -33,6 +33,15 @@ export interface ChapterProgress {
   attempts: number;
 }
 
+export interface DifficultyProgress {
+  bestScore: number;
+  totalSeen: number;
+  attempts: number;
+}
+
 export interface Progress {
   chapters: Record<string, ChapterProgress>;
+  easy: DifficultyProgress;
+  moderate: DifficultyProgress;
+  difficult: DifficultyProgress;
 }

@@ -1,0 +1,502 @@
+[
+  {
+    "id": "rel-easy-01",
+    "topic": "The Manifest is like the school's front-office binder",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ AndroidManifest.xml ]\n   the front-office binder\n\n   lists every classroom, every helper,\n   and every rule for the whole school\n\n           │\n           ▼\n[ Does this room exist? ]\n   If it's NOT written in the binder,\n   the school doesn't know it exists —\n   even if the room is built and ready.",
+    "question": "Imagine a school where the front office keeps ONE big binder listing every classroom that's allowed to be used. If a brand new classroom is built but never gets written into that binder, what happens?",
+    "choices": [
+      "Students can still use it, since the room is built and ready",
+      "As far as the school is concerned, that classroom doesn't exist yet — even though it's built, nobody official knows about it",
+      "The binder automatically updates itself the moment a new room is built",
+      "The classroom becomes the new front office"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "In an Android app, this binder is a real file called the Manifest. Every single piece of the app — every screen, every helper, everything — has to be written down in it. If something isn't written in the Manifest, the app's operating system doesn't know it exists, even if it was built perfectly.",
+      "lineByLine": [
+        "The binder = the Manifest file.",
+        "Each classroom = a piece of the app, like a screen or a background helper.",
+        "Being 'built' (the room exists) is different from being 'written down' (the binder lists it).",
+        "Only things written in the binder can actually be used by the school."
+      ],
+      "tip": "This is one of the most important ideas in the whole app: being written down in the Manifest is what makes something 'real' to the operating system. Being coded is not enough by itself."
+    }
+  },
+  {
+    "id": "rel-easy-02",
+    "topic": "An Activity is like one classroom you're currently in",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ Classroom A ]  ◀── you are here right now, this is\n                     the ONLY classroom you can see\n\n[ Classroom B ]  ◀── still exists! just not visible\n                     to you at this exact moment",
+    "question": "You're sitting in Classroom A. Down the hall, Classroom B still exists — chairs, desks, and all — you just can't see it from where you're sitting. What's the best way to describe Classroom B right now?",
+    "choices": [
+      "Classroom B has been destroyed since you're not in it",
+      "Classroom B still exists, it's just not the one you're currently looking at",
+      "Classroom B and Classroom A are actually the exact same room",
+      "Classroom B only exists if a teacher is standing inside it"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "In an app, each screen is called an Activity — like a classroom. Only one Activity is ever the 'current' one you're looking at, but others can still exist, just out of view, ready to be shown again later.",
+      "lineByLine": [
+        "Classroom A = the Activity currently on screen.",
+        "Classroom B = a different Activity, not currently visible.",
+        "'Not visible right now' is very different from 'gone forever.'",
+        "You could walk back down the hall to Classroom B, just like an app can return to a previous screen."
+      ],
+      "tip": "Only one screen is ever the one you're actively looking at — but that doesn't mean every other screen disappeared. Many can be 'stacked' behind it, waiting."
+    }
+  },
+  {
+    "id": "rel-easy-03",
+    "topic": "A screen is built out of smaller furniture pieces",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ Classroom ]\n   ├── [ desks arranged in rows ]\n   ├── [ a whiteboard on the wall ]\n   └── [ a reading corner with a rug ]\n\nThe classroom itself isn't ONE giant object —\nit's built by putting smaller pieces together.",
+    "question": "A classroom isn't one single solid block — it's desks, a whiteboard, and a reading corner, all placed together to make the room feel complete. How does this relate to how an app's screen is built?",
+    "choices": [
+      "An app's screen is always just one single giant piece, unlike a classroom",
+      "A screen is built the exact same way — smaller pieces (like text, buttons, and pictures) are placed together to build the whole screen",
+      "Only classrooms can be built from smaller pieces; app screens cannot",
+      "The whiteboard and the desks are actually the same object"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An app's screen is built the same way a classroom is: many small pieces (some text here, a button there, a picture over there) are arranged together to make one complete screen. Nothing about the screen is one giant, unchangeable block.",
+      "lineByLine": [
+        "Desks, whiteboard, and reading corner = small pieces put together.",
+        "The finished classroom = the finished screen.",
+        "In an app, these small pieces are called Composables.",
+        "Bigger pieces are often made of even smaller pieces nested inside them, just like a reading corner has both a rug AND a bookshelf inside it."
+      ],
+      "tip": "Whenever a screen looks complicated, remember: it's just smaller, simpler pieces stacked together — the same way a classroom is desks plus a whiteboard plus a reading corner, not one mysterious blob."
+    }
+  },
+  {
+    "id": "rel-easy-04",
+    "topic": "A classroom's status changes throughout the day",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ In Session ] ──▶ [ Recess ] ──▶ [ Locked Up for the Night ]\n\nThe classroom itself doesn't disappear between\nthese — it just changes STATUS depending on\nwhat's happening around it.",
+    "question": "A classroom can be \"in session\" (class is happening), then \"recess\" (empty, but everything is still set up), then \"locked up for the night.\" What's true about the classroom itself during all of this?",
+    "choices": [
+      "The classroom is destroyed and rebuilt each time its status changes",
+      "The classroom stays the same room the whole time — only its STATUS changes based on what's happening around it",
+      "Only \"in session\" is a real status; the others don't count",
+      "The classroom can only ever be in one status for its entire existence"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A screen in an app goes through statuses too — this is called its Lifecycle. It might be fully active, partly hidden, or completely out of view. None of these statuses destroy the screen — they just describe what's currently happening to it.",
+      "lineByLine": [
+        "\"In session\" = the screen is fully active and visible, like being resumed.",
+        "\"Recess\" = the screen is temporarily not the center of attention, like being paused.",
+        "\"Locked up for the night\" = the screen is completely out of view, like being stopped.",
+        "The classroom (or screen) itself is still the same one throughout — status changes, but identity doesn't, unless something more drastic happens (see the next question!)."
+      ],
+      "tip": "Think of a screen's status like a stoplight: it changes color depending on the situation, but it's still the exact same stoplight the whole time."
+    }
+  },
+  {
+    "id": "rel-easy-05",
+    "topic": "A fire drill forces a fresh restart, unlike a normal status change",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "Normal recess:\n[ Classroom A ] ──▶ [ still Classroom A, just paused ]\n\nFire drill:\n[ Classroom A ] ──▶ 💥 EVERYONE LEAVES 💥 ──▶ [ Brand New Classroom A ]\n   (the whiteboard gets erased completely!)",
+    "question": "During a normal recess, the classroom stays exactly as it was. But during a fire drill, everyone leaves and comes back to a freshly reset room, with the whiteboard wiped clean. What's different about a fire drill compared to a normal recess?",
+    "choices": [
+      "There's no real difference; both leave everything exactly the same",
+      "A fire drill causes something much bigger than a normal pause — the whole room resets fresh, and anything written on the whiteboard (that wasn't saved somewhere else) is gone",
+      "A fire drill only affects the hallway, never the classroom itself",
+      "A fire drill happens automatically every single recess"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is what happens when you rotate your phone's screen! Just like a fire drill, rotating the screen doesn't just pause the app — it actually rebuilds the whole screen fresh, wiping out anything that wasn't specifically saved beforehand.",
+      "lineByLine": [
+        "Normal recess = a simple pause, like a screen briefly losing focus.",
+        "Fire drill = a full reset, like what happens when you rotate your phone.",
+        "The whiteboard being erased = any information the app was holding in memory, like a tap counter, disappearing.",
+        "To survive a fire drill, important information needs to be written down somewhere safe BEFORE the reset happens — more on this in question 19!"
+      ],
+      "tip": "A 'fire drill' style reset (like rotating your phone) is much bigger than a normal pause. Anything not specifically saved beforehand gets wiped out completely."
+    }
+  },
+  {
+    "id": "rel-easy-06",
+    "topic": "A hall pass addressed to one specific room",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ You, in Classroom A ]\n        │\n        │  writes a hall pass that says:\n        │  \"Go to Classroom B, specifically\"\n        ▼\n[ Classroom B ]   ◀── this exact room opens up",
+    "question": "You write a hall pass that says exactly \"Go to Classroom B\" — naming that one specific room by name. What happens?",
+    "choices": [
+      "The office ignores the specific name and sends you to a random room instead",
+      "You go exactly to Classroom B, since you named it specifically — no guessing involved",
+      "The hall pass only works if Classroom B is currently empty",
+      "Naming a specific room on a hall pass is not allowed"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "In an app, this named hall pass is called an explicit Intent. It's a request that names the EXACT screen you want to go to, with zero ambiguity — the app goes precisely where you told it to.",
+      "lineByLine": [
+        "The hall pass = an Intent, a request to go somewhere.",
+        "Naming \"Classroom B\" specifically = an explicit Intent, naming one exact target.",
+        "Because it's named exactly, there's no guessing about where you end up.",
+        "This only works if Classroom B is actually written in the front-office binder from question 1 — otherwise, the request fails!"
+      ],
+      "tip": "When you name the exact destination, there's no mystery about where you'll end up. This is the simplest, most direct way to move between screens in an app."
+    }
+  },
+  {
+    "id": "rel-easy-07",
+    "topic": "A hall pass that just asks for \"whoever can help\"",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ You ]\n   │  writes a hall pass that says:\n   │  \"I need someone who can print something\"\n   │  (no specific name!)\n   ▼\n[ Front Office ]\n   checks: who CAN print things?\n        │\n        ▼\n[ Whichever room can help ] ◀── picked by the office,\n                                 not by you",
+    "question": "Instead of naming a specific room, you write a hall pass that just says \"I need someone who can print something\" — with no name at all. Who decides where you actually end up?",
+    "choices": [
+      "You decide, since you wrote the hall pass",
+      "The front office decides, by checking which rooms are actually able to help with printing, and sending you to one of those",
+      "Nobody decides; the hall pass simply does nothing",
+      "You always end up back in your own classroom"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "In an app, this kind of open request is called an implicit Intent. Instead of naming an exact target, you describe what you need, and the operating system figures out which part of which app can actually help — sometimes even an app you don't own!",
+      "lineByLine": [
+        "The vague hall pass = an implicit Intent, describing a need instead of naming a target.",
+        "The front office = the Android operating system, doing the matching.",
+        "\"Whichever room can help\" = whichever app/screen declared that it's able to handle this kind of request.",
+        "If more than one room could help, you might even get asked to pick which one you want — like Android's share menu!"
+      ],
+      "tip": "Sometimes you know exactly where you want to go (question 6). Other times, you just know what you NEED, and you let the system figure out who can help (this question) — both are valid, useful kinds of requests."
+    }
+  },
+  {
+    "id": "rel-easy-08",
+    "topic": "Pausing a slow project without freezing your whole day",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "Bad way:\n[ You ] ──▶ [ Stare at the printer for 5 whole minutes,\n              doing NOTHING else the entire time ]\n\nGood way:\n[ You ] ──▶ [ Start the print job, then go do other things ]\n                     │\n                     ▼\n            [ Come back once it's ready ]",
+    "question": "You need something printed, and it takes 5 minutes. One way is to stand at the printer the whole time, doing nothing else. The other way is to start the job, walk away, and come back once it's ready. Which approach lets you get more done?",
+    "choices": [
+      "Standing at the printer the whole time, since you need to watch it closely",
+      "Starting the job and walking away, since you're not stuck waiting and can do other things in the meantime",
+      "There's no real difference between the two approaches",
+      "The printer works faster if you stand and watch it"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is exactly the problem coroutines solve in an app! If an app does something slow (like loading data from the internet) the 'stand and stare' way, the ENTIRE app freezes — buttons stop working, nothing moves. Coroutines let the app start the slow task, then go do other things, coming back once the slow part is done.",
+      "lineByLine": [
+        "Standing at the printer = the app freezing while waiting for something slow.",
+        "Starting the job and walking away = a coroutine pausing at the slow part without blocking everything else.",
+        "\"Come back once it's ready\" = the app resuming exactly where it left off, once the slow work finishes.",
+        "This is why apps can load things in the background while you keep scrolling or tapping other buttons."
+      ],
+      "tip": "A frozen app (buttons not responding) is almost always caused by something slow happening the 'stand and stare' way, instead of the 'start it and walk away' way."
+    }
+  },
+  {
+    "id": "rel-easy-09",
+    "topic": "The custodian keeps working after school lets out",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ School Day Ends ]\n        │\n        ▼\n[ Students Go Home ]        [ Custodian ]\n                                  │\n                       keeps cleaning, even\n                       though no students\n                       are around anymore",
+    "question": "When school ends, all the students go home. But the custodian keeps working, cleaning the halls, long after everyone else has left. What does this tell you about the custodian's job compared to a student's day?",
+    "choices": [
+      "The custodian's work is tied to the students being there — they stop the moment students leave",
+      "The custodian's work continues independently, not tied to whether any specific student is still around",
+      "The custodian only exists while class is in session",
+      "Students and custodians always leave the building at the exact same time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "In an app, this custodian is called a Service. Unlike a screen (which usually closes when you leave it), a Service can keep working in the background, even after the screen that started it is gone — perfect for things like playing music or finishing a long download.",
+      "lineByLine": [
+        "Students = a screen (Activity) that opens and closes as you use the app.",
+        "Custodian = a Service, doing ongoing work independently.",
+        "The custodian NOT leaving when students leave = the Service continuing to run even after its starting screen is closed.",
+        "This is different from most helpers in the app, whose work IS tied closely to a specific screen being open."
+      ],
+      "tip": "Most parts of an app are tied to a screen being open. A Service is special — it's built specifically to keep working even when nobody is currently looking at any screen at all."
+    }
+  },
+  {
+    "id": "rel-easy-10",
+    "topic": "One announcement over the PA system, reaching many rooms at once",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ Principal speaks into the PA system ]\n        │\n        ▼ (goes to EVERY room at once)\n   ┌────┼────┬────────┐\n   ▼    ▼    ▼        ▼\n[Rm 1][Rm 2][Rm 3]...[Rm 40]\n   each room decides on its OWN\n   whether and how to react",
+    "question": "The principal makes ONE announcement over the school's PA system. Every single classroom hears it at the same time, and each one decides for itself whether to react (some keep working, some pause to listen). What kind of relationship is this?",
+    "choices": [
+      "One announcement, reaching exactly one specific classroom only",
+      "One announcement, reaching MANY classrooms at once, with each one independently deciding how (or whether) to react",
+      "The announcement only works if every classroom reacts in the exact same way",
+      "Only the principal's own office can hear the announcement"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "In an app, this is called a broadcast, and the rooms that listen for it are called BroadcastReceivers. It's very different from a hall pass (which goes to exactly one destination) — a broadcast can be heard by many different, unrelated parts of the app (or even different apps!) all at once.",
+      "lineByLine": [
+        "The PA announcement = a broadcast Intent.",
+        "Each classroom = a BroadcastReceiver, independently listening.",
+        "\"Each room decides for itself\" = each receiver reacts on its own, with no dependency on what any other receiver does.",
+        "Compare this to question 6's hall pass, which goes to exactly ONE named room — a broadcast is the opposite: it's built to be heard by many at once."
+      ],
+      "tip": "A hall pass (explicit Intent) is a private note to one room. A PA announcement (broadcast) is public and heard by everyone who's listening — two very different kinds of messages for two very different situations."
+    }
+  },
+  {
+    "id": "rel-easy-11",
+    "topic": "A permission slip before doing something sensitive",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ Field trip requires a permission slip ]\n        │\n        ▼\n[ Ask parent/guardian ]\n   ┌────┴────┐\n   ▼         ▼\n[ Signed  ]  [ Not signed ]\n[ → can go ] [ → cannot go ]",
+    "question": "Before going on a field trip, you need a permission slip signed by a parent or guardian. Simply WANTING to go isn't enough — you need that actual signed approval first. What does this remind you of in an app?",
+    "choices": [
+      "Every single action in an app always requires this kind of approval, with no exceptions",
+      "Sensitive actions (like using the camera or finding your location) require the app to ask for permission first, and the person using the app must actually approve it before that action is allowed to happen",
+      "Permission slips are only needed for actions that cost money",
+      "Once one permission slip is signed, every future field trip is automatically approved forever"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "In an app, this is called a permission, and it applies specifically to sensitive things — using the camera, finding your location, reading your contacts. The app has to ask, and the actual PERSON using the phone has to approve it — the app can't just decide for itself.",
+      "lineByLine": [
+        "The field trip = a sensitive action the app wants to do, like using the camera.",
+        "Asking a parent/guardian = the app asking the actual phone user for approval.",
+        "\"Signed\" = permission granted, the action is now allowed.",
+        "\"Not signed\" = permission denied, and the app must respect that decision, not force its way through."
+      ],
+      "tip": "Not every action needs a permission slip — just the sensitive ones. Most everyday things (like showing text on screen) don't need special approval at all."
+    }
+  },
+  {
+    "id": "rel-easy-12",
+    "topic": "Writing something in your planner vs. just saying it out loud",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "Saying it out loud:\n[ \"My locker combo is 12-34-56\" ] ──▶ 💨 gone the moment\n                                        you stop talking\n\nWriting it in your planner:\n[ 12-34-56, written on paper ] ──▶ 📓 still there tomorrow,\n                                     next week, next month...",
+    "question": "If you just SAY your locker combination out loud, it's gone the instant you stop talking. But if you WRITE it in your planner, it's still there days, weeks, even months later. What's the key difference?",
+    "choices": [
+      "There's no real difference between saying something and writing it down",
+      "Writing it down creates something lasting that survives long after the original moment, while just saying it out loud disappears immediately",
+      "Saying something out loud actually lasts longer than writing it down",
+      "A planner can only ever hold one single piece of information, ever"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is exactly the difference between information an app only remembers for a moment (like your tap count from question 5's fire drill) versus information the app actually SAVES somewhere permanent — called persistence. Saved information (like your favorite settings) is still there even if you close the app completely and open it again next week.",
+      "lineByLine": [
+        "Saying it out loud = information only held briefly in the app's memory, gone the moment something resets it.",
+        "Writing it in your planner = information actually saved to a permanent place, like a notebook.",
+        "\"Still there tomorrow\" = this is why your app settings are still there even after you fully close and reopen the app days later.",
+        "Apps use special tools for this kind of permanent saving, so the information survives no matter what happens to the app in between."
+      ],
+      "tip": "If information needs to survive even after the app is completely closed and reopened much later, it has to be truly SAVED somewhere — not just remembered for the moment."
+    }
+  },
+  {
+    "id": "rel-easy-13",
+    "topic": "Asking the front office for a shared building resource",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ You need to use the PA system ]\n        │\n        ▼\n[ Ask the Front Office ]\n   \"Can I use the PA system, please?\"\n        │\n        ▼\n[ Office hands you access to it ]\n\n[ You need to check the fire alarm ]\n        │\n        ▼\n[ Ask the SAME Front Office ]\n   \"Can I check the fire alarm, please?\"",
+    "question": "Whether you need the PA system OR the fire alarm, you ask the SAME front office both times — just requesting a different thing each time. What does this tell you about the front office's role?",
+    "choices": [
+      "The front office can only ever help with one specific thing, forever",
+      "The front office acts as ONE general gateway that can hand you many different shared building resources, depending on what you specifically ask for",
+      "You need an entirely different office for every single resource in the building",
+      "The PA system and the fire alarm are actually the exact same thing"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "In an app, this front office is a method called getSystemService(). It's ONE general request point that can hand back many different shared, OS-level tools — notifications, location, network status — depending on which one you specifically ask for.",
+      "lineByLine": [
+        "The front office = the getSystemService() gateway.",
+        "Asking for the PA system = requesting the notification system.",
+        "Asking for the fire alarm = requesting a completely different system tool, like location.",
+        "One gateway, many possible things it can hand you — that's the key relationship here."
+      ],
+      "tip": "Rather than a totally separate 'front office' for every single tool, there's just ONE general place to ask, and you simply specify which tool you need each time."
+    }
+  },
+  {
+    "id": "rel-easy-14",
+    "topic": "A note left for the maintenance crew: whenever it's convenient",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ Note left for maintenance crew: ]\n  \"Please fix this squeaky door,\n   whenever you get a chance —\n   no rush, and only once the\n   hallway is quiet.\"\n        │\n        ▼\n[ Crew fixes it eventually,\n  once the timing is right ]",
+    "question": "Instead of demanding something be fixed RIGHT NOW, you leave a note asking for it to be done \"whenever convenient, once the hallway is quiet.\" What kind of task is this?",
+    "choices": [
+      "An urgent task that must be done immediately, no matter what",
+      "A flexible task — it doesn't need to happen right this second, just reliably at SOME point, once the right conditions are met",
+      "A task that will never actually get done",
+      "The exact same kind of request as the custodian in question 9"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "In an app, this kind of flexible-timing task uses a tool called WorkManager. It's perfect for things like backing up photos or syncing data — stuff that doesn't need to happen the instant you ask, just reliably at some point, ideally when conditions are good (like when your phone has internet or is charging).",
+      "lineByLine": [
+        "The note left for maintenance = a WorkManager request.",
+        "\"Whenever you get a chance\" = flexible timing, not an immediate demand.",
+        "\"Once the hallway is quiet\" = a condition, like waiting for internet or a charging phone.",
+        "This is different from the custodian (question 9), who's doing ongoing, immediate work — this is more like a task queued up for later, whenever it makes sense."
+      ],
+      "tip": "Not everything needs to happen instantly. Some tasks are perfectly fine happening later, as long as they're guaranteed to happen EVENTUALLY — that's exactly the kind of job this tool is built for."
+    }
+  },
+  {
+    "id": "rel-easy-15",
+    "topic": "Reinforcing: a room that isn't in the binder cannot open",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ Front-Office Binder ]\n  lists: Classroom A, Classroom B\n  (does NOT list: Classroom C)\n\n[ Someone tries to send a hall pass to Classroom C ]\n        │\n        ▼\n   ❌ FAILS — the school has no\n      record that Classroom C\n      is a real, usable room",
+    "question": "Classroom C is fully built, with desks and everything — but it was never added to the front-office binder. Someone tries to send a hall pass there anyway. What happens?",
+    "choices": [
+      "It works fine — the room is built, so the binder doesn't really matter",
+      "It fails — even though the room physically exists, the school has no official record of it, so the hall pass can't be honored",
+      "The hall pass automatically adds Classroom C to the binder on the spot",
+      "Classroom C becomes the new front office instead"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects question 1 (the binder) and question 6 (the hall pass) together: a hall pass can only succeed if its destination is properly listed in the binder first. Building something in code isn't enough — it must ALSO be declared in the Manifest, or any attempt to go there will fail.",
+      "lineByLine": [
+        "Classroom C being built but not listed = a screen that exists in code but isn't declared in the Manifest.",
+        "The hall pass = an Intent trying to open that screen.",
+        "The failure = a real crash that happens in actual apps when a developer forgets this exact step.",
+        "This is why question 1's lesson matters so much — it's the foundation everything else (like question 6's hall pass) depends on."
+      ],
+      "tip": "Two things always have to be true together: something has to be BUILT, and it has to be OFFICIALLY LISTED. Missing either one means it doesn't really work."
+    }
+  },
+  {
+    "id": "rel-easy-16",
+    "topic": "A room you left is 'on hold,' not deleted",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ Classroom A ] ──▶ walk to ──▶ [ Classroom B ]\n\nStack of rooms you've visited (bottom to top):\n  Classroom A   (on hold, still exists)\n  Classroom B   (you're here now)",
+    "question": "You start in Classroom A, then walk to Classroom B. Classroom A doesn't get erased — it's just \"on hold,\" sitting underneath Classroom B, ready for you to return to. What would happen if you walked back out of Classroom B?",
+    "choices": [
+      "You'd end up in a brand new, completely empty room",
+      "You'd return to Classroom A, picking back up right where you left it, since it was only on hold, not deleted",
+      "The whole school would shut down",
+      "You'd have to rebuild Classroom A from scratch"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is exactly how the 'back' button works on your phone! Every screen you visit gets stacked on top of the one before it. Going back doesn't create something new — it just reveals the screen that was patiently waiting underneath.",
+      "lineByLine": [
+        "Classroom A, on hold underneath = the previous screen, paused but not destroyed.",
+        "Classroom B, on top = the current, visible screen.",
+        "Walking back out = pressing the back button.",
+        "This stack of rooms is called the 'back stack' in an app — connecting directly to question 2's idea that a screen you're not looking at can still exist."
+      ],
+      "tip": "The back button doesn't magically know what to show you — it's simply revealing whatever screen was sitting right underneath the one you just closed, in the exact order you visited them."
+    }
+  },
+  {
+    "id": "rel-easy-17",
+    "topic": "The custodian keeps cleaning even after the classroom is completely empty",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ Classroom A starts the custodian's task ]\n        │\n        ▼\n[ Everyone leaves Classroom A — it's completely empty now ]\n        │\n        ▼\n[ Custodian ] ──▶ keeps working anyway,\n                    totally unaffected by the\n                    empty classroom",
+    "question": "Classroom A asks the custodian to start cleaning, then everyone leaves and Classroom A is completely empty. Does the custodian's work stop just because the room that started it is now empty?",
+    "choices": [
+      "Yes, the custodian must stop the instant the classroom is empty",
+      "No — the custodian keeps working regardless, since their job was never actually tied to that classroom staying occupied",
+      "The custodian was never real to begin with",
+      "The custodian can only work while standing inside Classroom A"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This reinforces question 9's big idea: a Service's work isn't tied to the screen that started it. Even if that screen closes completely, the Service just keeps going, totally independent of whatever happens to the screen afterward.",
+      "lineByLine": [
+        "Classroom A starting the task = a screen (Activity) starting a Service.",
+        "The classroom becoming empty = that Activity finishing or being destroyed.",
+        "The custodian continuing anyway = the Service's independent lifetime, unaffected by its starting screen.",
+        "This independence is exactly WHY Services are useful for things like music playback that should keep going even after you leave the app's screen."
+      ],
+      "tip": "Once you start a Service, think of it as truly separate from the screen that started it — closing that screen doesn't automatically stop the Service's work."
+    }
+  },
+  {
+    "id": "rel-easy-18",
+    "topic": "Comparing a PA announcement to a private hall pass",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "Private hall pass:\n[ You ] ──▶ [ EXACTLY one named room ]\n\nPA announcement:\n[ Principal ] ──▶ [ EVERY room that's listening, at once ]",
+    "question": "A private hall pass goes to exactly one named room. A PA announcement goes to every listening room at once. If you want to make sure ONLY the school nurse's room hears your message, which should you use?",
+    "choices": [
+      "The PA announcement, since it reaches more rooms",
+      "The private hall pass, since it's addressed to exactly one specific destination and nobody else",
+      "Either one works exactly the same for this purpose",
+      "Neither one can ever reach the nurse's room"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This directly compares question 6 (the private hall pass) and question 10 (the PA announcement). When you need ONE exact destination and nothing else, a private, named request is the right tool. When you want many independent listeners to potentially react, a public announcement is the right tool instead.",
+      "lineByLine": [
+        "Private hall pass = an explicit Intent, for one exact, known destination.",
+        "PA announcement = a broadcast, for many potential listeners at once.",
+        "Wanting ONLY the nurse to hear it = a job for the private, named approach.",
+        "Choosing the right one depends entirely on whether you know exactly who should receive it, or you're fine with many independent reactions."
+      ],
+      "tip": "Ask yourself: do I know EXACTLY who should get this message? Use a private hall pass. Am I fine with many different listeners independently reacting? Use a PA announcement instead."
+    }
+  },
+  {
+    "id": "rel-easy-19",
+    "topic": "Surviving a fire drill by writing things down first",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "Without writing it down first:\n[ Fire Drill ] ──▶ 💥 whiteboard wiped ──▶ 😢 lost your notes\n\nWriting it down first:\n[ Quick note in your planner ] ──▶ [ Fire Drill ] ──▶\n💥 whiteboard wiped ──▶ 📓 you check your planner\n──▶ 😊 notes are still there!",
+    "question": "Connecting back to question 5's fire drill: if you write your notes in your planner BEFORE the fire drill happens, what's true afterward?",
+    "choices": [
+      "The planner gets wiped too, exactly like the whiteboard",
+      "Even though the whiteboard gets wiped clean, your planner notes survive the fire drill completely fine, since a planner isn't affected the same way a whiteboard is",
+      "Writing things down has no effect on what survives a fire drill",
+      "You can only write in your planner AFTER the fire drill, never before"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects question 5 (the fire drill/rotation) with question 12 (writing things down/persistence). A fire drill wipes the whiteboard (the app's temporary memory) — but anything already written safely in your planner (truly saved data) survives just fine, completely unaffected.",
+      "lineByLine": [
+        "The whiteboard = temporary memory, wiped clean by a fire drill (rotation).",
+        "The planner = truly saved information (persistence), unaffected by the same fire drill.",
+        "Writing it down BEFORE the drill = the app saving important information before something destructive happens.",
+        "This is exactly why some information survives your phone rotating or restarting, while other information doesn't — it depends entirely on whether it was truly saved, or just held temporarily."
+      ],
+      "tip": "The difference between losing information and keeping it often comes down to one thing: was it saved somewhere safe BEFORE the disruptive event happened, or was it only ever sitting on the whiteboard?"
+    }
+  },
+  {
+    "id": "rel-easy-20",
+    "topic": "Capstone: tapping a note on the board sends you to one specific classroom",
+    "difficulty": "easy",
+    "snippetLang": "diagram",
+    "snippet": "[ Notice posted on the board: \"Come to Classroom A!\" ]\n        │\n   someone taps/reads the notice\n        ▼\n[ It's actually a hall pass in disguise ]\n        │\n        ▼\n[ Classroom A opens up, exactly as promised ]",
+    "question": "A notice is posted on the board saying \"Come to Classroom A!\" When someone reads it, it turns out the notice was secretly carrying a hall pass the whole time, and it sends them exactly to Classroom A. What does this tell you about how a notice like this actually works?",
+    "choices": [
+      "The notice and the hall pass are two completely unrelated things",
+      "The notice was really just a hall pass wrapped up and delivered later — reading it triggers the exact same named, one-destination trip from question 6",
+      "Notices can never actually send you anywhere",
+      "The notice can only ever send you to a random, unknown classroom"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is exactly how tapping a notification works on your phone! A notification isn't some totally separate, mysterious thing — underneath, it's carrying the exact same kind of named hall pass from question 6, just wrapped up and delivered a little later, once you actually tap it.",
+      "lineByLine": [
+        "The posted notice = a notification on your phone.",
+        "\"Secretly carrying a hall pass\" = the notification wrapping up an explicit Intent (question 6) inside it.",
+        "Tapping/reading the notice = tapping the notification.",
+        "\"Classroom A opens up\" = the exact named screen from the wrapped-up hall pass finally launches."
+      ],
+      "tip": "This capstone question ties the whole system together: even something that seems brand new (a notification) usually turns out to be a familiar idea (a hall pass) wrapped up and delivered a little differently. Once you know the core ideas, new-looking things become much less mysterious."
+    }
+  }
+]

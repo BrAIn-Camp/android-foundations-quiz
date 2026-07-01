@@ -1,21 +1,37 @@
 import { useState } from 'react';
+import type { Difficulty } from './types/question';
 import { useProgress } from './hooks/useProgress';
 import { useQuiz } from './hooks/useQuiz';
 import HomePage from './components/HomePage';
+import PathSelector from './components/PathSelector';
 import ChapterSelector from './components/ChapterSelector';
+import DifficultySelector from './components/DifficultySelector';
 import QuestionCard from './components/QuestionCard';
 import ProgressBar from './components/ProgressBar';
 import SessionSummary from './components/SessionSummary';
 
-type AppView = 'home' | 'chapters' | 'quiz' | 'summary';
+type AppView = 'home' | 'path' | 'chapters' | 'difficulty' | 'quiz' | 'summary';
 
 export default function App() {
   const [view, setView] = useState<AppView>('home');
-  const { progress, recordSession } = useProgress();
-  const { quizState, startChapterQuiz, selectAnswer, nextQuestion, endQuiz, getScore } = useQuiz();
+  const { progress, recordSession, recordDifficultySession, isDifficultyUnlocked } = useProgress();
+  const {
+    quizState,
+    startChapterQuiz,
+    startDifficultyQuiz,
+    selectAnswer,
+    nextQuestion,
+    endQuiz,
+    getScore,
+  } = useQuiz();
 
   function handleSelectChapter(chapterId: string) {
     startChapterQuiz(chapterId);
+    setView('quiz');
+  }
+
+  function handleSelectDifficulty(difficulty: Difficulty) {
+    startDifficultyQuiz(difficulty);
     setView('quiz');
   }
 
@@ -23,7 +39,11 @@ export default function App() {
     if (!quizState) return;
     if (quizState.currentIndex + 1 >= quizState.questions.length) {
       const score = getScore();
-      recordSession(quizState.chapterId, score, quizState.questions.length);
+      if (quizState.mode === 'chapter' && quizState.chapterId) {
+        recordSession(quizState.chapterId, score, quizState.questions.length);
+      } else if (quizState.mode === 'difficulty' && quizState.difficulty) {
+        recordDifficultySession(quizState.difficulty, score, quizState.questions.length);
+      }
       setView('summary');
     } else {
       nextQuestion();
@@ -32,15 +52,22 @@ export default function App() {
 
   function handleRetry() {
     if (!quizState) return;
-    const id = quizState.chapterId;
-    endQuiz();
-    startChapterQuiz(id);
+    if (quizState.mode === 'chapter' && quizState.chapterId) {
+      const id = quizState.chapterId;
+      endQuiz();
+      startChapterQuiz(id);
+    } else if (quizState.mode === 'difficulty' && quizState.difficulty) {
+      const d = quizState.difficulty;
+      endQuiz();
+      startDifficultyQuiz(d);
+    }
     setView('quiz');
   }
 
-  function handleChooseChapter() {
+  function handleChooseNext() {
+    const wasChapterMode = quizState?.mode === 'chapter';
     endQuiz();
-    setView('chapters');
+    setView(wasChapterMode ? 'chapters' : 'difficulty');
   }
 
   function goHome() { endQuiz(); setView('home'); }
@@ -82,13 +109,30 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        {view === 'home' && <HomePage onStart={() => setView('chapters')} />}
+        {view === 'home' && <HomePage onStart={() => setView('path')} />}
+
+        {view === 'path' && (
+          <PathSelector
+            onSelectChapters={() => setView('chapters')}
+            onSelectDifficulty={() => setView('difficulty')}
+            onBack={() => setView('home')}
+          />
+        )}
 
         {view === 'chapters' && (
           <ChapterSelector
             progress={progress}
             onSelect={handleSelectChapter}
-            onBack={() => setView('home')}
+            onBack={() => setView('path')}
+          />
+        )}
+
+        {view === 'difficulty' && (
+          <DifficultySelector
+            progress={progress}
+            isUnlocked={isDifficultyUnlocked}
+            onSelect={handleSelectDifficulty}
+            onBack={() => setView('path')}
           />
         )}
 
@@ -114,11 +158,13 @@ export default function App() {
 
         {view === 'summary' && quizState && (
           <SessionSummary
+            mode={quizState.mode}
             chapterId={quizState.chapterId}
+            difficulty={quizState.difficulty}
             questions={quizState.questions}
             answers={quizState.answers}
             onRetry={handleRetry}
-            onChooseChapter={handleChooseChapter}
+            onChooseNext={handleChooseNext}
           />
         )}
       </main>

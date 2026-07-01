@@ -13,10 +13,10 @@ export default function HomePage({ onStart }: HomePageProps) {
         Understand how Android's building blocks relate to each other.
       </p>
       <ul className="home-features">
-        <li>📦 <strong>Ch 1–4</strong> — Project structure, the Manifest, Activity, Compose Bootstrap</li>
-        <li>🔄 <strong>Ch 5–7</strong> — Lifecycle, Intents, Coroutines</li>
-        <li>⚙️ <strong>Ch 8–10</strong> — Services, BroadcastReceiver, Permissions</li>
-        <li>💾 <strong>Ch 11–13</strong> — Data Persistence, System Services, WorkManager</li>
+        <li>📖 <strong>By Chapter</strong> — 13 chapters, read code and predict what happens</li>
+        <li>🕸️ <strong>By Relationship</strong> — see the whole system, 3 difficulty tiers</li>
+        <li>🟢 Easy tier explains everything in plain language, no jargon required</li>
+        <li>🔴 Difficult tier covers full branching flows, like reviewing real AI-generated code</li>
       </ul>
       <p className="home-description">
         Every question is about a <strong>relationship</strong> — what depends on what,

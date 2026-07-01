@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { Question } from '../types/question';
+import type { Question, Difficulty } from '../types/question';
 
 import ch01 from '../data/chapters/ch-01.json';
 import ch02 from '../data/chapters/ch-02.json';
@@ -15,6 +15,10 @@ import ch11 from '../data/chapters/ch-11.json';
 import ch12 from '../data/chapters/ch-12.json';
 import ch13 from '../data/chapters/ch-13.json';
 
+import relEasy from '../data/relationships/easy.json';
+import relModerate from '../data/relationships/moderate.json';
+import relDifficult from '../data/relationships/difficult.json';
+
 const QUESTIONS_PER_SESSION = 10;
 
 export const chapterQuestions: Record<string, Question[]> = {
@@ -23,6 +27,12 @@ export const chapterQuestions: Record<string, Question[]> = {
   'ch-07': ch07 as Question[], 'ch-08': ch08 as Question[], 'ch-09': ch09 as Question[],
   'ch-10': ch10 as Question[], 'ch-11': ch11 as Question[], 'ch-12': ch12 as Question[],
   'ch-13': ch13 as Question[],
+};
+
+const relationshipQuestions: Record<Difficulty, Question[]> = {
+  easy: relEasy as Question[],
+  moderate: relModerate as Question[],
+  difficult: relDifficult as Question[],
 };
 
 function shuffle<T>(arr: T[]): T[] {
@@ -35,7 +45,9 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export interface QuizState {
-  chapterId: string;
+  mode: 'chapter' | 'difficulty';
+  chapterId?: string;
+  difficulty?: Difficulty;
   questions: Question[];
   currentIndex: number;
   selectedAnswer: number | null;
@@ -50,7 +62,17 @@ export function useQuiz() {
     const pool = chapterQuestions[chapterId] ?? [];
     const selected = shuffle(pool).slice(0, Math.min(QUESTIONS_PER_SESSION, pool.length));
     setQuizState({
-      chapterId, questions: selected,
+      mode: 'chapter', chapterId, questions: selected,
+      currentIndex: 0, selectedAnswer: null,
+      answers: new Array(selected.length).fill(null), isComplete: false,
+    });
+  }, []);
+
+  const startDifficultyQuiz = useCallback((difficulty: Difficulty) => {
+    const pool = relationshipQuestions[difficulty];
+    const selected = shuffle(pool).slice(0, Math.min(QUESTIONS_PER_SESSION, pool.length));
+    setQuizState({
+      mode: 'difficulty', difficulty, questions: selected,
       currentIndex: 0, selectedAnswer: null,
       answers: new Array(selected.length).fill(null), isComplete: false,
     });
@@ -85,5 +107,5 @@ export function useQuiz() {
     }, 0);
   }, [quizState]);
 
-  return { quizState, startChapterQuiz, selectAnswer, nextQuestion, endQuiz, getScore };
+  return { quizState, startChapterQuiz, startDifficultyQuiz, selectAnswer, nextQuestion, endQuiz, getScore };
 }

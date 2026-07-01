@@ -598,6 +598,112 @@ code[class*="language-"] { text-shadow: none !important; }
 }
 
 /* ============================================================
+   PATH SELECTOR
+   ============================================================ */
+.path-selector { max-width: 660px; margin: 0 auto; }
+
+.path-cards { display: flex; flex-direction: column; gap: 16px; }
+
+.path-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  width: 100%;
+  cursor: pointer;
+}
+.path-card:hover { border-color: var(--primary); background: var(--surface-2); transform: translateY(-2px); }
+
+.path-icon { font-size: 32px; flex-shrink: 0; line-height: 1; padding-top: 2px; }
+.path-body { flex: 1; }
+.path-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+.path-description { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
+.path-tiers { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.tier-pip {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   DIFFICULTY SELECTOR (relationship tiers)
+   ============================================================ */
+.tier-list { display: flex; flex-direction: column; gap: 14px; max-width: 660px; margin: 0 auto; }
+
+.tier-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  text-align: left;
+  transition: border-color 0.15s, transform 0.1s, background 0.15s;
+  width: 100%;
+}
+.tier-unlocked:hover { border-color: var(--primary); background: var(--surface-2); transform: translateY(-1px); }
+.tier-locked  { opacity: 0.45; cursor: not-allowed; }
+
+.tier-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.tier-emoji { font-size: 20px; }
+.tier-label { font-size: 18px; font-weight: 700; flex: 1; }
+.tier-lock  { font-size: 16px; }
+.tier-score { font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+.score-pass { background: var(--success-bg); color: var(--success); }
+.score-fail { background: var(--warning-bg); color: var(--warning); }
+
+.tier-description { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+.tier-unlock-hint { font-size: 12px; color: var(--text-dim); margin-top: 8px; font-style: italic; }
+
+.tier-progress-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+.tier-progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ============================================================
+   DIAGRAM BLOCK (relationship diagrams — ASCII/Unicode)
+   ============================================================ */
+.diagram-block {
+  background: #0A140F;
+  border: 1px solid rgba(61, 220, 132, 0.3);
+}
+.diagram-block .code-header {
+  background: rgba(61, 220, 132, 0.06);
+  border-bottom: 1px solid rgba(61, 220, 132, 0.2);
+}
+.diagram-block .code-lang { color: var(--primary); }
+.diagram-block .code-pre code {
+  font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #B8F5D0;
+  white-space: pre;
+  display: block;
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 600px) {

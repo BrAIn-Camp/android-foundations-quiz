@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ch07-q11",
+    "topic": "Dispatchers.Default for CPU-intensive work",
+    "difficulty": "moderate",
+    "chapter": "ch-07",
+    "snippet": "lifecycleScope.launch(Dispatchers.Default) {\n    val sorted = sortAndAnalyzeLargeForecastHistory(hugeDataset)  // pure CPU work, no network/disk\n    withContext(Dispatchers.Main) {\n        updateUi(sorted)\n    }\n}",
+    "question": "Q5 established Dispatchers.IO for network/disk work and Dispatchers.Main for UI updates. Where does Dispatchers.Default fit into that same relationship?",
+    "choices": [
+      "It's identical to Dispatchers.IO and exists only as an alias",
+      "Dispatchers.Default is suited for CPU-intensive work that doesn't involve waiting on network or disk — like heavy sorting, filtering, or calculations — keeping that processing off the main thread (Q1's problem) without mixing it in with IO-bound work",
+      "Dispatchers.Default can only be used for UI updates, just like Dispatchers.Main",
+      "It has no practical purpose and is never actually used in real apps"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This completes the three-way relationship between kinds of work and dispatchers: Main for touching the UI, IO for blocking-style waiting (network, disk), and Default for CPU-bound crunching that doesn't wait on anything external — it just needs processing power.",
+      "lineByLine": [
+        "`Dispatchers.Default` — a thread pool sized around the device's CPU cores, intended for computationally heavy work.",
+        "`sortAndAnalyzeLargeForecastHistory(hugeDataset)` — no network, no disk, just processing — a natural fit for Default rather than IO.",
+        "`withContext(Dispatchers.Main)` — same temporary-switch relationship from Q6, used here to safely hand the processed result back to the UI."
+      ],
+      "tip": "A simple three-way rule of thumb: Main for UI, IO for waiting on network/disk, Default for CPU-heavy crunching. Using IO for CPU work (or vice versa) still technically works, but each dispatcher's thread pool is tuned for its intended kind of work — mismatching them can waste resources at scale."
+    }
+  },
+  {
+    "id": "ch07-q12",
+    "topic": "exception in one child affects siblings",
+    "difficulty": "difficult",
+    "chapter": "ch-07",
+    "snippet": "lifecycleScope.launch {\n    launch { fetchWeatherFromNetwork() }        // child 1 — throws an exception\n    launch { fetchUserPreferences() }           // child 2 — still in progress\n}",
+    "question": "Building on Q7's parent/child cancellation relationship, what happens to child 2 if child 1 throws an unhandled exception?",
+    "choices": [
+      "Child 2 is completely unaffected and continues running to completion, regardless of child 1's failure",
+      "By default, an unhandled exception in child 1 propagates up to the shared parent coroutine, which then cancels itself AND every other child nested within it — including child 2, even though child 2 itself never failed",
+      "Only the app's UI freezes; both coroutines keep running in the background forever",
+      "The exception is silently ignored, and child 1 is treated as if it succeeded"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This extends Q7's parent/child relationship in a new direction: it's not just cancellation that flows through that structure, but failure too. An unhandled exception in one child propagates upward to the shared parent, which — by default — cancels the entire structured hierarchy, siblings included.",
+      "lineByLine": [
+        "Child 1 and child 2 are both nested within the same outer coroutine, exactly like Q7's structure.",
+        "Child 1 throws — since nothing inside it catches the exception, it propagates up to the parent coroutine.",
+        "The parent, upon receiving that exception, cancels itself — and because child 2 is part of that same structured hierarchy, it gets cancelled too, even though child 2 was working fine on its own."
+      ],
+      "tip": "This is why real apps often wrap individual suspend calls in their own try/catch, or use dedicated exception-handling tools, rather than letting a single failure silently take down unrelated sibling work. The same parent/child structure that makes cancellation reliable (Q7) is also what makes failures contagious by default unless deliberately contained."
+    }
+  }
+]

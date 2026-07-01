@@ -1,0 +1,127 @@
+import { useState } from 'react';
+import { useProgress } from './hooks/useProgress';
+import { useQuiz } from './hooks/useQuiz';
+import HomePage from './components/HomePage';
+import ChapterSelector from './components/ChapterSelector';
+import QuestionCard from './components/QuestionCard';
+import ProgressBar from './components/ProgressBar';
+import SessionSummary from './components/SessionSummary';
+
+type AppView = 'home' | 'chapters' | 'quiz' | 'summary';
+
+export default function App() {
+  const [view, setView] = useState<AppView>('home');
+  const { progress, recordSession } = useProgress();
+  const { quizState, startChapterQuiz, selectAnswer, nextQuestion, endQuiz, getScore } = useQuiz();
+
+  function handleSelectChapter(chapterId: string) {
+    startChapterQuiz(chapterId);
+    setView('quiz');
+  }
+
+  function handleNext() {
+    if (!quizState) return;
+    if (quizState.currentIndex + 1 >= quizState.questions.length) {
+      const score = getScore();
+      recordSession(quizState.chapterId, score, quizState.questions.length);
+      setView('summary');
+    } else {
+      nextQuestion();
+    }
+  }
+
+  function handleRetry() {
+    if (!quizState) return;
+    const id = quizState.chapterId;
+    endQuiz();
+    startChapterQuiz(id);
+    setView('quiz');
+  }
+
+  function handleChooseChapter() {
+    endQuiz();
+    setView('chapters');
+  }
+
+  function goHome() { endQuiz(); setView('home'); }
+
+  const score = quizState ? getScore() : 0;
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <div className="header-inner">
+          <span className="header-logo">🤖</span>
+          <span className="header-title">Android Foundations Reader</span>
+          <a
+            className="header-github-link"
+            href="https://github.com/BrAIn-Camp/android-foundations-quiz"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="View this quiz app's repository on GitHub"
+          >
+            <svg height="18" viewBox="0 0 16 16" width="18" aria-hidden="true" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+                0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+                -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87
+                2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+                0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
+                0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
+                .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82
+                .44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15
+                0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+                0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38
+                A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            <span>Repo</span>
+          </a>
+          {view !== 'home' && (
+            <button className="header-home-btn" onClick={goHome}>Home</button>
+          )}
+        </div>
+      </header>
+
+      <main className="app-main">
+        {view === 'home' && <HomePage onStart={() => setView('chapters')} />}
+
+        {view === 'chapters' && (
+          <ChapterSelector
+            progress={progress}
+            onSelect={handleSelectChapter}
+            onBack={() => setView('home')}
+          />
+        )}
+
+        {view === 'quiz' && quizState && (
+          <div className="quiz-container">
+            <ProgressBar
+              current={quizState.currentIndex + 1}
+              total={quizState.questions.length}
+              score={score}
+            />
+            <QuestionCard
+              key={quizState.currentIndex}
+              question={quizState.questions[quizState.currentIndex]}
+              questionNumber={quizState.currentIndex + 1}
+              totalQuestions={quizState.questions.length}
+              selectedAnswer={quizState.selectedAnswer}
+              onSelectAnswer={selectAnswer}
+              onNext={handleNext}
+              isLastQuestion={quizState.currentIndex + 1 === quizState.questions.length}
+            />
+          </div>
+        )}
+
+        {view === 'summary' && quizState && (
+          <SessionSummary
+            chapterId={quizState.chapterId}
+            questions={quizState.questions}
+            answers={quizState.answers}
+            onRetry={handleRetry}
+            onChooseChapter={handleChooseChapter}
+          />
+        )}
+      </main>
+    </div>
+  );
+}

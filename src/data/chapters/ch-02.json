@@ -1,0 +1,357 @@
+[
+  {
+    "id": "ch02-q1",
+    "topic": "manifest core purpose",
+    "difficulty": "easy",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\">\n    <application>\n        <activity android:name=\".MainActivity\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MAIN\" />\n                <category android:name=\"android.intent.category.LAUNCHER\" />\n            </intent-filter>\n        </activity>\n    </application>\n</manifest>",
+    "question": "What is the fundamental role of `AndroidManifest.xml` in an Android app?",
+    "choices": [
+      "It's an optional file for documentation purposes only",
+      "It declares every component the OS needs to know about — activities, permissions, and how the app can be launched — nothing runs without being declared here",
+      "It stores the app's actual UI layout code",
+      "It's a log file generated after the app crashes"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The manifest is the contract between your app and the Android OS. Before any of your code runs, the system reads this file to understand what components exist, what permissions are needed, and how the app can be started.",
+      "lineByLine": [
+        "`<manifest>` — root element, wraps the entire declaration.",
+        "`<application>` — app-wide container holding all components.",
+        "`<activity android:name=\".MainActivity\">` — declares that MainActivity exists and the OS is allowed to launch it.",
+        "Without this declaration, trying to start MainActivity throws a runtime crash — the class existing in your Kotlin code is not enough."
+      ],
+      "tip": "This is the single most important mental model for the manifest: if a component isn't declared here, it doesn't exist as far as the OS is concerned — even if the Kotlin class compiles perfectly fine."
+    }
+  },
+  {
+    "id": "ch02-q2",
+    "topic": "MAIN LAUNCHER intent filter",
+    "difficulty": "easy",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<activity android:name=\".MainActivity\">\n    <intent-filter>\n        <action android:name=\"android.intent.action.MAIN\" />\n        <category android:name=\"android.intent.category.LAUNCHER\" />\n    </intent-filter>\n</activity>",
+    "question": "What is the practical effect of this specific `MAIN` + `LAUNCHER` combination?",
+    "choices": [
+      "It makes this activity run faster than other activities",
+      "It makes this the activity that opens when the user taps the app's icon on the home screen or app drawer",
+      "It gives this activity permission to access the internet",
+      "It's required on every single activity in the app, not just one"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "`action.MAIN` tells the OS this is a valid entry point with no expected input data. `category.LAUNCHER` tells the OS to show this activity's icon in the app drawer/home screen. Together, they mark 'this is the one that opens when the app icon is tapped.'",
+      "lineByLine": [
+        "`android.intent.action.MAIN` — 'start here, no incoming data expected.'",
+        "`android.intent.category.LAUNCHER` — 'show this as a launchable icon.'",
+        "Combined inside one `<intent-filter>`, they define the app's home-screen entry point."
+      ],
+      "tip": "Exactly one activity in a typical app has this combination. Every other screen is reached by navigating from this one — either through in-app navigation (Compose) or by launching a new Activity via an explicit Intent."
+    }
+  },
+  {
+    "id": "ch02-q3",
+    "topic": "uses-permission",
+    "difficulty": "easy",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<manifest>\n    <uses-permission android:name=\"android.permission.INTERNET\" />\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\n\n    <application>\n        ...\n    </application>\n</manifest>",
+    "question": "What does declaring `<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />` actually guarantee?",
+    "choices": [
+      "The app immediately has access to precise location — no further steps needed",
+      "It only declares the app's intent to use this permission; for a 'dangerous' permission like location, the app must still separately ask the user at runtime",
+      "It gives the app access to every permission listed above it as well",
+      "It's purely cosmetic and has no functional effect"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "`<uses-permission>` is a declaration, not a grant. For 'normal' permissions (like INTERNET), declaring it in the manifest is enough. For 'dangerous' permissions (like location, camera, contacts), the app must ALSO explicitly request it at runtime and the user must approve a system dialog.",
+      "lineByLine": [
+        "`INTERNET` — a normal permission, automatically granted once declared here.",
+        "`ACCESS_FINE_LOCATION` — a dangerous permission; this manifest entry is necessary but not sufficient.",
+        "The app must additionally call the runtime permission request APIs and handle the user's allow/deny response."
+      ],
+      "tip": "This two-step system (declare in manifest + request at runtime) exists specifically for permissions that affect user privacy or device safety. Chapter 10 (Permissions) covers the runtime request flow in depth — this manifest declaration is step one of two."
+    }
+  },
+  {
+    "id": "ch02-q4",
+    "topic": "undeclared component crash",
+    "difficulty": "moderate",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<!-- AndroidManifest.xml -->\n<application>\n    <activity android:name=\".MainActivity\">\n        <intent-filter>\n            <action android:name=\"android.intent.action.MAIN\" />\n            <category android:name=\"android.intent.category.LAUNCHER\" />\n        </intent-filter>\n    </activity>\n    <!-- SettingsActivity.kt exists in the code, but is NOT declared here -->\n</application>",
+    "question": "The Kotlin file `SettingsActivity.kt` compiles fine and the app builds successfully. What happens when code tries to launch `SettingsActivity`?",
+    "choices": [
+      "It launches normally — the manifest is only needed for the main launcher activity",
+      "It throws a runtime crash (ActivityNotFoundException) because SettingsActivity is not declared in the manifest",
+      "Android Studio will refuse to build the app at all",
+      "SettingsActivity silently does nothing when launched"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The compiler doesn't check the manifest — only the OS does, at runtime. A perfectly valid Kotlin class that isn't declared in the manifest will compile and build successfully, then crash the moment the app tries to actually launch it.",
+      "lineByLine": [
+        "`SettingsActivity.kt` — exists as a class, compiles without errors.",
+        "The manifest only lists `MainActivity` — SettingsActivity is invisible to the OS.",
+        "At runtime, code that calls `startActivity(Intent(this, SettingsActivity::class.java))` triggers the OS to look for a declared SettingsActivity component.",
+        "Not finding one, the OS throws `android.content.ActivityNotFoundException`."
+      ],
+      "tip": "This is one of the most common 'it compiled but crashed!' bugs for developers new to Android. Every single Activity, Service, and BroadcastReceiver (with a few dynamic exceptions) must be declared in the manifest before it can be launched."
+    }
+  },
+  {
+    "id": "ch02-q5",
+    "topic": "android:exported",
+    "difficulty": "moderate",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<activity\n    android:name=\".ShareResultActivity\"\n    android:exported=\"false\" />\n\n<activity\n    android:name=\".MainActivity\"\n    android:exported=\"true\">\n    <intent-filter>\n        <action android:name=\"android.intent.action.MAIN\" />\n        <category android:name=\"android.intent.category.LAUNCHER\" />\n    </intent-filter>\n</activity>",
+    "question": "What does `android:exported=\"false\"` on `ShareResultActivity` mean?",
+    "choices": [
+      "The activity is disabled and can never be launched, even by this app",
+      "Only components from within this same app can launch ShareResultActivity — other apps and the OS launcher cannot start it directly",
+      "The activity will not appear on screen when launched",
+      "It has no effect — exported is purely decorative"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "`exported` controls whether components OUTSIDE your app (other apps, the system) are allowed to launch this component directly. `false` restricts it to internal use only — a security-relevant setting.",
+      "lineByLine": [
+        "`ShareResultActivity exported=\"false\"` — only your own app's code can start this Activity.",
+        "`MainActivity exported=\"true\"` — required here, because it has an intent-filter (MAIN/LAUNCHER) and the OS/launcher needs to be able to start it.",
+        "Since Android 12, any component with an `<intent-filter>` MUST explicitly declare `android:exported` — it's no longer inferred automatically."
+      ],
+      "tip": "As a security best practice: components that don't need to be triggered by other apps should be `exported=\"false\"`. Leaving internal components exported unnecessarily widens your app's attack surface for malicious apps trying to invoke your components directly."
+    }
+  },
+  {
+    "id": "ch02-q6",
+    "topic": "application tag attributes",
+    "difficulty": "easy",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<application\n    android:label=\"@string/app_name\"\n    android:icon=\"@mipmap/ic_launcher\"\n    android:theme=\"@style/Theme.WeatherNow\">\n    ...\n</application>",
+    "question": "What do `android:label` and `android:icon` on the `<application>` tag control?",
+    "choices": [
+      "Debug-only settings visible solely in Android Studio's logcat",
+      "The app's display name and icon shown in the app drawer, recent apps, and home screen — sourced from resources, not hardcoded text",
+      "The internal package name used by the OS",
+      "The color scheme of the status bar only"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "These app-wide attributes control how the app presents itself to the user across the OS — its name and icon wherever the system shows a list of installed apps.",
+      "lineByLine": [
+        "`android:label=\"@string/app_name\"` — points to a string resource (from Chapter 1's `strings.xml`) rather than hardcoding text directly.",
+        "`android:icon=\"@mipmap/ic_launcher\"` — points to the launcher icon resource (recall: launcher icons live in `mipmap/`, not `drawable/`).",
+        "`android:theme` — the default visual theme (colors, styles) applied across all activities unless overridden individually."
+      ],
+      "tip": "Notice the `@string/` and `@mipmap/` prefix syntax — this is how XML references resources declared elsewhere, mirroring the `R.string.x` / `R.mipmap.x` pattern used in Kotlin code from Chapter 1."
+    }
+  },
+  {
+    "id": "ch02-q7",
+    "topic": "multiple activities single launcher",
+    "difficulty": "moderate",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<application>\n    <activity android:name=\".MainActivity\">\n        <intent-filter>\n            <action android:name=\"android.intent.action.MAIN\" />\n            <category android:name=\"android.intent.category.LAUNCHER\" />\n        </intent-filter>\n    </activity>\n\n    <activity android:name=\".DetailActivity\" />\n    <activity android:name=\".SettingsActivity\" />\n</application>",
+    "question": "Why do `DetailActivity` and `SettingsActivity` have no `<intent-filter>` at all?",
+    "choices": [
+      "This is a mistake — every activity needs an intent-filter to function",
+      "They're only reachable by explicit Intent from within the app's own code, not by tapping an icon or from other apps — so no filter is needed",
+      "They will never actually be able to launch without one",
+      "Intent filters are only required for the very first activity created in a project"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An `<intent-filter>` declares how a component can be triggered from outside (or by the OS/launcher). Activities meant to be started only by your own app's code via an explicit Intent don't need one — the app already knows their exact class name.",
+      "lineByLine": [
+        "`MainActivity` — needs MAIN/LAUNCHER because the OS/home-screen launcher must find it without knowing anything about your app's internals.",
+        "`DetailActivity` and `SettingsActivity` — still fully declared (so the OS knows they exist and are allowed to run), but reached only via explicit Intent from within MainActivity's own code, e.g. `Intent(this, DetailActivity::class.java)`.",
+        "Only ONE activity in a typical single-module app has the MAIN/LAUNCHER filter."
+      ],
+      "tip": "Being declared and having an intent-filter are two separate things. Every launchable component must be *declared*; only entry points meant to be discoverable from outside your own code (or the home screen) need an *intent-filter*."
+    }
+  },
+  {
+    "id": "ch02-q8",
+    "topic": "meta-data",
+    "difficulty": "moderate",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<application>\n    <meta-data\n        android:name=\"com.google.android.geo.API_KEY\"\n        android:value=\"AIzaSyD-EXAMPLE-KEY-VALUE\" />\n</application>",
+    "question": "What is the purpose of a `<meta-data>` tag like this one?",
+    "choices": [
+      "It's used to embed comments explaining the manifest to other developers",
+      "It passes a static key-value configuration pair into the manifest that a library (in this case, Google Maps) reads at runtime — without needing a line of Kotlin code",
+      "It defines a new permission the app requires",
+      "It declares a new Activity"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "`<meta-data>` lets you embed arbitrary configuration values directly in the manifest, which third-party libraries or the OS can read at startup. This is a common way to supply API keys or configuration flags without writing initialization code.",
+      "lineByLine": [
+        "`android:name` — the key the library looks for, often a reverse-domain-style identifier defined by that library's documentation.",
+        "`android:value` — the actual value, here a (fake, illustrative) Google Maps API key.",
+        "The Google Maps SDK reads this specific key/value pair automatically during app startup to authenticate its map requests — no Kotlin initialization code required."
+      ],
+      "tip": "Seeing a `<meta-data>` block usually means 'a third-party library needs this specific configuration value.' The exact `android:name` string to use always comes from that library's own setup documentation."
+    }
+  },
+  {
+    "id": "ch02-q9",
+    "topic": "custom Application class",
+    "difficulty": "moderate",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<application\n    android:name=\".WeatherApp\"\n    android:label=\"@string/app_name\">\n    ...\n</application>",
+    "question": "What does `android:name=\".WeatherApp\"` on the `<application>` tag do?",
+    "choices": [
+      "Nothing — it's purely cosmetic metadata",
+      "It tells the OS to instantiate WeatherApp (a custom subclass of the Application class) instead of the default, letting it run setup code once when the entire app process starts",
+      "It renames the app for users on the home screen",
+      "It sets the default activity to launch, replacing the LAUNCHER intent-filter"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "By default, Android creates a plain instance of the `Application` class when your app's process starts. Setting `android:name` here points to your own subclass instead, letting you run one-time setup code (like initializing logging, dependency injection, or crash reporting) before any Activity starts.",
+      "lineByLine": [
+        "`android:name=\".WeatherApp\"` — the leading dot means 'in this app's package', resolving to `com.example.weathernow.WeatherApp`.",
+        "`WeatherApp` would be a Kotlin class: `class WeatherApp : Application() { override fun onCreate() { ... } }`.",
+        "Its `onCreate()` runs once, before any Activity in the app, making it the natural place for app-wide initialization."
+      ],
+      "tip": "This is the same `android:name=\".ClassName\"` pattern used for activities — a leading dot is shorthand for 'this app's package + this class name', avoiding the need to spell out the full package path every time."
+    }
+  },
+  {
+    "id": "ch02-q10",
+    "topic": "reading a full manifest",
+    "difficulty": "moderate",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\">\n\n    <uses-permission android:name=\"android.permission.INTERNET\" />\n\n    <application\n        android:name=\".WeatherApp\"\n        android:label=\"@string/app_name\"\n        android:icon=\"@mipmap/ic_launcher\">\n\n        <activity android:name=\".MainActivity\" android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MAIN\" />\n                <category android:name=\"android.intent.category.LAUNCHER\" />\n            </intent-filter>\n        </activity>\n\n        <activity android:name=\".ForecastDetailActivity\" android:exported=\"false\" />\n\n    </application>\n</manifest>",
+    "question": "Based on this manifest, which statement is TRUE?",
+    "choices": [
+      "The app cannot access the internet because no INTERNET permission is granted at runtime",
+      "MainActivity is the home-screen entry point, ForecastDetailActivity can only be reached via internal code, and a custom WeatherApp class runs setup logic at process start",
+      "ForecastDetailActivity will also appear on the home screen because it's declared inside the same <application> tag",
+      "This manifest is invalid because it only has one intent-filter"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This ties together everything from the chapter: a normal permission declared once (sufficient by itself), a custom Application subclass for startup logic, exactly one launcher activity, and a second activity reachable only internally.",
+      "lineByLine": [
+        "`INTERNET` is a normal permission — declaring it here is sufficient; no runtime prompt needed (unlike dangerous permissions).",
+        "`android:name=\".WeatherApp\"` — custom Application subclass runs once at process start.",
+        "`MainActivity` — has MAIN/LAUNCHER, so it's the home-screen entry point; exported=\"true\" is required alongside that filter.",
+        "`ForecastDetailActivity` — declared (so the OS knows it exists) but has no intent-filter and is exported=\"false\", so it's reachable only from within the app's own code."
+      ],
+      "tip": "Real manifests are simply combinations of these individual pieces you've now seen separately. Reading one is a matter of recognizing each familiar element — permissions, application-level config, and per-activity declarations — and reasoning about how they interact."
+    }
+  },
+  {
+    "id": "ch02-q11",
+    "topic": "merged manifest",
+    "difficulty": "difficult",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<!-- app/src/main/AndroidManifest.xml (what YOU wrote) -->\n<manifest>\n    <uses-permission android:name=\"android.permission.INTERNET\" />\n    <application>\n        <activity android:name=\".MainActivity\">...</activity>\n    </application>\n</manifest>\n\n<!-- After Gradle build, the \"Merged Manifest\" view in Android Studio\n     ALSO shows permissions and components from library dependencies\n     you never typed yourself, e.g. from a crash-reporting SDK -->",
+    "question": "A teammate is confused: \"I only wrote one `<uses-permission>` line, but Android Studio's Merged Manifest view shows five!\" What's happening?",
+    "choices": [
+      "Android Studio has a bug and is showing incorrect information",
+      "Every library dependency (from build.gradle.kts) can include its own AndroidManifest.xml; Gradle automatically merges all of them into one final manifest at build time",
+      "The extra permissions were added by a virus",
+      "The app has multiple manifests that all run simultaneously"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Every Android library (AAR dependency) can ship its own manifest snippet declaring the permissions and components it needs. Gradle's manifest merger tool combines your app's manifest with every dependency's manifest into one final, merged manifest — which is what actually ships in the APK.",
+      "lineByLine": [
+        "Your `app/src/main/AndroidManifest.xml` — what you directly author.",
+        "Each library dependency (declared in `build.gradle.kts`, connecting back to Chapter 1) can bundle its own manifest fragment.",
+        "A crash-reporting SDK, for example, might bundle a permission for network access and declare its own background Service.",
+        "Android Studio's 'Merged Manifest' tab shows the final combined result — the real manifest that ships."
+      ],
+      "tip": "Whenever you're debugging an unexpected permission prompt or a component you don't recognize, check the Merged Manifest view (not just your hand-written file) — the answer is very often 'a dependency brought this in.'"
+    }
+  },
+  {
+    "id": "ch02-q12",
+    "topic": "uses-feature vs uses-permission",
+    "difficulty": "moderate",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<uses-permission android:name=\"android.permission.CAMERA\" />\n<uses-feature\n    android:name=\"android.hardware.camera\"\n    android:required=\"false\" />",
+    "question": "This app declares BOTH `<uses-permission>` for CAMERA and `<uses-feature>` for camera hardware. What's the difference in what each one controls?",
+    "choices": [
+      "They do the same thing; one is just a legacy duplicate of the other",
+      "uses-permission controls runtime access to camera data; uses-feature declares hardware/software the app uses, and affects whether the Play Store shows the app to devices lacking that hardware",
+      "uses-feature grants the permission automatically without a runtime prompt",
+      "uses-permission is only needed on tablets, uses-feature only on phones"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "These two tags answer different questions. `<uses-permission>` is about *access control* — can this app use the camera API? `<uses-feature>` is about *device compatibility* — does this app require camera hardware to function, and should the Play Store hide the app from devices that lack it?",
+      "lineByLine": [
+        "`<uses-permission android:name=\"...CAMERA\" />` — the app can request camera access at runtime (a dangerous permission, per Chapter 2's earlier lesson).",
+        "`<uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />` — declares the app USES a camera if available, but `required=\"false\"` means it will still install on devices without one.",
+        "If `required` were `true` (or omitted, since true is the default), the Play Store would hide this app entirely from cameraless devices."
+      ],
+      "tip": "`android:required=\"false\"` on a `<uses-feature>` is important for apps where a feature is nice-to-have but not essential — e.g., an app that CAN scan a barcode with the camera but works fine without one. Always check the `required` value; the default is `true`, which can unintentionally shrink your available device audience."
+    }
+  },
+  {
+    "id": "ch02-q13",
+    "topic": "deep link intent filter",
+    "difficulty": "difficult",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<activity android:name=\".ForecastDetailActivity\" android:exported=\"true\">\n    <intent-filter>\n        <action android:name=\"android.intent.action.VIEW\" />\n        <category android:name=\"android.intent.category.DEFAULT\" />\n        <category android:name=\"android.intent.category.BROWSABLE\" />\n        <data\n            android:scheme=\"https\"\n            android:host=\"weathernow.example.com\"\n            android:pathPrefix=\"/forecast\" />\n    </intent-filter>\n</activity>",
+    "question": "What does this second intent-filter (different from MAIN/LAUNCHER) enable?",
+    "choices": [
+      "It makes ForecastDetailActivity the app's new home-screen launcher icon, replacing MainActivity",
+      "It's a deep link: tapping a link like https://weathernow.example.com/forecast/today (in a browser, text message, or another app) can open this exact Activity directly",
+      "It has no effect since an activity can only have one intent-filter",
+      "It requires the user to manually enable this link in Settings before it works"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a deep link filter — a completely different purpose from MAIN/LAUNCHER. It tells the OS: 'if the user taps a link matching this URL pattern, this Activity can handle it directly,' bypassing the home screen entirely.",
+      "lineByLine": [
+        "`action.VIEW` — 'display this piece of content' (different from action.MAIN's 'start with no data').",
+        "`category.BROWSABLE` — allows a web browser to trigger this filter when a matching link is tapped.",
+        "`<data android:scheme=\"https\" android:host=\"weathernow.example.com\" android:pathPrefix=\"/forecast\" />` — matches URLs like `https://weathernow.example.com/forecast/...`.",
+        "`exported=\"true\"` is required here since the trigger comes from outside the app (a browser, another app, an SMS link)."
+      ],
+      "tip": "This is proof that a single Activity can have MULTIPLE intent-filters for different purposes simultaneously — MainActivity might have both the LAUNCHER filter AND its own deep link filter. Each `<intent-filter>` block describes one independent way the component can be triggered."
+    }
+  },
+  {
+    "id": "ch02-q14",
+    "topic": "per-activity label override",
+    "difficulty": "easy",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<application android:label=\"@string/app_name\">\n\n    <activity android:name=\".MainActivity\" />\n\n    <activity\n        android:name=\".SettingsActivity\"\n        android:label=\"@string/settings_title\" />\n\n</application>",
+    "question": "MainActivity has no `android:label` of its own, but SettingsActivity does. What title appears in the Recent Apps screen for each?",
+    "choices": [
+      "Both show \"Weather Now\" (the app-level label) because activity-level labels are ignored",
+      "MainActivity shows the app-level label (e.g., \"Weather Now\"); SettingsActivity shows its own override (e.g., \"Settings\") instead",
+      "Neither shows a title — labels only affect the app drawer icon",
+      "This configuration causes a build error since labels can only be set once per app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Attributes like `android:label` cascade: the `<application>` tag sets a default for every activity, but any individual `<activity>` can override it with its own value. This lets each screen show a more specific, contextual title where it makes sense.",
+      "lineByLine": [
+        "`<application android:label=\"@string/app_name\">` — sets the default label ('Weather Now') for every activity in the app.",
+        "`MainActivity` — no override, so it inherits the app-wide default label.",
+        "`SettingsActivity android:label=\"@string/settings_title\"` — overrides the default, showing 'Settings' instead wherever this activity's title is displayed (task switcher, action bar, etc.)."
+      ],
+      "tip": "This inheritance-with-override pattern — application-level default, activity-level override — appears throughout the manifest (label, theme, and more). Reading a manifest means checking both levels: what does `<application>` set as default, and does this specific `<activity>` override it?"
+    }
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "id": "ch13-q11",
+    "topic": "ExistingWorkPolicy prevents accidental duplicate scheduling",
+    "difficulty": "difficult",
+    "chapter": "ch-13",
+    "snippet": "// User taps \"Enable Auto-Sync\" multiple times by accident\nWorkManager.getInstance(context).enqueueUniquePeriodicWork(\n    \"log_sync\",\n    ExistingPeriodicWorkPolicy.KEEP,\n    periodicWorkRequest\n)",
+    "question": "If the user accidentally triggers this enqueue call three separate times, what's the relationship between `ExistingPeriodicWorkPolicy.KEEP` and how many actual periodic syncs end up scheduled?",
+    "choices": [
+      "Three separate periodic work schedules are created, each running independently and duplicating the sync",
+      "By enqueuing this as UNIQUE work with a specific name (\"log_sync\") and the KEEP policy, only the FIRST enqueue actually takes effect — subsequent calls with the same unique name are recognized as referring to the same logical work, and the existing schedule is simply kept as-is rather than creating duplicates",
+      "KEEP means all three requests are merged into one that runs three times as often",
+      "Unique work names have no real effect on preventing duplicates"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This introduces a genuinely different problem than anything covered so far: accidentally scheduling the SAME logical work multiple times. Unique work names plus an explicit policy (like KEEP) establish a relationship where repeated enqueue attempts for the same named work are reconciled sensibly, rather than each blindly creating a new independent schedule.",
+      "lineByLine": [
+        "`enqueueUniquePeriodicWork(\"log_sync\", ...)` — ties this request to a specific unique name, rather than an anonymous one-off.",
+        "`ExistingPeriodicWorkPolicy.KEEP` — if work already exists under this same name, keep the existing schedule and ignore this new request entirely.",
+        "Three accidental taps → only the first actually establishes the schedule; the second and third are recognized as referring to that same named work and don't create duplicates."
+      ],
+      "tip": "This relationship matters anywhere a user action might trigger the same background work request more than once (e.g., toggling a setting repeatedly) — using a unique name with an appropriate policy (KEEP, REPLACE, or APPEND, depending on the desired behavior) prevents the same logical task from silently multiplying."
+    }
+  },
+  {
+    "id": "ch13-q12",
+    "topic": "constraints and flexible timing exist because of battery optimization (Doze mode)",
+    "difficulty": "difficult",
+    "chapter": "ch-13",
+    "snippetLang": "markup",
+    "snippet": "Recall Chapter 8, Q5: a foreground Service raises an\napp's process priority against being killed.\n\nModern Android also aggressively restricts background\nbattery usage overall (\"Doze mode\" and similar features) —\nan app with no foreground Service or visible Activity is\ngiven very limited opportunities to do background work\nfreely, on the OS's own schedule rather than the app's.",
+    "question": "How does this battery-optimization reality relate to WHY WorkManager's whole design (constraints, flexible timing, no guaranteed immediate execution) makes sense?",
+    "choices": [
+      "There's no real connection; WorkManager's flexible timing is an arbitrary design choice unrelated to battery optimization",
+      "WorkManager's entire design directly accommodates this reality — because the OS itself decides the actual opportune moments to run background work (batching multiple apps' deferred tasks together to minimize battery impact), an API that only promises \"this will run eventually, under acceptable conditions\" is fundamentally more honest and battery-friendly than one promising immediate execution the OS might not actually allow anyway",
+      "WorkManager guarantees immediate execution regardless of Doze mode or any battery optimization features",
+      "Doze mode only affects Services (Chapter 8), and has no relationship to WorkManager at all"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This surfaces the actual underlying motivation for WorkManager's whole design philosophy, tying together the book's recurring 'modern Android restricts background behavior' theme (Chapter 8, Q12; Chapter 9, Q8) with why 'flexible, eventually, under good conditions' is the honest and appropriate relationship for this kind of work to have with the OS.",
+      "lineByLine": [
+        "Doze mode and similar battery optimizations mean the OS itself controls when background work is actually allowed to run, batching multiple apps' requests together to minimize overall battery drain.",
+        "WorkManager's API — never promising immediate execution, always working with constraints and acceptable delay (Q1, Q3) — is designed around this reality rather than against it.",
+        "An API that instead promised guaranteed immediate execution would be making a promise the OS's own battery management might simply not honor — WorkManager's flexible framing avoids that mismatch entirely."
+      ],
+      "tip": "This connects directly to the recurring restriction theme from Chapter 8 (Q12) and Chapter 9 (Q8): modern Android increasingly requires background behavior to be either tied to visible foreground presence (Services, notifications) or framed as flexible, deferred work (WorkManager) — and understanding WHY (battery preservation at the OS level) makes the API's design choices feel like sensible accommodation rather than arbitrary limitation."
+    }
+  }
+]

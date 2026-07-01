@@ -1,0 +1,297 @@
+[
+  {
+    "id": "ch09-q1",
+    "topic": "BroadcastReceiver is the component that reacts to broadcasts",
+    "difficulty": "easy",
+    "chapter": "ch-09",
+    "snippet": "class BootCompletedReceiver : BroadcastReceiver() {\n    override fun onReceive(context: Context, intent: Intent) {\n        // react to the device having finished booting\n    }\n}",
+    "question": "Chapter 6, Q11 introduced broadcasts as one-to-many announcements. What's the relationship between THIS class and that concept?",
+    "choices": [
+      "BroadcastReceiver is just another name for Activity — they're functionally identical",
+      "BroadcastReceiver is the specific component type built to receive and react to those one-to-many broadcast announcements — this is the concrete answer to Chapter 6, Q11's preview of \"many independent components can react to the same event\"",
+      "Only the OS itself can ever implement a BroadcastReceiver; apps cannot create their own",
+      "A BroadcastReceiver must always show a notification when it reacts to something"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This directly fulfills Chapter 6, Q11's setup: a BroadcastReceiver is the actual component type an app builds to participate in that one-to-many relationship — reacting independently to a broadcast that potentially many other apps are also reacting to simultaneously.",
+      "lineByLine": [
+        "`class BootCompletedReceiver : BroadcastReceiver()` — a component specifically built to receive broadcasts.",
+        "`onReceive(context: Context, intent: Intent)` — called by the OS when a matching broadcast arrives, handing over the same kind of Intent object covered throughout Chapter 6.",
+        "Many other apps could have their own, entirely separate BootCompletedReceiver reacting to this exact same system broadcast — none of them 'the' resolved target, exactly as Chapter 6, Q11 described."
+      ],
+      "tip": "Whenever you see a class extending BroadcastReceiver, recognize it as opting into that one-to-many relationship — it's built to potentially be one of several independent reactions to the same announcement, not a single resolved destination like an Activity or Service."
+    }
+  },
+  {
+    "id": "ch09-q2",
+    "topic": "receivers still require declaration",
+    "difficulty": "easy",
+    "chapter": "ch-09",
+    "snippetLang": "xml",
+    "snippet": "<application>\n    <receiver android:name=\".BootCompletedReceiver\" android:exported=\"true\">\n        <intent-filter>\n            <action android:name=\"android.intent.action.BOOT_COMPLETED\" />\n        </intent-filter>\n    </receiver>\n</application>",
+    "question": "What familiar relationship from Chapters 2 and 8 does this manifest entry represent, applied to a BroadcastReceiver?",
+    "choices": [
+      "Receivers are the one exception to the manifest-declaration rule and never need to appear here",
+      "The exact same declaration relationship as Activities (Chapter 2) and Services (Chapter 8, Q1) — the OS's component system requires every kind of component, receivers included, to be declared before it can be recognized and triggered",
+      "This declaration only matters for receivers that show a visible UI",
+      "<receiver> tags can only be nested inside an <activity> tag, never directly under <application>"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This confirms that the manifest-declaration relationship established back in Chapter 2, and reinforced for Services in Chapter 8, extends fully to BroadcastReceivers as well — a third example of the same underlying rule applying across every OS-managed component type.",
+      "lineByLine": [
+        "`<receiver android:name=\".BootCompletedReceiver\">` — the same style of declaration as `<activity>` and `<service>`.",
+        "`<intent-filter><action android:name=\"...BOOT_COMPLETED\" /></intent-filter>` — declares which specific broadcast this receiver wants to be notified about, similar in structure to Chapter 6's intent-filter matching (Q8).",
+        "`android:exported=\"true\"` — same security-relevant attribute from Chapter 2, Q5, controlling whether components outside this app can trigger it."
+      ],
+      "tip": "By this point in the book, this should feel like a familiar pattern: Activity, Service, and now BroadcastReceiver all follow the identical 'declared in manifest, OS decides when to invoke it' relationship — only the specific triggering circumstances differ between component types."
+    }
+  },
+  {
+    "id": "ch09-q3",
+    "topic": "static vs dynamic registration — two different lifetime relationships",
+    "difficulty": "difficult",
+    "chapter": "ch-09",
+    "snippetLang": "markup",
+    "snippet": "Static registration: declared in the manifest (Q2) —\nactive for as long as the app is installed, regardless\nof whether any part of the app is currently running.\n\nDynamic registration: registered at runtime inside\nMainActivity's onStart(), and unregistered in onStop() —\nactive only while MainActivity is actually visible.",
+    "question": "What's the key relational difference between these two ways of setting up a BroadcastReceiver?",
+    "choices": [
+      "There's no real difference — both approaches result in identical behavior and lifetime",
+      "Static registration's lifetime is tied to the app being installed at all — independent of anything currently running; dynamic registration's lifetime is deliberately tied to a specific component's own lifecycle (here, MainActivity's visible period), similar in spirit to Chapter 7's lifecycleScope tying a coroutine's life to an Activity",
+      "Dynamic registration lasts longer than static registration in every case",
+      "Static registration can only be used for system broadcasts, never custom ones"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This mirrors a relationship pattern already seen elsewhere in the book (Chapter 7's scope-tied-to-owner, Chapter 8's started-vs-bound Service). Static registration exists independent of any running component. Dynamic registration deliberately ties the receiver's active window to a specific component's own lifecycle.",
+      "lineByLine": [
+        "Static (Q2's manifest approach): active as long as the app exists on the device, whether or not any Activity or Service is currently running.",
+        "Dynamic: registered in `onStart()`, unregistered in `onStop()` — its active window is deliberately scoped to exactly when MainActivity is visible, echoing Chapter 5's onStart/onStop relationship.",
+        "Choosing between them is a lifetime decision: does this receiver need to work even when nothing in the app is currently running (static), or only while a specific screen is actually active (dynamic)?"
+      ],
+      "tip": "This pairs directly with Chapter 7, Q4's scope-lifetime relationship: dynamic registration is essentially 'tie this receiver's life to this component,' the same underlying idea as tying a coroutine to lifecycleScope, just applied to a different kind of component."
+    }
+  },
+  {
+    "id": "ch09-q4",
+    "topic": "onReceive has a brief execution window, unlike a service",
+    "difficulty": "difficult",
+    "chapter": "ch-09",
+    "snippet": "class NetworkChangeReceiver : BroadcastReceiver() {\n    override fun onReceive(context: Context, intent: Intent) {\n        // The OS expects this to finish executing very quickly —\n        // typically within just a few seconds\n    }\n}",
+    "question": "Contrast this with Chapter 8's Service, which can run for a long time. What's the relationship between a BroadcastReceiver's onReceive and how long it's expected to take?",
+    "choices": [
+      "onReceive can run indefinitely, exactly like a Service — there's no meaningful time constraint",
+      "onReceive is expected to complete very quickly — it's not built for extended work the way a Service is; if a broadcast reaction requires substantial ongoing work, the receiver's job is typically to kick off something better suited for that (like starting a Service, Chapter 8), not to do the heavy lifting itself",
+      "onReceive always runs on Dispatchers.IO automatically, so long work is never actually a problem",
+      "A BroadcastReceiver can only ever call finish() and nothing else"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This establishes a sharp contrast with Chapter 8's Service: a BroadcastReceiver's onReceive has a narrow relationship with time — it's meant for a quick reaction, not sustained work. The OS may consider the receiver unresponsive and terminate it if onReceive takes too long.",
+      "lineByLine": [
+        "`onReceive(...)` — expected to do its job and return within a short window, often just a few seconds.",
+        "This is fundamentally different from a Service (Chapter 8), which is specifically built to keep running for extended periods, especially once promoted to foreground (Chapter 8, Q4-Q5).",
+        "A common, correct pattern: onReceive notices the broadcast, then starts a Service (Chapter 8, Q2's Intent-based starting) to actually perform any longer-running work — delegating rather than doing it directly."
+      ],
+      "tip": "This is a direct callback to Chapter 8: whenever a broadcast reaction requires real, sustained work, the correct relationship is receiver-notices → Service-does-the-work, not trying to cram that work directly inside the brief onReceive window."
+    }
+  },
+  {
+    "id": "ch09-q5",
+    "topic": "system broadcasts vs custom app broadcasts share the same mechanism",
+    "difficulty": "moderate",
+    "chapter": "ch-09",
+    "snippetLang": "markup",
+    "snippet": "System broadcast: the OS itself announces\n\"android.intent.action.BOOT_COMPLETED\" after startup.\n\nCustom broadcast: WeatherNow's own code creates and\nsends its own broadcast, \"com.example.weathernow.SYNC_DONE\",\nafter finishing a background sync.",
+    "question": "What's the relationship between how these two broadcasts are received by an app's BroadcastReceiver?",
+    "choices": [
+      "Custom, app-created broadcasts cannot be received by BroadcastReceivers — only system broadcasts can",
+      "Both use the exact same underlying mechanism — an Intent broadcast out to any matching, interested receiver (Chapter 6, Q11) — regardless of whether the OS or an ordinary app's own code is the one sending it",
+      "System broadcasts require a completely different component type than custom broadcasts",
+      "Custom broadcasts can only ever be received by the exact same app that sent them, unlike system broadcasts"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This generalizes the broadcast relationship beyond just OS-originated events: the one-to-many mechanism from Chapter 6, Q11 doesn't care whether the sender is the Android system itself or an ordinary app's own code — the receiving side (an intent-filter matching a BroadcastReceiver, Q2) works identically either way.",
+      "lineByLine": [
+        "System broadcast: `BOOT_COMPLETED` — sent by the OS, potentially received by many different installed apps' own receivers.",
+        "Custom broadcast: `com.example.weathernow.SYNC_DONE` — sent by WeatherNow's own code, using the same broadcast mechanism, just with an app-defined action string instead of a system-defined one.",
+        "A receiver declares an intent-filter matching whichever action it cares about — the matching process itself (Chapter 6, Q8) doesn't distinguish based on who originally sent the broadcast."
+      ],
+      "tip": "Apps often use custom broadcasts internally as a way to announce 'something happened' to any other part of the same app that might care — the same one-to-many relationship as a system broadcast, just scoped to an app's own custom event vocabulary instead of OS-defined ones."
+    }
+  },
+  {
+    "id": "ch09-q6",
+    "topic": "explicit vs implicit broadcasts parallel chapter 6",
+    "difficulty": "moderate",
+    "chapter": "ch-09",
+    "snippet": "// Implicit broadcast — no specific receiver named,\n// any matching registered receiver can respond\nsendBroadcast(Intent(\"com.example.weathernow.SYNC_DONE\"))\n\n// Explicit broadcast — targets one specific receiver directly\nval intent = Intent(this, SyncCompleteReceiver::class.java)\nsendBroadcast(intent)",
+    "question": "How does this distinction relate to Chapter 6's explicit-vs-implicit Intent framework (Q2, Q3, Q9)?",
+    "choices": [
+      "Broadcasts don't have this distinction at all — they're always implicit, unlike Activity or Service intents",
+      "It's the exact same explicit/implicit relationship from Chapter 6, applied to broadcasts: naming a specific receiver class directly (explicit) versus describing an action that any matching registered receiver can independently respond to (implicit) — just now potentially matching MULTIPLE receivers instead of resolving to one",
+      "Explicit broadcasts can only be used for system-level events, never custom app events",
+      "Implicit broadcasts always require a chooser dialog, exactly like Chapter 6 Q4's implicit Activity intents"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This maps Chapter 6's explicit/implicit framework directly onto broadcasts, with one key twist: while an implicit Activity Intent (Chapter 6, Q3-Q4) resolves to ONE target (possibly via a user-facing chooser), an implicit broadcast can legitimately be received by MANY matching receivers simultaneously — consistent with Chapter 6, Q11's one-to-many broadcast relationship.",
+      "lineByLine": [
+        "`Intent(\"com.example.weathernow.SYNC_DONE\")` with no named class — implicit, any receiver with a matching intent-filter (Q2) can respond, and potentially several could.",
+        "`Intent(this, SyncCompleteReceiver::class.java)` — explicit, naming one specific receiver class directly, just like Chapter 6, Q2's explicit Activity example.",
+        "The key difference from Activities: implicit broadcasts don't need a chooser to pick just one recipient — multiple receivers matching the same implicit broadcast is normal and expected, not an ambiguity to resolve."
+      ],
+      "tip": "This is a good test of whether the explicit/implicit framework from Chapter 6 was understood as a general Intent-addressing concept, rather than something specific only to Activities — the same underlying idea applies here, just with a different resolution outcome (many possible receivers, rather than one chosen target)."
+    }
+  },
+  {
+    "id": "ch09-q7",
+    "topic": "receiver's lifetime does not include the ability to do async work directly",
+    "difficulty": "difficult",
+    "chapter": "ch-09",
+    "snippet": "class SyncStatusReceiver : BroadcastReceiver() {\n    override fun onReceive(context: Context, intent: Intent) {\n        // Attempting to launch a long coroutine directly here\n        // is risky — this receiver object may not exist long\n        // enough for it to safely complete\n    }\n}",
+    "question": "Why is launching a long-running coroutine directly inside onReceive considered risky, connecting back to Chapters 5 and 7?",
+    "choices": [
+      "It's not risky at all — receivers have their own permanent lifecycleScope, just like Activities",
+      "A BroadcastReceiver instance is short-lived by design (Q4) — once onReceive returns, the OS may consider its job finished and the instance eligible for cleanup; a coroutine that outlives that brief window has no reliable owner to be scoped to, unlike an Activity's lifecycleScope (Chapter 7, Q4) or a ViewModel's viewModelScope",
+      "Coroutines can never be used anywhere near a BroadcastReceiver under any circumstances",
+      "This only matters for system broadcasts, never for custom app broadcasts"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects Q4's brief-execution-window relationship to Chapter 7's scope-ownership relationship: a coroutine needs a reliable, sufficiently long-lived owner to be scoped to (Chapter 7, Q4's lifecycleScope example). A BroadcastReceiver's own instance is deliberately short-lived, making it a poor, unreliable owner for anything long-running.",
+      "lineByLine": [
+        "Chapter 7, Q4 established that a coroutine's lifetime should be deliberately tied to a suitable owner (like an Activity via lifecycleScope).",
+        "A BroadcastReceiver instance, per Q4, isn't meant to stick around — onReceive returning may signal the OS that this instance's job is done.",
+        "A coroutine started here, without a more durable owner, risks being orphaned if the receiver instance is cleaned up before the coroutine finishes — echoing exactly the kind of scope-mismatch problem Chapter 7 was designed to prevent."
+      ],
+      "tip": "The correct pattern again reinforces Q4's guidance: if real ongoing work is needed in response to a broadcast, hand it off to something with an appropriate, longer-lived scope — a Service (Chapter 8) with its own coroutine scope, rather than trying to launch that work directly inside the receiver's brief onReceive window."
+    }
+  },
+  {
+    "id": "ch09-q8",
+    "topic": "modern android restricts many implicit broadcast receivers in the manifest",
+    "difficulty": "difficult",
+    "chapter": "ch-09",
+    "snippetLang": "markup",
+    "snippet": "Recall Chapter 8, Q12: modern Android restricts apps\nfrom freely starting new background Services while\nthe app itself is in the background.\n\nSimilarly, modern Android versions no longer allow\nmanifest-declared (static) receivers for MANY common\nimplicit system broadcasts — apps wanting to react to\nthose specific broadcasts must instead register a\nreceiver dynamically (Q3) while some part of the app\nis actually running.",
+    "question": "What's the relationship between this restriction and Chapter 8, Q12's background-Service restriction?",
+    "choices": [
+      "They're unrelated restrictions with completely different motivations",
+      "Both restrictions share the same underlying motivation: preventing apps from passively reacting to broad, common system events (or spawning background work) while the app itself isn't actively running — favoring registration/starting approaches that require some part of the app to already be active or explicitly scheduled",
+      "This restriction means BroadcastReceivers are now completely obsolete and unused",
+      "This restriction only applies to custom app broadcasts, never system ones"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This draws a direct parallel to a restriction already covered in Chapter 8: both are part of the same broader trend in modern Android toward limiting what apps can passively do while not actively running, requiring more deliberate, active registration instead.",
+      "lineByLine": [
+        "Chapter 8, Q12: apps in the background are restricted from freely starting new background Services.",
+        "This chapter's parallel: many implicit system broadcasts can no longer wake up a manifest-declared receiver the way they once could — apps must dynamically register (Q3) while already running to reliably catch these.",
+        "Both restrictions push toward the same design philosophy: significant background behavior should generally require the app to already be doing something the user is aware of, or use a properly scheduled tool (like Chapter 13's WorkManager, previewed in Chapter 8, Q11) rather than passively waking up unprompted."
+      ],
+      "tip": "Recognizing this pattern — modern Android increasingly limiting passive, always-on background triggers in favor of active registration or scheduled work — helps make sense of several restrictions across this book that might otherwise seem like unrelated, arbitrary rules."
+    }
+  },
+  {
+    "id": "ch09-q9",
+    "topic": "explicit broadcast to a component within the same app",
+    "difficulty": "moderate",
+    "chapter": "ch-09",
+    "snippet": "// Sent from within WeatherNow's own sync logic\nval intent = Intent(this, SyncCompleteReceiver::class.java).apply {\n    putExtra(\"records_synced\", 42)\n}\nsendBroadcast(intent)",
+    "question": "This explicit broadcast includes an extra, just like Chapter 6, Q6's Activity example. What relationship does this confirm?",
+    "choices": [
+      "Extras can only be attached to Activity-targeting Intents, never to broadcasts",
+      "The same payload relationship from Chapter 6, Q6 — an Intent carrying additional data alongside its addressing information — applies to broadcasts too; SyncCompleteReceiver's onReceive can read \"records_synced\" back out, just as ForecastDetailActivity read its extras in Chapter 6",
+      "This broadcast will crash, since only implicit broadcasts are allowed to carry extras",
+      "The extra will be silently ignored by any BroadcastReceiver"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This confirms that Chapter 6's Intent-as-envelope relationship (addressing plus payload) is genuinely universal across every Intent-based mechanism covered in this book — not something unique to starting Activities.",
+      "lineByLine": [
+        "`Intent(this, SyncCompleteReceiver::class.java)` — explicit addressing, same pattern as Chapter 6, Q2 and Chapter 8, Q2.",
+        "`putExtra(\"records_synced\", 42)` — the identical payload mechanism from Chapter 6, Q6.",
+        "`sendBroadcast(intent)` — delivers both the addressing and the payload together; SyncCompleteReceiver's onReceive can extract \"records_synced\" from the Intent it's handed, exactly as any Activity would extract its own extras."
+      ],
+      "tip": "By now, a reliable pattern should be clear: regardless of whether an Intent is starting an Activity, a Service, or triggering a BroadcastReceiver, the same two ingredients are always at play — addressing (explicit or implicit) and an optional payload of extras."
+    }
+  },
+  {
+    "id": "ch09-q10",
+    "topic": "full scenario synthesis",
+    "difficulty": "difficult",
+    "chapter": "ch-09",
+    "snippetLang": "markup",
+    "snippet": "1. The OS broadcasts CONNECTIVITY_CHANGE whenever the\n   network connection changes.\n2. WeatherNow has dynamically registered a receiver for\n   this broadcast, tied to MainActivity's onStart/onStop.\n3. When the receiver's onReceive fires and detects the\n   network is now available, it immediately starts\n   WeatherSyncService to perform a full sync.\n4. The Service promotes itself to foreground while syncing.",
+    "question": "Which statement correctly identifies the relationships woven through this entire scenario?",
+    "choices": [
+      "This scenario is invalid because receivers can never start a Service",
+      "Step 1 is a system broadcast, matched via the same intent-filter mechanism from Chapter 6; step 2 uses dynamic registration (Q3), tying the receiver's lifetime to MainActivity's own visible period (Chapter 5); step 3 respects Q4's guidance by quickly delegating real work to a Service rather than doing it inside onReceive; step 4 brings in Chapter 8's foreground-Service relationships (notification requirement and elevated process priority)",
+      "Every step here actually describes Activity behavior, not BroadcastReceiver or Service behavior",
+      "Step 3 is unnecessary since onReceive itself could safely run the entire sync directly"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This scenario deliberately chains together this chapter's core relationships with several from earlier chapters: broadcast matching, receiver registration lifetime, the quick-reaction-then-delegate pattern, and Service-related consequences.",
+      "lineByLine": [
+        "Step 1: a system broadcast (Q5), matched the same way as any intent-filter (Chapter 6, Q8).",
+        "Step 2: dynamic registration (Q3), with a lifetime tied to MainActivity's onStart/onStop — echoing Chapter 5's own lifecycle callbacks.",
+        "Step 3: onReceive stays brief and simply triggers a Service (Q4, Q7) rather than attempting the sync itself.",
+        "Step 4: the started Service promotes to foreground, invoking Chapter 8's notification requirement (Q4) and process-priority boost (Q5)."
+      ],
+      "tip": "This kind of chained relationship — broadcast noticed, receiver reacts briefly, Service takes over for the real work — is an extremely common real-world pattern precisely because it respects each component's proper role: receivers for quick reactions, Services for sustained work."
+    }
+  },
+  {
+    "id": "ch09-q11",
+    "topic": "goAsync extends the window slightly, without becoming a Service",
+    "difficulty": "difficult",
+    "chapter": "ch-09",
+    "snippet": "class SyncStatusReceiver : BroadcastReceiver() {\n    override fun onReceive(context: Context, intent: Intent) {\n        val pendingResult = goAsync()\n        // a short amount of extra time is granted here\n        // to finish a small amount of additional work\n        pendingResult.finish()  // signals the OS this receiver is truly done\n    }\n}",
+    "question": "Q4 and Q7 established that onReceive should be brief and delegate real work elsewhere. Where does `goAsync()` fit into that relationship?",
+    "choices": [
+      "goAsync() turns the receiver into a full Service with an unlimited execution window",
+      "goAsync() is a middle-ground tool — it grants a modest, still-limited amount of extra time beyond onReceive's normal brief window, for small amounts of additional work that don't justify starting a whole separate Service, while still requiring an explicit finish() to tell the OS the receiver is truly done",
+      "goAsync() has no real effect and exists purely as documentation",
+      "goAsync() permanently registers this receiver so it never needs to be redeclared"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This refines Q4 and Q7's 'onReceive must be brief, delegate real work to a Service' guidance with a specific middle-ground tool: goAsync() extends the window somewhat, for cases where the work is slightly more than instantaneous but still doesn't warrant the overhead of an entire Service.",
+      "lineByLine": [
+        "`goAsync()` — signals to the OS 'I need a bit more time than a normal onReceive gets, but I'm not becoming a long-running Service.'",
+        "The extra time granted is still modest and bounded — it does NOT turn this receiver into something with a Service's open-ended lifetime (Chapter 8).",
+        "`pendingResult.finish()` — must be called explicitly once the extra work is done, telling the OS this receiver's job really is complete now."
+      ],
+      "tip": "Think of the options as three tiers: normal onReceive (near-instant), goAsync() (a little more time, still bounded), and starting a Service (Chapter 8, for genuinely long-running work). Choosing the right tier is a relationship between how much time the reaction actually needs and how much overhead is appropriate to take on."
+    }
+  },
+  {
+    "id": "ch09-q12",
+    "topic": "ordered broadcasts — sequential, not simultaneous fan-out",
+    "difficulty": "difficult",
+    "chapter": "ch-09",
+    "snippetLang": "markup",
+    "snippet": "Q1 described broadcasts as many independent receivers all\nreacting to the same event, with no particular relationship\nbetween them.\n\nAn ORDERED broadcast is different: multiple receivers are\ngiven a priority order, called ONE AT A TIME in sequence;\nany one of them can choose to abort the broadcast,\npreventing lower-priority receivers from ever being called\nat all.",
+    "question": "How does an ordered broadcast's relationship between its receivers differ from the simultaneous, independent relationship described in Q1?",
+    "choices": [
+      "There's no real difference — all broadcasts, ordered or not, behave identically",
+      "Unlike Q1's simultaneous, mutually-independent receivers, an ordered broadcast's receivers form a sequential chain based on priority, where an earlier receiver can deliberately stop the broadcast from ever reaching later, lower-priority receivers — introducing a dependency between receivers that a normal broadcast doesn't have",
+      "Ordered broadcasts can only ever have exactly one receiver",
+      "Aborting an ordered broadcast also cancels every previously-called receiver's already-completed work"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This nuances Q1's foundational 'one-to-many, independent' model: ordered broadcasts introduce genuine dependency and sequencing between receivers, which is structurally different from the simultaneous fan-out relationship described earlier in the chapter.",
+      "lineByLine": [
+        "Q1's normal broadcast: every matching receiver reacts independently, with no receiver aware of or able to affect any other.",
+        "Ordered broadcast: receivers are called ONE AT A TIME, highest priority first.",
+        "Any receiver in that chain can call `abortBroadcast()`, and lower-priority receivers further down the chain will never be invoked at all for this particular broadcast — a real dependency that a normal broadcast's receivers simply don't have on each other."
+      ],
+      "tip": "This distinction matters when reading real code: seeing `android:priority` on an intent-filter, or `abortBroadcast()` inside onReceive, signals you're looking at this more structured, sequential relationship — not the simpler, fully-independent fan-out that's the default assumption throughout the rest of this chapter."
+    }
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ch12-q11",
+    "topic": "unsupported service returns null gracefully, unlike a permission crash",
+    "difficulty": "difficult",
+    "chapter": "ch-12",
+    "snippet": "val fingerprintManager =\n    context.getSystemService(Context.FINGERPRINT_SERVICE) as? FingerprintManager\n\n// On a device with no fingerprint hardware at all,\n// this returns null rather than throwing",
+    "question": "Contrast this with Q5's permission-gated LocationManager scenario. What's different about how an UNSUPPORTED system service behaves, versus a permission-denied one?",
+    "choices": [
+      "Both scenarios behave identically — an exception is thrown in both cases",
+      "A device lacking specific hardware/capability entirely results in getSystemService() gracefully returning null for that service — a fundamentally different failure mode than Q5's scenario, where the service object itself is always obtainable, but specific METHOD CALLS on it fail due to a missing permission",
+      "Missing hardware always crashes the app immediately with no way to check beforehand",
+      "getSystemService() can never return null under any circumstances"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This distinguishes two different failure relationships that are easy to conflate. Q5 established that a service OBJECT is always obtainable, but specific ACTIONS on it can fail due to permissions. Here, a different scenario: the service itself may not exist at all on a given device, in which case the gateway method gracefully hands back null rather than the object failing later.",
+      "lineByLine": [
+        "`getSystemService(FINGERPRINT_SERVICE) as? FingerprintManager` — using the safe cast (`as?`) precisely because this might not resolve to anything at all on hardware lacking that capability.",
+        "On a device without fingerprint hardware, this returns null — a clean, checkable outcome, not a crash.",
+        "Compare to Q5: LocationManager itself is essentially always obtainable (nearly every device has SOME location capability), but calling specific location-fetching methods on it is what depends on a granted permission."
+      ],
+      "tip": "Two different things can go wrong with a system service, and recognizing which one you're dealing with matters: 'this capability doesn't exist on this device at all' (null from getSystemService, checked with `as?`) versus 'this capability exists, but I haven't been granted permission to use it yet' (Q5's SecurityException risk)."
+    }
+  },
+  {
+    "id": "ch12-q12",
+    "topic": "PackageManager also resolves this app's own component metadata",
+    "difficulty": "moderate",
+    "chapter": "ch-12",
+    "snippet": "// Q6 and Q7 showed PackageManager looking OUTWARD at\n// other installed apps.\n\nval activityInfo = packageManager.getActivityInfo(\n    ComponentName(context, MainActivity::class.java), 0\n)\nprintln(activityInfo.label)",
+    "question": "This call asks PackageManager about MainActivity — a component belonging to THIS SAME app. How does this relate to Q6's \"outward-looking\" framing?",
+    "choices": [
+      "This is impossible; PackageManager can only ever query other apps, never this app's own components",
+      "PackageManager's queries aren't exclusively about OTHER apps — the same outward-facing query system (Q6, Q7) can just as easily be pointed back at this app's own declared components, retrieving the exact metadata (like the label) that was declared for MainActivity back in Chapter 2's manifest",
+      "This call requires a completely different service than the one used in Q6 and Q7",
+      "getActivityInfo() bypasses the manifest entirely and reads directly from MainActivity.kt's source code"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This refines Q6's 'outward-looking' framing slightly: PackageManager's queries can be pointed at ANY declared component on the device — including this very app's own — not exclusively at unrelated third-party apps. The distinguishing trait isn't 'other apps only,' but 'component metadata declared somewhere in a manifest, queryable regardless of which app owns it.'",
+      "lineByLine": [
+        "`ComponentName(context, MainActivity::class.java)` — identifies MainActivity specifically, within this same app.",
+        "`packageManager.getActivityInfo(...)` — the same general PackageManager relationship from Q6/Q7, just directed at a component from this app rather than a different one.",
+        "`activityInfo.label` — retrieves metadata that traces directly back to Chapter 2's manifest declaration (recall Chapter 2, Q14's per-activity label override) — confirming this is genuinely reading the same declared information, regardless of which app it belongs to."
+      ],
+      "tip": "The precise relationship to hold onto: PackageManager queries component metadata declared in ANY app's manifest on the device — this app's own components are simply one particular target among many it can be asked about, not a special exception to how it works."
+    }
+  }
+]

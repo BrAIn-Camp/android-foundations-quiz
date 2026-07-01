@@ -1,0 +1,52 @@
+[
+  {
+    "id": "ch08-q11",
+    "topic": "WorkManager as the alternative for deferrable work",
+    "difficulty": "difficult",
+    "chapter": "ch-08",
+    "snippetLang": "markup",
+    "snippet": "Task A: Sync weather data RIGHT NOW while the user\nwatches a progress notification (must run immediately\nand continuously).\n\nTask B: Upload analytics logs sometime in the next few\nhours, whenever the device has a stable network\nconnection — the exact timing doesn't matter to the user.",
+    "question": "Task A fits this chapter's Service relationship well. Does Task B have the same relationship to Services, or does it fit better elsewhere?",
+    "choices": [
+      "Both tasks have an identical relationship to Services — there's no reason to treat them differently",
+      "Task A fits a Service's immediate, continuous-execution relationship well; Task B, being flexible on timing and conditions, is a better fit for WorkManager (Chapter 13) — a tool specifically for deferrable, guaranteed-eventually work, rather than something that needs to run right now with a persistent notification",
+      "Task B cannot be accomplished by any Android component at all",
+      "Task A should use WorkManager, and Task B should use a foreground Service"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This previews Chapter 13 by drawing a relational boundary: a Service (this chapter) fits work that needs to happen now, visibly, and continuously. Work that's flexible on exact timing — and just needs to reliably happen eventually, even across app restarts or reboots — has a better relationship with a different tool entirely.",
+      "lineByLine": [
+        "Task A: immediate, continuous, user-relevant right now → Service, with the foreground notification relationship from Q4.",
+        "Task B: flexible timing, condition-dependent (network availability), no immediate user relevance → a poor fit for a Service's 'running right now with a visible notification' relationship.",
+        "Chapter 13 (WorkManager) is built specifically for Task B's kind of relationship: 'make sure this eventually happens, under the right conditions, even if the app isn't running at that moment.'"
+      ],
+      "tip": "A quick relational test: does the work need to happen immediately and does the user benefit from seeing it happen live? Lean Service. Is the exact timing flexible, and does it just need to reliably happen eventually? Lean WorkManager — covered properly in Chapter 13."
+    }
+  },
+  {
+    "id": "ch08-q12",
+    "topic": "starting a service from the background is restricted",
+    "difficulty": "difficult",
+    "chapter": "ch-08",
+    "snippetLang": "markup",
+    "snippet": "Scenario A: MainActivity is currently visible and in the\nforeground. Its code calls startService() to begin a sync.\n\nScenario B: WeatherSyncService itself (already running in\nthe background, with no visible Activity anywhere) tries\nto call startService() to start ANOTHER new Service.",
+    "question": "On modern Android versions, what's different about these two attempts to start a Service?",
+    "choices": [
+      "Both scenarios behave identically — the app's current visibility has no bearing on whether starting a Service succeeds",
+      "Scenario A succeeds normally, since the request originates from a foreground component; Scenario B is restricted on modern Android — an app already running invisibly in the background generally cannot freely start new background Services, specifically to prevent apps from silently spawning ongoing work the user never sees or approved",
+      "Scenario B always succeeds, while Scenario A is the one that's restricted",
+      "Neither scenario is allowed under any circumstances"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This reveals an additional relationship: whether starting a Service succeeds depends not just on manifest declaration and correct Intent addressing (Q1, Q2), but also on the CALLING app's own current state. Modern Android restricts background apps from freely starting new background Services, as a safeguard against invisible, unapproved work.",
+      "lineByLine": [
+        "Scenario A: MainActivity is foreground/visible when it calls startService() — this is generally permitted.",
+        "Scenario B: the calling component (the Service itself) has no visible Activity anywhere — the whole app is effectively in the background — and modern Android restricts this kind of request.",
+        "This restriction exists precisely because of Q3 and Q9's relationships: since a Service can run independently and be interacted with broadly, the OS limits WHEN new ones can be freely spun up, to prevent abuse."
+      ],
+      "tip": "This is part of why foreground Services (Q4, Q5) and WorkManager (Q11) have become the standard tools for background work on modern Android — both come with OS-level guardrails (visible notifications, or scheduled/deferred execution) that a freely-started background Service increasingly lacks."
+    }
+  }
+]

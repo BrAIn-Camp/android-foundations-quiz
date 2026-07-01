@@ -1,0 +1,294 @@
+[
+  {
+    "id": "ch07-q1",
+    "topic": "blocking the main thread freezes the UI",
+    "difficulty": "easy",
+    "chapter": "ch-07",
+    "snippet": "// Button's onClick handler (Chapter 4)\nonClick = {\n    val result = fetchWeatherFromNetwork()  // takes 3 real seconds\n    updateUi(result)\n}",
+    "question": "If `fetchWeatherFromNetwork()` runs directly and synchronously inside this onClick handler, what's the relationship between this call and the rest of the app during those 3 seconds?",
+    "choices": [
+      "Nothing is affected — Android automatically runs every onClick handler on a separate thread",
+      "The entire UI freezes for those 3 seconds — onClick runs on the main thread by default, and the main thread is also responsible for drawing the screen and responding to touches, so a long blocking call there blocks everything else too",
+      "Only the button itself becomes unresponsive; the rest of the screen keeps working normally",
+      "The app automatically cancels fetchWeatherFromNetwork() after 1 second to prevent this"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the foundational problem coroutines exist to solve: the main thread has a dual relationship — it's the one thread responsible for both running your onClick code AND keeping the screen responsive. A long blocking call on that same thread starves everything else sharing it.",
+      "lineByLine": [
+        "`onClick = { ... }` — by default, this code runs on the main thread, same as Chapter 4's Composable rendering.",
+        "`fetchWeatherFromNetwork()` — if this blocks for 3 real seconds, the main thread is occupied that entire time.",
+        "During those 3 seconds, the main thread can't process new touches, animations, or screen redraws — the whole UI appears frozen, not just the button."
+      ],
+      "tip": "This relationship — one main thread, shared between your code and the UI system — is the entire reason async tools like coroutines exist. Anything slow (network calls, disk access, heavy computation) needs a different relationship with the main thread than 'run directly on it and block.'"
+    }
+  },
+  {
+    "id": "ch07-q2",
+    "topic": "suspend functions pause without blocking",
+    "difficulty": "moderate",
+    "chapter": "ch-07",
+    "snippet": "suspend fun fetchWeatherFromNetwork(): Weather {\n    // performs a network call\n}",
+    "question": "What is the relationship between a `suspend` function and the thread it's called from, compared to Q1's blocking call?",
+    "choices": [
+      "suspend functions still block the calling thread exactly the same way as a normal function would",
+      "A suspend function can pause its own execution at a slow point (like waiting on the network) WITHOUT blocking the thread it was called from — the thread is freed up to do other work while waiting, then the suspend function resumes later",
+      "suspend functions always run instantly with no waiting involved",
+      "suspend is just a naming convention with no actual effect on how the function runs"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the key relationship the `suspend` keyword expresses: it marks a function as capable of pausing itself at a slow operation without holding a thread hostage the whole time — a fundamentally different relationship to threads than Q1's blocking call.",
+      "lineByLine": [
+        "`suspend fun fetchWeatherFromNetwork()` — the suspend keyword signals this function may pause partway through.",
+        "While waiting on the network, the underlying thread is released to do other work (like keeping the UI responsive).",
+        "Once the network responds, the function resumes exactly where it left off — to the calling code, it still looks like a normal sequential function call."
+      ],
+      "tip": "suspend functions can only be called from another suspend function or from inside a coroutine (covered in Q3) — this requirement itself is a relationship: pausability needs a pausable context to run within, which a coroutine provides."
+    }
+  },
+  {
+    "id": "ch07-q3",
+    "topic": "launch starts a new coroutine",
+    "difficulty": "easy",
+    "chapter": "ch-07",
+    "snippet": "lifecycleScope.launch {\n    val weather = fetchWeatherFromNetwork()\n    updateUi(weather)\n}",
+    "question": "What relationship does `launch { }` establish between this block of code and the main thread?",
+    "choices": [
+      "launch does nothing special — the code inside still runs synchronously and blocks exactly like Q1",
+      "launch starts a new coroutine — a unit of work that can call suspend functions like fetchWeatherFromNetwork() and pause at the slow parts (Q2's relationship) without freezing the thread that launched it",
+      "launch immediately creates a brand new Activity to run this code in",
+      "launch permanently detaches this code from the app, running it even after the app is closed"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "`launch` is how you actually create the pausable context that suspend functions require. It starts a coroutine — code that can call suspend functions and pause without blocking, resolving Q1's original problem.",
+      "lineByLine": [
+        "`lifecycleScope.launch { ... }` — starts a new coroutine tied to this scope (more on that relationship in Q4).",
+        "`fetchWeatherFromNetwork()` — a suspend call, now legally callable because we're inside a coroutine.",
+        "While waiting on the network, this coroutine pauses; the main thread is free to keep the UI responsive, unlike Q1's frozen scenario.",
+        "Once the network responds, execution resumes and `updateUi(weather)` runs."
+      ],
+      "tip": "launch is 'fire-and-forget' — it starts the coroutine and doesn't hand back a usable result to the calling code directly. Compare this to `async` (covered later in this chapter), which does return something you can wait on."
+    }
+  },
+  {
+    "id": "ch07-q4",
+    "topic": "scope ties a coroutine's lifetime to an owner",
+    "difficulty": "difficult",
+    "chapter": "ch-07",
+    "snippet": "class MainActivity : ComponentActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        lifecycleScope.launch {\n            val weather = fetchWeatherFromNetwork()\n            updateUi(weather)\n        }\n    }\n}",
+    "question": "Recall Chapter 5's lifecycle relationships. What happens to this launched coroutine if MainActivity is destroyed (say, by rotation) before the network call finishes?",
+    "choices": [
+      "The coroutine keeps running indefinitely in the background, completely unaffected by the Activity's destruction",
+      "Because the coroutine was launched using lifecycleScope, its lifetime is tied to MainActivity's lifecycle (Chapter 5) — when the Activity is destroyed, the scope automatically cancels the coroutine, preventing it from trying to update a UI that no longer exists",
+      "The coroutine pauses indefinitely and resumes automatically once a new MainActivity instance is created",
+      "lifecycleScope has no real relationship to the Activity at all — the name is purely coincidental"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This directly ties Chapter 5's lifecycle relationships into coroutines: `lifecycleScope` deliberately binds a coroutine's lifetime to its owning Activity's lifecycle. When that Activity is destroyed, the scope automatically cancels any coroutines still running in it.",
+      "lineByLine": [
+        "`lifecycleScope.launch { ... }` — the scope is explicitly tied to MainActivity's own lifecycle.",
+        "If MainActivity is destroyed (Chapter 5, Q3's rotation scenario, or any other destroy trigger) while this coroutine is still awaiting the network, the scope is cancelled along with it.",
+        "This prevents a real bug: without this relationship, the coroutine might finish later and try to call `updateUi()` against an Activity instance that no longer exists on screen."
+      ],
+      "tip": "This is exactly why Chapter 5's ViewModel discussion (Q11) matters here too: a coroutine launched in `viewModelScope` instead survives configuration changes (since the ViewModel itself does), while one in `lifecycleScope` does not — choosing the right scope means choosing the right lifetime relationship for the work being done."
+    }
+  },
+  {
+    "id": "ch07-q5",
+    "topic": "dispatchers determine which thread pool",
+    "difficulty": "moderate",
+    "chapter": "ch-07",
+    "snippet": "lifecycleScope.launch(Dispatchers.IO) {\n    val weather = fetchWeatherFromNetwork()  // slow, blocking-style network call\n    withContext(Dispatchers.Main) {\n        updateUi(weather)  // must touch UI elements\n    }\n}",
+    "question": "What relationship do `Dispatchers.IO` and `Dispatchers.Main` each have to the kind of work being done in this snippet?",
+    "choices": [
+      "They're interchangeable — either dispatcher works equally well for any kind of work",
+      "Dispatchers.IO is suited for slow, blocking-style work like network calls (running off the main thread so it doesn't freeze the UI, per Q1); Dispatchers.Main is required specifically for touching UI elements, since Android only allows UI updates from the main thread",
+      "Dispatchers.IO can only be used inside onCreate(), never elsewhere",
+      "withContext() permanently switches the entire app to a new dispatcher for the rest of its life"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This establishes the relationship between the KIND of work being done and WHERE it should run. Dispatchers represent different thread pools suited to different jobs — using the wrong one for a task either wastes resources or (in the UI case) causes a crash.",
+      "lineByLine": [
+        "`Dispatchers.IO` — a thread pool suited to blocking-style work like network or disk access, kept off the main thread specifically so it doesn't recreate Q1's frozen-UI problem.",
+        "`fetchWeatherFromNetwork()` runs here, on an IO thread, not the main thread.",
+        "`withContext(Dispatchers.Main)` — temporarily switches back to the main thread specifically because `updateUi()` needs to touch UI elements, which Android requires to happen on the main thread."
+      ],
+      "tip": "A simple relationship to remember: slow/blocking work belongs on Dispatchers.IO; anything touching the actual UI must happen on Dispatchers.Main. Mismatching these — like calling a UI update from an IO-dispatched coroutine without switching back — is a common source of crashes."
+    }
+  },
+  {
+    "id": "ch07-q6",
+    "topic": "withContext switches and then returns automatically",
+    "difficulty": "difficult",
+    "chapter": "ch-07",
+    "snippet": "lifecycleScope.launch(Dispatchers.IO) {\n    val weather = fetchWeatherFromNetwork()      // running on IO\n    withContext(Dispatchers.Main) {\n        updateUi(weather)                         // running on Main\n    }\n    saveToLocalCache(weather)                     // back to IO automatically\n}",
+    "question": "What's the relationship between the code before, inside, and after the `withContext` block, in terms of which dispatcher runs each part?",
+    "choices": [
+      "Once withContext switches to Main, the entire rest of the coroutine permanently stays on Main from then on",
+      "withContext only affects the code inside its own block — fetchWeatherFromNetwork() runs on IO, updateUi() runs on Main (only for that block), and once the block ends, execution automatically returns to IO for saveToLocalCache()",
+      "withContext has no effect at all; every line here runs on whatever dispatcher the app started on",
+      "saveToLocalCache() must be manually reassigned to IO, since withContext doesn't return automatically"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the specific scoping relationship withContext establishes: it only changes the dispatcher for the code inside its braces. Once that block completes, execution automatically resumes on whatever dispatcher the coroutine was using before — no separate cleanup or manual switch-back is needed.",
+      "lineByLine": [
+        "`launch(Dispatchers.IO) { ... }` — this whole coroutine starts on IO.",
+        "`fetchWeatherFromNetwork()` — runs on IO, consistent with the surrounding scope.",
+        "`withContext(Dispatchers.Main) { updateUi(weather) }` — temporarily switches just for this one call.",
+        "`saveToLocalCache(weather)` — after the withContext block ends, execution is automatically back on IO, exactly where it was before the temporary switch."
+      ],
+      "tip": "Think of withContext as a temporary detour, not a permanent lane change: it's the tool for briefly touching the UI (or doing any dispatcher-specific work) in the middle of a larger coroutine that otherwise belongs on a different dispatcher, like IO."
+    }
+  },
+  {
+    "id": "ch07-q7",
+    "topic": "structured concurrency — parent cancellation cancels children",
+    "difficulty": "difficult",
+    "chapter": "ch-07",
+    "snippet": "lifecycleScope.launch {\n    launch { fetchWeatherFromNetwork() }   // child coroutine 1\n    launch { fetchUserPreferences() }      // child coroutine 2\n}\n\n// The Activity is destroyed while both child launches are still running",
+    "question": "What's the relationship between the outer launch and the two inner launch calls when the Activity is destroyed?",
+    "choices": [
+      "Each of the three coroutines is entirely independent; cancelling one has no effect on the others",
+      "The two inner launches are children of the outer one, all ultimately tied to lifecycleScope; when the Activity's destruction cancels the outer scope, both children are automatically cancelled along with it — cancellation flows down through the parent/child relationship",
+      "Only child coroutine 1 gets cancelled; child coroutine 2 continues running forever",
+      "The children must be manually cancelled one by one, or they'll keep running even after the parent is gone"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is structured concurrency's core relationship: coroutines launched inside another coroutine become children of it, nested within the same overall scope (lifecycleScope, in this case). Cancelling a scope cascades down through every child automatically — you don't need to track and cancel each one individually.",
+      "lineByLine": [
+        "`lifecycleScope.launch { ... }` — the outer coroutine, tied to the Activity's lifecycle (Q4's relationship).",
+        "The two inner `launch` calls are children, nested within that outer coroutine's scope.",
+        "Activity destruction cancels lifecycleScope → the outer coroutine is cancelled → both children, being part of that same structured hierarchy, are automatically cancelled too."
+      ],
+      "tip": "This parent/child cancellation cascade is what makes 'structured' concurrency safer than manually managing individual background threads: cancelling one well-chosen scope reliably cleans up everything nested inside it, with no risk of an orphaned child coroutine continuing to run unnoticed."
+    }
+  },
+  {
+    "id": "ch07-q8",
+    "topic": "suspend functions can only be called from a coroutine (or another suspend fun)",
+    "difficulty": "moderate",
+    "chapter": "ch-07",
+    "snippet": "// This does NOT compile:\nfun onSettingsButtonClicked() {\n    val weather = fetchWeatherFromNetwork()  // ERROR: suspend function\n                                              // called outside a coroutine\n}",
+    "question": "Why does calling a suspend function directly from this ordinary function fail?",
+    "choices": [
+      "suspend functions can only ever be called once per app session",
+      "A suspend function's ability to pause (Q2) only makes sense within a coroutine, which provides the pausable context it needs; an ordinary function has no such context, so there's nothing for it to pause within",
+      "This is just a naming restriction with no real technical reason behind it",
+      "fetchWeatherFromNetwork() would actually run fine; the comment is incorrect"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This makes explicit a requirement implied back in Q2: a suspend function's pausability isn't self-contained — it depends on running within a coroutine, which is the thing actually capable of being paused and resumed. An ordinary function provides no such mechanism.",
+      "lineByLine": [
+        "`fun onSettingsButtonClicked()` — an ordinary, non-suspend function; it has no relationship with the coroutine machinery.",
+        "`fetchWeatherFromNetwork()` — as a suspend function, it needs to be able to pause partway through if needed.",
+        "Without a surrounding coroutine (established via `launch` or `async`, Q3), there's no context capable of actually suspending — hence the compile error, catching this mismatch before the app can even run."
+      ],
+      "tip": "This is precisely why you constantly see `lifecycleScope.launch { }` wrapped around calls to suspend functions throughout this chapter — that wrapping isn't decorative, it's what establishes the required relationship between a suspend function and a pausable coroutine context."
+    }
+  },
+  {
+    "id": "ch07-q9",
+    "topic": "async produces an awaitable result, unlike launch",
+    "difficulty": "difficult",
+    "chapter": "ch-07",
+    "snippet": "lifecycleScope.launch {\n    val weatherDeferred = async { fetchWeatherFromNetwork() }\n    val prefsDeferred = async { fetchUserPreferences() }\n\n    val weather = weatherDeferred.await()\n    val prefs = prefsDeferred.await()\n    updateUi(weather, prefs)\n}",
+    "question": "Both fetches are started with `async` rather than `launch`. What relationship does this establish, compared to Q3's plain launch?",
+    "choices": [
+      "async behaves identically to launch in every way — there's no meaningful difference",
+      "async starts a coroutine AND hands back a Deferred value representing its eventual result — unlike launch's fire-and-forget relationship, async lets the caller later retrieve that result via await(), and starting both fetches with async lets them run concurrently rather than one strictly after the other",
+      "async can only be used for network calls, never for any other kind of suspend function",
+      "await() blocks the main thread while waiting, exactly like Q1's original problem"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This distinguishes async's relationship to its result from launch's fire-and-forget relationship (Q3). async hands back a Deferred — essentially a placeholder for a result that will exist once the coroutine finishes — which the caller can retrieve later with await().",
+      "lineByLine": [
+        "`async { fetchWeatherFromNetwork() }` — starts a coroutine AND immediately returns a Deferred<Weather>, without waiting for the result yet.",
+        "`async { fetchUserPreferences() }` — starts immediately as well, running concurrently alongside the first one, rather than waiting for it to finish first.",
+        "`weatherDeferred.await()` and `prefsDeferred.await()` — each pauses (without blocking the thread, per Q2's relationship) until its respective result is ready."
+      ],
+      "tip": "Use launch when you don't need a result back (Q3's fire-and-forget). Use async when you do need a result, especially when you want multiple independent suspend calls to run concurrently rather than strictly one after another."
+    }
+  },
+  {
+    "id": "ch07-q10",
+    "topic": "full scenario synthesis",
+    "difficulty": "difficult",
+    "chapter": "ch-07",
+    "snippetLang": "markup",
+    "snippet": "1. User taps \"Refresh\" (Chapter 4's Button onClick).\n2. onClick launches a coroutine in lifecycleScope.\n3. Inside, Dispatchers.IO is used to fetch data from the network.\n4. A withContext(Dispatchers.Main) block updates the UI\n   once data arrives.\n5. Before the network call finishes, the user rotates\n   the device.",
+    "question": "Combining this chapter's relationships with Chapter 5's, what happens at step 5?",
+    "choices": [
+      "Nothing — the coroutine and the Activity are entirely unrelated systems",
+      "Rotation destroys the current Activity instance (Chapter 5, Q3); because the coroutine was launched in that instance's lifecycleScope (Q4), it's automatically cancelled as part of that destruction, preventing it from later trying to update UI that no longer exists — the new Activity instance created after rotation would need to kick off its own fresh coroutine if the refresh is still needed",
+      "The coroutine pauses and automatically resumes once the new Activity instance is created, with no cancellation involved",
+      "Rotation has no effect on lifecycleScope coroutines, only on ViewModel-scoped ones"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This threads together Chapter 5's destroy/recreate relationship with this chapter's scope-cancellation relationship: rotation destroying the old Activity instance directly triggers cancellation of any coroutine tied to that instance's lifecycleScope, exactly as established in Q4.",
+      "lineByLine": [
+        "Steps 1-4 establish a typical IO-fetch-then-Main-update coroutine, scoped to the current Activity instance via lifecycleScope.",
+        "Step 5: rotation triggers the same destroy-and-recreate relationship from Chapter 5, Q3.",
+        "Because the coroutine's scope was tied to the OLD instance specifically, its destruction cancels the in-flight coroutine — it will never reach the withContext(Main) block to update a UI that no longer exists.",
+        "If the refresh is still needed after rotation, the NEW Activity instance would need to launch its own new coroutine — this is exactly the kind of scenario where a ViewModel-scoped coroutine (surviving rotation, per Chapter 5 Q11) might be the more appropriate choice instead."
+      ],
+      "tip": "This scenario is a good test of whether you're tracking WHICH object owns a given coroutine's scope, and what happens to that owner during a destroy/recreate cycle — the same reasoning applies regardless of the specific trigger (rotation here, but the same logic extends to any Activity destruction)."
+    }
+  },
+  {
+    "id": "ch07-q11",
+    "topic": "Dispatchers.Default for CPU-intensive work",
+    "difficulty": "moderate",
+    "chapter": "ch-07",
+    "snippet": "lifecycleScope.launch(Dispatchers.Default) {\n    val sorted = sortAndAnalyzeLargeForecastHistory(hugeDataset)  // pure CPU work, no network/disk\n    withContext(Dispatchers.Main) {\n        updateUi(sorted)\n    }\n}",
+    "question": "Q5 established Dispatchers.IO for network/disk work and Dispatchers.Main for UI updates. Where does Dispatchers.Default fit into that same relationship?",
+    "choices": [
+      "It's identical to Dispatchers.IO and exists only as an alias",
+      "Dispatchers.Default is suited for CPU-intensive work that doesn't involve waiting on network or disk — like heavy sorting, filtering, or calculations — keeping that processing off the main thread (Q1's problem) without mixing it in with IO-bound work",
+      "Dispatchers.Default can only be used for UI updates, just like Dispatchers.Main",
+      "It has no practical purpose and is never actually used in real apps"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This completes the three-way relationship between kinds of work and dispatchers: Main for touching the UI, IO for blocking-style waiting (network, disk), and Default for CPU-bound crunching that doesn't wait on anything external — it just needs processing power.",
+      "lineByLine": [
+        "`Dispatchers.Default` — a thread pool sized around the device's CPU cores, intended for computationally heavy work.",
+        "`sortAndAnalyzeLargeForecastHistory(hugeDataset)` — no network, no disk, just processing — a natural fit for Default rather than IO.",
+        "`withContext(Dispatchers.Main)` — same temporary-switch relationship from Q6, used here to safely hand the processed result back to the UI."
+      ],
+      "tip": "A simple three-way rule of thumb: Main for UI, IO for waiting on network/disk, Default for CPU-heavy crunching. Using IO for CPU work (or vice versa) still technically works, but each dispatcher's thread pool is tuned for its intended kind of work — mismatching them can waste resources at scale."
+    }
+  },
+  {
+    "id": "ch07-q12",
+    "topic": "exception in one child affects siblings",
+    "difficulty": "difficult",
+    "chapter": "ch-07",
+    "snippet": "lifecycleScope.launch {\n    launch { fetchWeatherFromNetwork() }        // child 1 — throws an exception\n    launch { fetchUserPreferences() }           // child 2 — still in progress\n}",
+    "question": "Building on Q7's parent/child cancellation relationship, what happens to child 2 if child 1 throws an unhandled exception?",
+    "choices": [
+      "Child 2 is completely unaffected and continues running to completion, regardless of child 1's failure",
+      "By default, an unhandled exception in child 1 propagates up to the shared parent coroutine, which then cancels itself AND every other child nested within it — including child 2, even though child 2 itself never failed",
+      "Only the app's UI freezes; both coroutines keep running in the background forever",
+      "The exception is silently ignored, and child 1 is treated as if it succeeded"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This extends Q7's parent/child relationship in a new direction: it's not just cancellation that flows through that structure, but failure too. An unhandled exception in one child propagates upward to the shared parent, which — by default — cancels the entire structured hierarchy, siblings included.",
+      "lineByLine": [
+        "Child 1 and child 2 are both nested within the same outer coroutine, exactly like Q7's structure.",
+        "Child 1 throws — since nothing inside it catches the exception, it propagates up to the parent coroutine.",
+        "The parent, upon receiving that exception, cancels itself — and because child 2 is part of that same structured hierarchy, it gets cancelled too, even though child 2 was working fine on its own."
+      ],
+      "tip": "This is why real apps often wrap individual suspend calls in their own try/catch, or use dedicated exception-handling tools, rather than letting a single failure silently take down unrelated sibling work. The same parent/child structure that makes cancellation reliable (Q7) is also what makes failures contagious by default unless deliberately contained."
+    }
+  }
+]

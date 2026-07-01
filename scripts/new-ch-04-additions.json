@@ -1,0 +1,74 @@
+[
+  {
+    "id": "ch04-q11",
+    "topic": "Modifier decorates self vs container arranges children",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "Row(modifier = Modifier.padding(16.dp)) {\n    Text(\n        \"Monday\",\n        modifier = Modifier.weight(1f)\n    )\n    Text(\"72°F\")\n}",
+    "question": "Row arranges its Text children side-by-side. What's different about the relationship Modifier has, compared to Row's relationship to its children?",
+    "choices": [
+      "Modifier and Row do the exact same job — arranging multiple children",
+      "Modifier describes how a SINGLE Composable behaves or is decorated (its own padding, size, weight) — a self-relationship — while Row's job is arranging its CHILDREN relative to each other — a parent-to-children relationship",
+      "Modifier can only be used inside Text, never on Row or Column",
+      "Modifier replaces the need for Row entirely"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "These are two distinct kinds of relationships that are easy to conflate at first. A container like Row/Column/Box has a relationship with its CHILDREN (how are they arranged relative to each other?). A Modifier has a relationship with the ONE Composable it's attached to (how does this specific element behave — its padding, size, weight, etc.)",
+      "lineByLine": [
+        "`Row(modifier = Modifier.padding(16.dp))` — this padding affects Row itself (space around its own edges), not how its children are arranged relative to each other.",
+        "`Text(\"Monday\", modifier = Modifier.weight(1f))` — this weight affects only this one Text's own sizing within the Row.",
+        "Row's own separate job — putting \"Monday\" and \"72°F\" side by side — happens regardless of what Modifiers are attached to each; that arrangement relationship belongs to Row itself, not to Modifier."
+      ],
+      "tip": "A simple way to keep these straight while reading code: if you see `modifier = ...` attached to a single Composable, ask 'what does this do to THIS element?' If you see children nested inside `Row { }` / `Column { }` / `Box { }`, ask 'how are these children positioned relative to EACH OTHER?' Two different questions, two different relationships."
+    }
+  },
+  {
+    "id": "ch04-q12",
+    "topic": "Preview is independent of Activity and manifest",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "@Preview\n@Composable\nfun ForecastRowPreview() {\n    ForecastRow(day = Day(\"Monday\", 72))\n}\n\n// This can be viewed directly in Android Studio's design pane\n// without installing the app on a device or emulator at all.",
+    "question": "Given everything covered so far about Activities needing manifest declarations to run, what's true about this `@Preview` function's relationship to the app's manifest and MainActivity?",
+    "choices": [
+      "It has none — @Preview functions are a design-time tool for Android Studio only; they don't need a manifest entry, don't run inside any Activity, and never touch setContent",
+      "Every @Preview function must also be declared as an activity in the manifest",
+      "@Preview functions replace MainActivity entirely once added",
+      "@Preview only works if the app has already been installed on a real device first"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "This reinforces, from a new angle, something Chapter 3 established: not everything in an Android project has a relationship with the manifest or the OS's component system. @Preview functions are purely a tool for Android Studio's editor — they render a Composable in isolation, without any Activity, without setContent, and without installing anything on a device.",
+      "lineByLine": [
+        "`@Preview @Composable fun ForecastRowPreview()` — calls a real Composable (ForecastRow) with sample data.",
+        "Android Studio recognizes the `@Preview` annotation and renders just this function's output in its design pane.",
+        "No Activity is involved, no manifest entry is needed, and no app installation happens — this relationship is entirely separate from how the app actually runs on a device."
+      ],
+      "tip": "This is a genuinely useful practical relationship to recognize: Preview functions are a fast feedback loop for checking how a piece of UI looks, completely decoupled from the full Activity-and-manifest machinery needed to actually run the app end-to-end."
+    }
+  },
+  {
+    "id": "ch04-q13",
+    "topic": "parent-to-child parameter passing",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "@Composable\nfun HomeScreen(forecast: List<Day>) {\n    ForecastList(days = forecast)\n}\n\n@Composable\nfun ForecastList(days: List<Day>) {\n    // days came from HomeScreen, not fetched independently here\n}",
+    "question": "How does `ForecastList` get access to the forecast data it displays?",
+    "choices": [
+      "ForecastList reaches upward and independently fetches the data itself from wherever HomeScreen originally got it",
+      "HomeScreen passes the data DOWN to ForecastList as a parameter; ForecastList has no independent relationship with the data's original source — it only knows whatever its parent hands it",
+      "ForecastList and HomeScreen share a global variable that either can modify at any time",
+      "The data automatically appears in every Composable in the file without being explicitly passed"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the structural relationship for how data enters a tree of Composables at all: it flows downward, from parent to child, as ordinary function parameters. A child Composable has no built-in way to reach upward or sideways to grab data on its own — it only has what's explicitly handed to it.",
+      "lineByLine": [
+        "`HomeScreen(forecast: List<Day>)` — receives the forecast data from somewhere above it (not shown here — perhaps Chapter 7's coroutines fetched it).",
+        "`ForecastList(days = forecast)` — HomeScreen explicitly passes its own data down as an argument.",
+        "`ForecastList(days: List<Day>)` — has zero awareness of where `days` originally came from; it only knows the parameter it was handed."
+      ],
+      "tip": "This top-down, parameter-passing relationship is sometimes called 'unidirectional data flow.' It's why reading a Composable's parameter list tells you exactly what it depends on — nothing more, nothing hidden. This becomes especially important once you study how state is owned and shared, which is a core focus of Book 3."
+    }
+  }
+]

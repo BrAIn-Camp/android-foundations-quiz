@@ -1,0 +1,292 @@
+[
+  {
+    "id": "ch12-q1",
+    "topic": "getSystemService as a universal gateway",
+    "difficulty": "moderate",
+    "chapter": "ch-12",
+    "snippet": "val notificationManager =\n    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager\n\nval connectivityManager =\n    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager",
+    "question": "Recall Chapter 3, Q4's relationship: Activity is-a Context, granting it certain capabilities. How does getSystemService() fit into that relationship?",
+    "choices": [
+      "getSystemService() is unrelated to Context — it's a completely separate, standalone function",
+      "getSystemService() is itself one of the specific capabilities Context grants (Chapter 3, Q4) — it's a single, universal gateway method that can hand back many DIFFERENT system-level tools depending on which constant you pass it, rather than each system service having its own separate access method",
+      "Each system service requires its own uniquely-named method, and getSystemService() is just one example specific to notifications",
+      "getSystemService() can only ever be called once per app, for a single service"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This extends Chapter 3, Q4 concretely: one of the specific things being a Context grants is exactly this — a single, general-purpose gateway method that can retrieve many different system-level services, simply by asking for a different one each time.",
+      "lineByLine": [
+        "`context.getSystemService(Context.NOTIFICATION_SERVICE)` — same method, asking for the notification-related service.",
+        "`context.getSystemService(Context.CONNECTIVITY_SERVICE)` — the exact same method, this time asking for the network-related service.",
+        "Both calls go through the identical gateway — only the constant passed in changes which underlying service comes back."
+      ],
+      "tip": "Recognizing `getSystemService(...)` as a single, general pattern — rather than memorizing it as specific to notifications or any one service — is the key relational insight of this chapter. Whatever the specific service constant, the relationship (Context → gateway method → specific system tool) stays the same."
+    }
+  },
+  {
+    "id": "ch12-q2",
+    "topic": "casting to the correct specific type",
+    "difficulty": "moderate",
+    "chapter": "ch-12",
+    "snippet": "val notificationManager =\n    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager",
+    "question": "Why does this line include `as NotificationManager` at the end, connecting back to Chapter 21 of the Kotlin book's casting concepts?",
+    "choices": [
+      "The cast is purely optional stylistic decoration with no functional purpose",
+      "getSystemService() has a generic return type capable of representing any system service; the `as NotificationManager` cast narrows that generic result down to the SPECIFIC type actually being requested here, so the rest of the code can call NotificationManager's own specific methods on it",
+      "The cast converts a NotificationManager into a completely different, unrelated type",
+      "Casting here permanently changes what Context.NOTIFICATION_SERVICE refers to for the rest of the app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects the general gateway relationship from Q1 to the specific-type relationship needed to actually use what comes back: since one method can return many different kinds of services, a cast is what tells the compiler exactly which specific type this particular call is expected to produce.",
+      "lineByLine": [
+        "`getSystemService(Context.NOTIFICATION_SERVICE)` — returns a general result, since this same method could return many different service types depending on the constant passed in (Q1).",
+        "`as NotificationManager` — narrows that general result down to the specific type this call is actually requesting.",
+        "With that cast, the resulting `notificationManager` variable can now call NotificationManager-specific methods (like building and posting notifications, covered in Q3), which wouldn't be available without the cast."
+      ],
+      "tip": "This is a direct real-world application of the `as` casting relationship: because Q1's gateway method is intentionally general-purpose, a cast is required every time to recover the specific type actually being asked for."
+    }
+  },
+  {
+    "id": "ch12-q3",
+    "topic": "NotificationManager fulfills ch8's persistent notification requirement",
+    "difficulty": "difficult",
+    "chapter": "ch-12",
+    "snippet": "Recall Chapter 8, Q4: a foreground Service requires\na persistent, visible notification.\n\nval notification = NotificationCompat.Builder(context, channelId)\n    .setContentTitle(\"Syncing weather data\")\n    .build()\n\nnotificationManager.notify(notificationId, notification)",
+    "question": "What's the relationship between this code and Chapter 8's foreground-Service notification requirement?",
+    "choices": [
+      "There's no connection — Chapter 8's notification requirement is satisfied automatically without any code",
+      "This IS the actual mechanism behind Chapter 8's requirement — NotificationManager (obtained via Q1's gateway) is the tool used to actually build and post that persistent notification a foreground Service needs, closing the loop on something Chapter 8 only described conceptually",
+      "NotificationManager is only used for notifications unrelated to Services",
+      "This code would only work for a bound Service, not a started one"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This reveals the concrete tool behind something Chapter 8 introduced only at the concept level. When a foreground Service 'shows a persistent notification,' NotificationManager (retrieved through Q1's universal gateway) is the actual system service responsible for making that notification appear.",
+      "lineByLine": [
+        "Chapter 8, Q4 established WHY this notification is required (transparency for background work) without naming the specific tool.",
+        "`NotificationCompat.Builder(...)` — constructs the notification's content.",
+        "`notificationManager.notify(...)` — actually posts it, using the same NotificationManager obtained via Q1 and Q2's gateway-and-cast pattern."
+      ],
+      "tip": "This is a good example of how concepts introduced early in the book (Chapter 8's notification requirement) often get their concrete mechanism revealed later (this chapter's NotificationManager) — the relationship was true all along, just not yet made specific."
+    }
+  },
+  {
+    "id": "ch12-q4",
+    "topic": "notification channels required for user control",
+    "difficulty": "moderate",
+    "chapter": "ch-12",
+    "snippet": "val channel = NotificationChannel(\n    \"sync_updates\",\n    \"Sync Updates\",\n    NotificationManager.IMPORTANCE_DEFAULT\n)\nnotificationManager.createNotificationChannel(channel)\n\n// Only AFTER this, notifications using \"sync_updates\"\n// as their channelId (Q3) can actually appear",
+    "question": "What's the relationship between a notification channel and the individual notifications posted through it?",
+    "choices": [
+      "Channels are purely cosmetic labels with no functional requirement behind them",
+      "On modern Android, every notification MUST belong to a declared channel before it can appear at all — channels group related notifications together and let the user control them collectively (e.g., muting all \"Sync Updates\" notifications) rather than having no way to manage individual notification types",
+      "A channel can only ever contain exactly one notification, ever",
+      "Channels replace the need for a NotificationManager entirely"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This establishes a required grouping relationship, reminiscent of Chapter 2's 'nothing runs without being declared' theme: on modern Android, a notification's channel isn't optional metadata — it's a prerequisite the user-facing notification depends on to exist at all.",
+      "lineByLine": [
+        "`NotificationChannel(\"sync_updates\", \"Sync Updates\", IMPORTANCE_DEFAULT)` — declares a category of notifications with a user-visible name and importance level.",
+        "`createNotificationChannel(channel)` — registers it with the system, typically done once (often during app startup).",
+        "Q3's notification, built with `channelId = \"sync_updates\"`, depends entirely on this channel already being declared — without it, that notification would fail to appear."
+      ],
+      "tip": "This mirrors Chapter 2's manifest-declaration theme in a new context: individual notifications depend on their channel being declared first, just as components depend on manifest declarations — declare the category first, then the specific instances that belong to it."
+    }
+  },
+  {
+    "id": "ch12-q5",
+    "topic": "some system services require a granted permission, tying to ch10",
+    "difficulty": "difficult",
+    "chapter": "ch-12",
+    "snippet": "val locationManager =\n    context.getSystemService(Context.LOCATION_SERVICE) as LocationManager\n\n// Actually retrieving a location from locationManager\n// requires ACCESS_FINE_LOCATION or ACCESS_COARSE_LOCATION\n// to have been granted (Chapter 10)",
+    "question": "What's the relationship between successfully OBTAINING this LocationManager object, and successfully USING it to get an actual location?",
+    "choices": [
+      "They're the same thing — obtaining the object always means you can immediately use it fully",
+      "Obtaining the LocationManager object itself (Q1's gateway pattern) always succeeds — but actually calling its location-retrieving methods depends on Chapter 10's separate permission relationship; without a granted location permission, those specific calls will fail or throw, even though the object itself was successfully retrieved",
+      "LocationManager cannot be obtained at all without a location permission already granted",
+      "Location permissions have no bearing on LocationManager whatsoever"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This draws an important boundary between two separate relationships that are easy to conflate: getting a system service object via Q1's gateway is unconditional, but actually USING many of that object's capabilities depends on Chapter 10's permission system as a completely separate gate.",
+      "lineByLine": [
+        "`getSystemService(LOCATION_SERVICE) as LocationManager` — this line succeeds regardless of any permission status; it's just Q1's universal gateway pattern.",
+        "Calling a method like requesting the current location on that object is where Chapter 10's dangerous-permission relationship (Q1-Q4) actually applies.",
+        "Without ACCESS_FINE_LOCATION or ACCESS_COARSE_LOCATION currently granted, those specific calls fail — echoing Chapter 10, Q4's SecurityException risk for unchecked dangerous-permission usage."
+      ],
+      "tip": "This is a good test of whether Chapters 10 and 12 are being connected correctly: obtaining a system service object is never permission-gated, but many of the ACTIONS you can take with certain services absolutely are — always check which category a specific capability falls into."
+    }
+  },
+  {
+    "id": "ch12-q6",
+    "topic": "PackageManager queries information about OTHER apps",
+    "difficulty": "moderate",
+    "chapter": "ch-12",
+    "snippet": "val packageManager = context.packageManager\nval installedApps = packageManager.getInstalledApplications(0)\n\nprintln(\"Number of apps installed: ${installedApps.size}\")",
+    "question": "How does PackageManager's relationship to the device differ from the other system services covered so far in this chapter?",
+    "choices": [
+      "It behaves identically to NotificationManager and LocationManager — just another service that does something for THIS app specifically",
+      "PackageManager's relationship is fundamentally outward-looking — rather than doing something on behalf of this one app (like posting a notification or finding this device's location), it provides information ABOUT the broader device environment, including other installed apps entirely separate from this one",
+      "PackageManager can only ever return information about the current app itself, never any others",
+      "PackageManager requires a foreground Service (Chapter 8) to be running before it can be used"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This distinguishes PackageManager's relationship from the other system services examined so far: while NotificationManager and LocationManager act on behalf of THIS app (posting a notification for it, finding ITS location), PackageManager looks outward at the broader device — including apps that have nothing to do with this one.",
+      "lineByLine": [
+        "`context.packageManager` — accessed via Context directly, though conceptually similar to Q1's gateway pattern.",
+        "`getInstalledApplications(0)` — returns information about every installed app on the device, not just this one.",
+        "This outward-looking relationship is genuinely different in kind from a service like NotificationManager, which only ever concerns itself with this specific app's own notifications."
+      ],
+      "tip": "Recognizing PackageManager as fundamentally about querying the broader device environment (rather than acting on behalf of just this one app) sets up its most important specific relationship, explored next: how it connects directly to Chapter 6's implicit Intent resolution."
+    }
+  },
+  {
+    "id": "ch12-q7",
+    "topic": "PackageManager is the actual mechanism behind implicit intent resolution",
+    "difficulty": "difficult",
+    "chapter": "ch-12",
+    "snippet": "// Recall Chapter 6, Q3: the OS resolves an implicit\n// Intent by checking every installed app's intent-filters\n\nval intent = Intent(Intent.ACTION_VIEW).apply {\n    data = Uri.parse(\"https://weathernow.example.com/forecast\")\n}\nval matchingActivities = packageManager.queryIntentActivities(intent, 0)",
+    "question": "What does `queryIntentActivities()` reveal about HOW the OS actually performs the matchmaking described conceptually in Chapter 6, Q3?",
+    "choices": [
+      "This has no real connection to Chapter 6 — it's an entirely separate, unrelated capability",
+      "This IS the underlying mechanism — PackageManager, with its outward-looking view across every installed app (Q6), is literally what the OS itself uses to find every component with a matching intent-filter (Chapter 6, Q3, Q8) for a given implicit Intent; calling this method yourself performs the exact same search the OS runs internally",
+      "queryIntentActivities() can only be used by the Android system itself, never by ordinary app code",
+      "This method only checks the current app's own manifest, never any other app's"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This reveals the concrete mechanism behind one of Chapter 6's more abstract ideas. The OS's matchmaking behavior for implicit Intents (Q3, Q8 in Chapter 6) isn't some invisible magic — it's performed using PackageManager, the exact same outward-looking service (Q6) that any app's own code can call directly.",
+      "lineByLine": [
+        "The Intent here is the same kind of implicit request from Chapter 6, Q3 — an action and data, no specific target named.",
+        "`packageManager.queryIntentActivities(intent, 0)` — searches across every installed app's declared intent-filters (Chapter 2, Chapter 6, Q8) for matches.",
+        "This is genuinely the same search the OS performs internally when resolving any implicit Intent — calling it yourself just exposes that same matching process directly to your own code, perhaps to preview what would happen before actually sending the Intent."
+      ],
+      "tip": "This is one of the most satisfying relationship reveals in the book: an abstract idea from Chapter 6 ('the OS checks every app's intent-filters') turns out to have a concrete, directly callable implementation — PackageManager's queryIntentActivities() — introduced here in Chapter 12."
+    }
+  },
+  {
+    "id": "ch12-q8",
+    "topic": "notification tap uses a PendingIntent, tying back to ch6",
+    "difficulty": "difficult",
+    "chapter": "ch-12",
+    "snippet": "val contentIntent = Intent(context, MainActivity::class.java)\nval pendingIntent = PendingIntent.getActivity(\n    context, 0, contentIntent, PendingIntent.FLAG_IMMUTABLE\n)\n\nval notification = NotificationCompat.Builder(context, channelId)\n    .setContentTitle(\"Sync complete\")\n    .setContentIntent(pendingIntent)\n    .build()",
+    "question": "What's the relationship between this PendingIntent and Chapter 6's Intent concepts, in the context of what happens when the user taps this notification?",
+    "choices": [
+      "PendingIntent is entirely unrelated to Chapter 6's Intent concept, despite the similar name",
+      "A PendingIntent wraps an ordinary Intent (here, an explicit one targeting MainActivity, exactly like Chapter 6, Q2) along with permission for ANOTHER piece of code — in this case, the notification system, running outside this app's own process — to trigger it later, on the app's behalf, at the moment the user actually taps the notification",
+      "PendingIntent immediately launches MainActivity the instant this code runs, before the notification is even shown",
+      "Notifications can only ever open a Service, never an Activity, when tapped"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects the notification system back to Chapter 6's Intent framework one more time: tapping a notification doesn't use some entirely separate mechanism — it's still fundamentally an Intent (here, explicit, per Chapter 6, Q2), just wrapped in a PendingIntent so that a different piece of code (the notification system itself) can trigger it later, on this app's behalf.",
+      "lineByLine": [
+        "`Intent(context, MainActivity::class.java)` — an ordinary explicit Intent, identical in kind to Chapter 6, Q2's example.",
+        "`PendingIntent.getActivity(...)` — wraps that Intent, additionally granting the notification system itself the ability to fire it later, even though it's not part of this app's own code.",
+        "`.setContentIntent(pendingIntent)` — attaches it to the notification; tapping the notification is what actually triggers this wrapped Intent, landing the user in MainActivity."
+      ],
+      "tip": "The relationship to hold onto: a PendingIntent is still fundamentally 'an Intent plus permission for someone else to trigger it later' — it's how notifications (and other deferred, cross-process triggers) connect back into the same Intent-based navigation system covered throughout Chapter 6."
+    }
+  },
+  {
+    "id": "ch12-q9",
+    "topic": "ConnectivityManager relationship to ch9's network-change broadcast",
+    "difficulty": "moderate",
+    "chapter": "ch-12",
+    "snippet": "val connectivityManager =\n    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager\n\nval isConnected = connectivityManager.activeNetwork != null\n\n// Recall Chapter 9's CONNECTIVITY_CHANGE broadcast example",
+    "question": "How does ConnectivityManager's relationship to network status compare to Chapter 9's broadcast-based approach to detecting connectivity changes?",
+    "choices": [
+      "They're unrelated — ConnectivityManager cannot tell you anything about the current network status",
+      "They represent two complementary relationships to the same underlying information: ConnectivityManager (this chapter's gateway pattern, Q1) lets you check the CURRENT connectivity status on demand at any moment, while Chapter 9's broadcast receiver approach lets you REACT the moment connectivity CHANGES — checking a current snapshot versus being notified of a transition are different but related needs",
+      "ConnectivityManager can only be used inside a BroadcastReceiver, never anywhere else",
+      "Chapter 9's broadcast approach has been completely replaced and is no longer relevant given this chapter's tool"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects two different but complementary relationships to the same topic: 'checking a value right now' (ConnectivityManager, this chapter's gateway pattern) versus 'being notified when a value changes' (Chapter 9's broadcast receiver) — both are valid, serving different specific needs.",
+      "lineByLine": [
+        "`connectivityManager.activeNetwork != null` — a direct, on-demand snapshot: 'is there network access RIGHT NOW, at this exact moment I'm asking?'",
+        "Chapter 9's CONNECTIVITY_CHANGE broadcast — a notification-based relationship: 'tell me the moment this status changes,' without needing to repeatedly ask.",
+        "A real app might use ConnectivityManager for an immediate one-time check (e.g., right before attempting a network call) while also using a broadcast receiver to react to ongoing changes over time."
+      ],
+      "tip": "This distinction — checking a current snapshot on demand (this chapter's system services) versus being proactively notified of changes over time (Chapter 9's broadcasts) — is a useful general pattern to recognize across many different kinds of device state, not just connectivity."
+    }
+  },
+  {
+    "id": "ch12-q10",
+    "topic": "full scenario synthesis",
+    "difficulty": "difficult",
+    "chapter": "ch-12",
+    "snippetLang": "markup",
+    "snippet": "1. WeatherSyncService (Chapter 8) begins running as a\n   foreground Service.\n2. It obtains NotificationManager via getSystemService()\n   and posts a notification through a pre-declared channel.\n3. The notification includes a PendingIntent wrapping an\n   explicit Intent targeting MainActivity.\n4. The user taps the notification, launching MainActivity.\n5. Separately, before starting the sync, the Service used\n   ConnectivityManager to confirm network access was\n   currently available.",
+    "question": "Which statement correctly identifies the relationships woven through this scenario?",
+    "choices": [
+      "This scenario incorrectly combines unrelated concepts from different chapters that don't actually connect",
+      "Step 1 is Chapter 8's foreground Service; step 2 uses Q1-Q4's getSystemService/cast/channel/NotificationManager relationship to fulfill Chapter 8, Q4's notification requirement; step 3-4 uses Q8's PendingIntent, itself wrapping a Chapter 6, Q2-style explicit Intent; step 5 uses Q9's on-demand ConnectivityManager check, distinct from Chapter 9's ongoing broadcast-based approach",
+      "Step 5 should have used a BroadcastReceiver instead, since ConnectivityManager cannot check current status",
+      "Steps 2-4 are unnecessary, since foreground Services are not actually required to show any notification"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This scenario chains together this chapter's core relationships with earlier ones: the universal getSystemService gateway (Q1), the cast needed to use its result (Q2), the channel requirement (Q4), fulfilling Chapter 8's notification obligation (Q3), PendingIntent wrapping a familiar explicit Intent (Q8, Chapter 6), and an on-demand connectivity check (Q9) distinct from Chapter 9's reactive broadcast approach.",
+      "lineByLine": [
+        "Step 1: Chapter 8's foreground Service, requiring a notification (Chapter 8, Q4).",
+        "Step 2: Q1's gateway pattern retrieves NotificationManager (Q2's cast), which posts through a channel (Q4) — directly fulfilling Chapter 8's requirement (Q3).",
+        "Step 3-4: Q8's PendingIntent, wrapping an ordinary explicit Intent (Chapter 6, Q2) targeting MainActivity — tapping the notification triggers it.",
+        "Step 5: Q9's on-demand ConnectivityManager check — a snapshot at one specific moment, distinct from Chapter 9's ongoing broadcast-based reaction to changes over time."
+      ],
+      "tip": "This kind of multi-chapter synthesis is exactly what makes reading real Android code manageable: rather than each snippet being an isolated mystery, it's almost always a combination of a small number of relationships you've already seen individually, now working together toward one concrete goal."
+    }
+  },
+  {
+    "id": "ch12-q11",
+    "topic": "unsupported service returns null gracefully, unlike a permission crash",
+    "difficulty": "difficult",
+    "chapter": "ch-12",
+    "snippet": "val fingerprintManager =\n    context.getSystemService(Context.FINGERPRINT_SERVICE) as? FingerprintManager\n\n// On a device with no fingerprint hardware at all,\n// this returns null rather than throwing",
+    "question": "Contrast this with Q5's permission-gated LocationManager scenario. What's different about how an UNSUPPORTED system service behaves, versus a permission-denied one?",
+    "choices": [
+      "Both scenarios behave identically — an exception is thrown in both cases",
+      "A device lacking specific hardware/capability entirely results in getSystemService() gracefully returning null for that service — a fundamentally different failure mode than Q5's scenario, where the service object itself is always obtainable, but specific METHOD CALLS on it fail due to a missing permission",
+      "Missing hardware always crashes the app immediately with no way to check beforehand",
+      "getSystemService() can never return null under any circumstances"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This distinguishes two different failure relationships that are easy to conflate. Q5 established that a service OBJECT is always obtainable, but specific ACTIONS on it can fail due to permissions. Here, a different scenario: the service itself may not exist at all on a given device, in which case the gateway method gracefully hands back null rather than the object failing later.",
+      "lineByLine": [
+        "`getSystemService(FINGERPRINT_SERVICE) as? FingerprintManager` — using the safe cast (`as?`) precisely because this might not resolve to anything at all on hardware lacking that capability.",
+        "On a device without fingerprint hardware, this returns null — a clean, checkable outcome, not a crash.",
+        "Compare to Q5: LocationManager itself is essentially always obtainable (nearly every device has SOME location capability), but calling specific location-fetching methods on it is what depends on a granted permission."
+      ],
+      "tip": "Two different things can go wrong with a system service, and recognizing which one you're dealing with matters: 'this capability doesn't exist on this device at all' (null from getSystemService, checked with `as?`) versus 'this capability exists, but I haven't been granted permission to use it yet' (Q5's SecurityException risk)."
+    }
+  },
+  {
+    "id": "ch12-q12",
+    "topic": "PackageManager also resolves this app's own component metadata",
+    "difficulty": "moderate",
+    "chapter": "ch-12",
+    "snippet": "// Q6 and Q7 showed PackageManager looking OUTWARD at\n// other installed apps.\n\nval activityInfo = packageManager.getActivityInfo(\n    ComponentName(context, MainActivity::class.java), 0\n)\nprintln(activityInfo.label)",
+    "question": "This call asks PackageManager about MainActivity — a component belonging to THIS SAME app. How does this relate to Q6's \"outward-looking\" framing?",
+    "choices": [
+      "This is impossible; PackageManager can only ever query other apps, never this app's own components",
+      "PackageManager's queries aren't exclusively about OTHER apps — the same outward-facing query system (Q6, Q7) can just as easily be pointed back at this app's own declared components, retrieving the exact metadata (like the label) that was declared for MainActivity back in Chapter 2's manifest",
+      "This call requires a completely different service than the one used in Q6 and Q7",
+      "getActivityInfo() bypasses the manifest entirely and reads directly from MainActivity.kt's source code"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This refines Q6's 'outward-looking' framing slightly: PackageManager's queries can be pointed at ANY declared component on the device — including this very app's own — not exclusively at unrelated third-party apps. The distinguishing trait isn't 'other apps only,' but 'component metadata declared somewhere in a manifest, queryable regardless of which app owns it.'",
+      "lineByLine": [
+        "`ComponentName(context, MainActivity::class.java)` — identifies MainActivity specifically, within this same app.",
+        "`packageManager.getActivityInfo(...)` — the same general PackageManager relationship from Q6/Q7, just directed at a component from this app rather than a different one.",
+        "`activityInfo.label` — retrieves metadata that traces directly back to Chapter 2's manifest declaration (recall Chapter 2, Q14's per-activity label override) — confirming this is genuinely reading the same declared information, regardless of which app it belongs to."
+      ],
+      "tip": "The precise relationship to hold onto: PackageManager queries component metadata declared in ANY app's manifest on the device — this app's own components are simply one particular target among many it can be asked about, not a special exception to how it works."
+    }
+  }
+]

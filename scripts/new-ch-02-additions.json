@@ -1,0 +1,104 @@
+[
+  {
+    "id": "ch02-q11",
+    "topic": "merged manifest",
+    "difficulty": "difficult",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<!-- app/src/main/AndroidManifest.xml (what YOU wrote) -->\n<manifest>\n    <uses-permission android:name=\"android.permission.INTERNET\" />\n    <application>\n        <activity android:name=\".MainActivity\">...</activity>\n    </application>\n</manifest>\n\n<!-- After Gradle build, the \"Merged Manifest\" view in Android Studio\n     ALSO shows permissions and components from library dependencies\n     you never typed yourself, e.g. from a crash-reporting SDK -->",
+    "question": "A teammate is confused: \"I only wrote one `<uses-permission>` line, but Android Studio's Merged Manifest view shows five!\" What's happening?",
+    "choices": [
+      "Android Studio has a bug and is showing incorrect information",
+      "Every library dependency (from build.gradle.kts) can include its own AndroidManifest.xml; Gradle automatically merges all of them into one final manifest at build time",
+      "The extra permissions were added by a virus",
+      "The app has multiple manifests that all run simultaneously"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Every Android library (AAR dependency) can ship its own manifest snippet declaring the permissions and components it needs. Gradle's manifest merger tool combines your app's manifest with every dependency's manifest into one final, merged manifest — which is what actually ships in the APK.",
+      "lineByLine": [
+        "Your `app/src/main/AndroidManifest.xml` — what you directly author.",
+        "Each library dependency (declared in `build.gradle.kts`, connecting back to Chapter 1) can bundle its own manifest fragment.",
+        "A crash-reporting SDK, for example, might bundle a permission for network access and declare its own background Service.",
+        "Android Studio's 'Merged Manifest' tab shows the final combined result — the real manifest that ships."
+      ],
+      "tip": "Whenever you're debugging an unexpected permission prompt or a component you don't recognize, check the Merged Manifest view (not just your hand-written file) — the answer is very often 'a dependency brought this in.'"
+    }
+  },
+  {
+    "id": "ch02-q12",
+    "topic": "uses-feature vs uses-permission",
+    "difficulty": "moderate",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<uses-permission android:name=\"android.permission.CAMERA\" />\n<uses-feature\n    android:name=\"android.hardware.camera\"\n    android:required=\"false\" />",
+    "question": "This app declares BOTH `<uses-permission>` for CAMERA and `<uses-feature>` for camera hardware. What's the difference in what each one controls?",
+    "choices": [
+      "They do the same thing; one is just a legacy duplicate of the other",
+      "uses-permission controls runtime access to camera data; uses-feature declares hardware/software the app uses, and affects whether the Play Store shows the app to devices lacking that hardware",
+      "uses-feature grants the permission automatically without a runtime prompt",
+      "uses-permission is only needed on tablets, uses-feature only on phones"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "These two tags answer different questions. `<uses-permission>` is about *access control* — can this app use the camera API? `<uses-feature>` is about *device compatibility* — does this app require camera hardware to function, and should the Play Store hide the app from devices that lack it?",
+      "lineByLine": [
+        "`<uses-permission android:name=\"...CAMERA\" />` — the app can request camera access at runtime (a dangerous permission, per Chapter 2's earlier lesson).",
+        "`<uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />` — declares the app USES a camera if available, but `required=\"false\"` means it will still install on devices without one.",
+        "If `required` were `true` (or omitted, since true is the default), the Play Store would hide this app entirely from cameraless devices."
+      ],
+      "tip": "`android:required=\"false\"` on a `<uses-feature>` is important for apps where a feature is nice-to-have but not essential — e.g., an app that CAN scan a barcode with the camera but works fine without one. Always check the `required` value; the default is `true`, which can unintentionally shrink your available device audience."
+    }
+  },
+  {
+    "id": "ch02-q13",
+    "topic": "deep link intent filter",
+    "difficulty": "difficult",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<activity android:name=\".ForecastDetailActivity\" android:exported=\"true\">\n    <intent-filter>\n        <action android:name=\"android.intent.action.VIEW\" />\n        <category android:name=\"android.intent.category.DEFAULT\" />\n        <category android:name=\"android.intent.category.BROWSABLE\" />\n        <data\n            android:scheme=\"https\"\n            android:host=\"weathernow.example.com\"\n            android:pathPrefix=\"/forecast\" />\n    </intent-filter>\n</activity>",
+    "question": "What does this second intent-filter (different from MAIN/LAUNCHER) enable?",
+    "choices": [
+      "It makes ForecastDetailActivity the app's new home-screen launcher icon, replacing MainActivity",
+      "It's a deep link: tapping a link like https://weathernow.example.com/forecast/today (in a browser, text message, or another app) can open this exact Activity directly",
+      "It has no effect since an activity can only have one intent-filter",
+      "It requires the user to manually enable this link in Settings before it works"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a deep link filter — a completely different purpose from MAIN/LAUNCHER. It tells the OS: 'if the user taps a link matching this URL pattern, this Activity can handle it directly,' bypassing the home screen entirely.",
+      "lineByLine": [
+        "`action.VIEW` — 'display this piece of content' (different from action.MAIN's 'start with no data').",
+        "`category.BROWSABLE` — allows a web browser to trigger this filter when a matching link is tapped.",
+        "`<data android:scheme=\"https\" android:host=\"weathernow.example.com\" android:pathPrefix=\"/forecast\" />` — matches URLs like `https://weathernow.example.com/forecast/...`.",
+        "`exported=\"true\"` is required here since the trigger comes from outside the app (a browser, another app, an SMS link)."
+      ],
+      "tip": "This is proof that a single Activity can have MULTIPLE intent-filters for different purposes simultaneously — MainActivity might have both the LAUNCHER filter AND its own deep link filter. Each `<intent-filter>` block describes one independent way the component can be triggered."
+    }
+  },
+  {
+    "id": "ch02-q14",
+    "topic": "per-activity label override",
+    "difficulty": "easy",
+    "chapter": "ch-02",
+    "snippetLang": "xml",
+    "snippet": "<application android:label=\"@string/app_name\">\n\n    <activity android:name=\".MainActivity\" />\n\n    <activity\n        android:name=\".SettingsActivity\"\n        android:label=\"@string/settings_title\" />\n\n</application>",
+    "question": "MainActivity has no `android:label` of its own, but SettingsActivity does. What title appears in the Recent Apps screen for each?",
+    "choices": [
+      "Both show \"Weather Now\" (the app-level label) because activity-level labels are ignored",
+      "MainActivity shows the app-level label (e.g., \"Weather Now\"); SettingsActivity shows its own override (e.g., \"Settings\") instead",
+      "Neither shows a title — labels only affect the app drawer icon",
+      "This configuration causes a build error since labels can only be set once per app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Attributes like `android:label` cascade: the `<application>` tag sets a default for every activity, but any individual `<activity>` can override it with its own value. This lets each screen show a more specific, contextual title where it makes sense.",
+      "lineByLine": [
+        "`<application android:label=\"@string/app_name\">` — sets the default label ('Weather Now') for every activity in the app.",
+        "`MainActivity` — no override, so it inherits the app-wide default label.",
+        "`SettingsActivity android:label=\"@string/settings_title\"` — overrides the default, showing 'Settings' instead wherever this activity's title is displayed (task switcher, action bar, etc.)."
+      ],
+      "tip": "This inheritance-with-override pattern — application-level default, activity-level override — appears throughout the manifest (label, theme, and more). Reading a manifest means checking both levels: what does `<application>` set as default, and does this specific `<activity>` override it?"
+    }
+  }
+]

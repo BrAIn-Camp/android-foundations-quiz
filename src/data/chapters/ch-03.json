@@ -1,0 +1,302 @@
+[
+  {
+    "id": "ch03-q1",
+    "topic": "Activity depends on manifest to exist",
+    "difficulty": "easy",
+    "chapter": "ch-03",
+    "snippetLang": "xml",
+    "snippet": "<!-- AndroidManifest.xml -->\n<application>\n    <activity android:name=\".MainActivity\">\n        <intent-filter>\n            <action android:name=\"android.intent.action.MAIN\" />\n            <category android:name=\"android.intent.category.LAUNCHER\" />\n        </intent-filter>\n    </activity>\n</application>",
+    "question": "A Kotlin file defines `class MainActivity`. What is this class's relationship to the OS if the manifest entry above did NOT exist?",
+    "choices": [
+      "No relationship at all — the OS has no way to know MainActivity exists as a launchable component, regardless of how well-written the Kotlin code is",
+      "The class would still launch automatically since Android scans all .kt files for Activity subclasses",
+      "The relationship is unaffected — the manifest is purely for documentation",
+      "The OS would launch a generic default Activity instead"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "An Activity's relationship to the Android OS is established entirely through the manifest declaration — not through the Kotlin class itself. The class can be flawless, compile perfectly, and still be completely invisible to the OS if it isn't declared.",
+      "lineByLine": [
+        "`class MainActivity` in Kotlin — just a class definition, meaningless to the OS on its own.",
+        "`<activity android:name=\".MainActivity\">` — this line is what CREATES the relationship between the class and the OS's component system.",
+        "Only once declared does the OS know this class can be treated as an Activity, launched, and tracked."
+      ],
+      "tip": "This is the foundational relationship of the whole chapter: Activity code and Activity declaration are two separate things that must both exist for an Activity to actually function as one."
+    }
+  },
+  {
+    "id": "ch03-q2",
+    "topic": "Activity hosts UI, is not the UI",
+    "difficulty": "easy",
+    "chapter": "ch-03",
+    "snippet": "class MainActivity : ComponentActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContent {\n            WeatherScreen()\n        }\n    }\n}",
+    "question": "What is the relationship between `MainActivity` and `WeatherScreen()` here?",
+    "choices": [
+      "They are the same thing — Activity and Composable are interchangeable terms",
+      "MainActivity is the host/window that the OS manages; WeatherScreen() is the actual visual content displayed inside that window via setContent",
+      "WeatherScreen() controls MainActivity's lifecycle",
+      "MainActivity only exists to store data for WeatherScreen() to read"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Activity and its UI content are two distinct things with a host-and-content relationship. The Activity is what the OS knows about, manages, and tracks in the back stack. The Composable content is what setContent hands off to be displayed inside that Activity's window.",
+      "lineByLine": [
+        "`MainActivity : ComponentActivity()` — the OS-managed component; this is what gets declared in the manifest and tracked by the system.",
+        "`setContent { ... }` — the bridge point where the Activity hands control of what's on screen over to Compose.",
+        "`WeatherScreen()` — just a function describing UI; it has no relationship with the OS on its own — it only appears because an Activity chose to host it."
+      ],
+      "tip": "Think of the Activity as a picture frame that the OS manages (position, visibility, lifecycle), and the Composable content as the picture inside it. You can swap the picture without replacing the frame — this is exactly what navigating between Composable screens does in a single-Activity app (Chapter 4)."
+    }
+  },
+  {
+    "id": "ch03-q3",
+    "topic": "back stack relationship between activities",
+    "difficulty": "moderate",
+    "chapter": "ch-03",
+    "snippetLang": "markup",
+    "snippet": "Back stack (bottom to top):\n[ MainActivity ]\n\nUser taps a forecast row →\n\n[ MainActivity ]\n[ ForecastDetailActivity ]  <- now on top, visible",
+    "question": "ForecastDetailActivity is launched from MainActivity. What is the relationship between the two on the back stack?",
+    "choices": [
+      "ForecastDetailActivity replaces MainActivity entirely — MainActivity no longer exists",
+      "ForecastDetailActivity is stacked on top of MainActivity; MainActivity still exists underneath, just not visible, and reappears if ForecastDetailActivity is closed",
+      "They run side by side, both visible on screen simultaneously",
+      "MainActivity is destroyed and cannot be returned to"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Launching one Activity from another doesn't replace it — it stacks on top of it. The back stack is a literal stack data structure: activities pile up in the order they were launched, and only the topmost one is visible.",
+      "lineByLine": [
+        "Before: `[MainActivity]` — one activity, visible.",
+        "User action launches ForecastDetailActivity.",
+        "After: `[MainActivity, ForecastDetailActivity]` — MainActivity still exists in the stack, just hidden underneath.",
+        "The system back button (or a 'navigate up' action) pops the top activity off, revealing whatever is now on top — MainActivity, in this case."
+      ],
+      "tip": "This stacking relationship is the mental model behind the term 'back stack.' Every activity you launch stacks on top of the one that launched it, and the back button's job is simply 'pop the top of the stack.'"
+    }
+  },
+  {
+    "id": "ch03-q4",
+    "topic": "Activity is-a Context",
+    "difficulty": "moderate",
+    "chapter": "ch-03",
+    "snippet": "class MainActivity : ComponentActivity() {\n    // ComponentActivity is a subclass of Context\n}\n\nclass PlainHelper {\n    // just a regular Kotlin class, NOT a Context\n}",
+    "question": "Because `ComponentActivity` (and therefore `MainActivity`) is a subclass of `Context`, what capability does MainActivity have that PlainHelper does not?",
+    "choices": [
+      "MainActivity can run faster than PlainHelper",
+      "MainActivity can do Context-dependent things — like accessing app resources, starting other components, and getting system services — because it inherits that relationship; PlainHelper has no such connection to the Android system",
+      "MainActivity automatically has more memory allocated to it",
+      "There is no practical difference between the two"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "`Context` is Android's gateway to system-level capabilities. Because Activity inherits from Context, every Activity automatically has this relationship to the OS's resources and services 'for free' — a plain class has no such connection unless one is explicitly given to it.",
+      "lineByLine": [
+        "`ComponentActivity` inherits from `Context` (through several layers) — this is an IS-A relationship.",
+        "Because of that inheritance, MainActivity gains everything a Context can do: reading resources declared in `res/` (Chapter 1), starting other declared components, requesting system services.",
+        "`PlainHelper` has no such relationship — if it needs to do Context-dependent work, a Context must be explicitly passed to it from something that has one, like an Activity."
+      ],
+      "tip": "This IS-A relationship explains why you'll often see a `Context` parameter passed into helper classes and functions throughout Android code — it's how non-Activity classes borrow that connection to the OS when they need it."
+    }
+  },
+  {
+    "id": "ch03-q5",
+    "topic": "launching activity requires manifest declaration",
+    "difficulty": "moderate",
+    "chapter": "ch-03",
+    "snippetLang": "xml",
+    "snippet": "<!-- Only MainActivity is declared in the manifest -->\n<application>\n    <activity android:name=\".MainActivity\">\n        <intent-filter>...</intent-filter>\n    </activity>\n</application>\n\n<!-- ForecastDetailActivity.kt exists as a class,\n     but has NO corresponding <activity> tag -->",
+    "question": "MainActivity's code attempts to launch ForecastDetailActivity. Given this manifest, what is the relationship that's missing?",
+    "choices": [
+      "Nothing is missing — any Activity class can be launched by any other Activity regardless of the manifest",
+      "ForecastDetailActivity has no relationship with the OS's component system since it isn't declared — MainActivity's request to launch it will fail at runtime even though both classes compile fine",
+      "MainActivity needs to declare ForecastDetailActivity as a property before launching it",
+      "The manifest only matters for the very first activity launched, not subsequent ones"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects Chapter 2's lesson directly to Activity-to-Activity relationships: for ONE Activity to successfully launch ANOTHER, the target must independently have its own valid relationship with the OS via the manifest. A launching Activity cannot 'vouch for' an undeclared one.",
+      "lineByLine": [
+        "MainActivity is declared — the OS recognizes it and can launch it as the entry point.",
+        "ForecastDetailActivity is NOT declared — as far as the OS's component system is concerned, it doesn't exist as a launchable target.",
+        "MainActivity's attempt to launch it compiles fine (the class reference is valid Kotlin) but fails at runtime because the OS can't find a matching declared component."
+      ],
+      "tip": "Every Activity in a chain of launches needs its own independent declaration. There's no inheritance of 'launchability' between activities — each one's relationship with the manifest stands alone."
+    }
+  },
+  {
+    "id": "ch03-q6",
+    "topic": "finish() and returning to caller",
+    "difficulty": "moderate",
+    "chapter": "ch-03",
+    "snippetLang": "markup",
+    "snippet": "Back stack: [ MainActivity, ForecastDetailActivity ]\n\nForecastDetailActivity calls finish()\n\nBack stack afterward: [ MainActivity ]  <- now on top again, visible",
+    "question": "What relationship does `finish()` express between an Activity and the one that launched it?",
+    "choices": [
+      "finish() destroys the entire back stack, closing the whole app",
+      "finish() removes the current Activity from the top of the back stack, automatically revealing whatever Activity is now on top — typically the one that launched it",
+      "finish() pauses the Activity temporarily but keeps it on top of the stack",
+      "finish() has no relationship with the back stack; it only affects memory"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "`finish()` is the mirror image of launching an activity — it's how an activity voluntarily removes itself from the stack, restoring visibility to whatever activity is now on top.",
+      "lineByLine": [
+        "Before: `[MainActivity, ForecastDetailActivity]` — ForecastDetailActivity on top, visible.",
+        "`finish()` is called — ForecastDetailActivity is popped off the stack.",
+        "After: `[MainActivity]` — MainActivity is now the top of the stack again, and becomes visible without needing to be relaunched."
+      ],
+      "tip": "This relationship — push on launch, pop on finish (or back button) — is the entire mental model for how screens flow in a multi-Activity app. The stack always reflects the actual navigation history."
+    }
+  },
+  {
+    "id": "ch03-q7",
+    "topic": "foreground exclusivity",
+    "difficulty": "moderate",
+    "chapter": "ch-03",
+    "snippetLang": "markup",
+    "snippet": "Back stack: [ MainActivity, ForecastDetailActivity, SettingsActivity ]\n                                                       ^\n                                             only this one is RESUMED and visible",
+    "question": "With three activities in the back stack, what's true about their relationship to the screen at this moment?",
+    "choices": [
+      "All three are visible simultaneously, stacked visually on screen",
+      "Only SettingsActivity (topmost) is in the foreground and visible; MainActivity and ForecastDetailActivity still exist in the stack but are not currently drawn to the screen",
+      "Only MainActivity (the first one) is ever actually visible; the others are just placeholders",
+      "The three activities take turns being visible every few seconds"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "At any given moment, exactly one Activity owns the screen — the one at the top of the back stack. The others aren't gone; they're simply not currently being displayed, waiting their turn to resurface if the ones above them are closed.",
+      "lineByLine": [
+        "`MainActivity` — bottom of stack, exists but not visible.",
+        "`ForecastDetailActivity` — middle of stack, exists but not visible.",
+        "`SettingsActivity` — top of stack, the ONLY one currently in the foreground and visible to the user.",
+        "Pressing back from here would pop SettingsActivity and reveal ForecastDetailActivity, not MainActivity — the stack unwinds one level at a time."
+      ],
+      "tip": "This foreground exclusivity is a hard rule: no two activities are ever simultaneously visible in the same window. It's why the back stack is described as a stack rather than a list — only the top is ever exposed."
+    }
+  },
+  {
+    "id": "ch03-q8",
+    "topic": "single-Activity vs multi-Activity architecture",
+    "difficulty": "difficult",
+    "chapter": "ch-03",
+    "snippetLang": "markup",
+    "snippet": "Multi-Activity approach:\n[ MainActivity ] -> launches -> [ ForecastDetailActivity ] -> launches -> [ SettingsActivity ]\n(3 separate OS-managed Activity components)\n\nSingle-Activity approach:\n[ MainActivity ]\n   hosts Composable: HomeScreen()\n   hosts Composable: ForecastDetailScreen()\n   hosts Composable: SettingsScreen()\n(1 Activity, 3 Composable screens swapped inside it)",
+    "question": "In the single-Activity approach, what's the relationship between the app's screens and the back stack described earlier in this chapter?",
+    "choices": [
+      "There's no difference — Compose screens still create new entries on the OS Activity back stack, exactly like separate activities would",
+      "The Composable screens are swapped inside ONE Activity's content; Compose has its own separate internal navigation system for moving between them, rather than relying on the OS Activity back stack for every screen change",
+      "Single-Activity apps cannot have more than one screen at all",
+      "The single-Activity approach requires manually declaring each screen in the manifest, just like separate activities"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a genuine architectural relationship shift: instead of the OS's Activity back stack managing every screen transition, one Activity stays alive the whole time, and Compose's own navigation system manages moving between screens inside it.",
+      "lineByLine": [
+        "Multi-Activity: each screen is its own OS-declared component; the OS back stack tracks screen-to-screen navigation directly.",
+        "Single-Activity: one Activity is declared and launched once; it hosts multiple Composable functions, swapping which one is displayed.",
+        "Screen-to-screen navigation in the single-Activity approach is handled by a separate navigation system built for Compose (covered properly in Book 3), not by launching new OS Activities for every screen."
+      ],
+      "tip": "Modern Android apps almost universally favor the single-Activity approach — fewer manifest declarations, lighter OS overhead, and more flexible in-app navigation. Chapter 4 (Compose Bootstrap) sets up exactly this pattern: one Activity, many Composable screens inside it."
+    }
+  },
+  {
+    "id": "ch03-q9",
+    "topic": "Activity vs plain class relationship to OS",
+    "difficulty": "easy",
+    "chapter": "ch-03",
+    "snippet": "class MainActivity : ComponentActivity() {\n    // declared in manifest, lifecycle-managed by the OS\n}\n\nclass WeatherFormatter {\n    // a plain utility class\n    fun format(temp: Double): String = \"$temp°\"\n}",
+    "question": "What is fundamentally different about MainActivity's relationship to the Android system compared to WeatherFormatter's?",
+    "choices": [
+      "MainActivity runs Kotlin code, while WeatherFormatter runs a different programming language entirely",
+      "MainActivity participates in the OS's component system — it must be declared, it's tracked on the back stack, and its lifecycle is controlled by the OS; WeatherFormatter is just an ordinary object with none of these relationships",
+      "There's no real difference; both are treated identically by the Android OS",
+      "WeatherFormatter actually has a more privileged relationship with the OS since it doesn't need a manifest entry"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This distinction cuts to the heart of what makes an Activity special: it's not really about the code inside the class, but about the class's relationship with the operating system's component-management system.",
+      "lineByLine": [
+        "`MainActivity : ComponentActivity()` — by extending this specific class AND being declared in the manifest, it becomes something the OS knows about, can launch, track in a back stack, and manage through a lifecycle.",
+        "`WeatherFormatter` — a plain object. You create it, use it, and it's garbage collected like any other value. The OS has zero awareness of it.",
+        "This is why you can create as many `WeatherFormatter` instances as you like freely, but Activities are specifically instantiated and destroyed by the OS according to its own rules."
+      ],
+      "tip": "Whenever you see a class extend `ComponentActivity` (or `Activity`), read it as: 'this class is opting into a relationship with the Android OS's component system' — declaration, back stack membership, and lifecycle management all come as a package deal."
+    }
+  },
+  {
+    "id": "ch03-q10",
+    "topic": "reading a launch-and-finish scenario",
+    "difficulty": "moderate",
+    "chapter": "ch-03",
+    "snippetLang": "markup",
+    "snippet": "1. App starts -> MainActivity launches. Stack: [ MainActivity ]\n2. User taps a forecast row -> ForecastDetailActivity launches. Stack: [ MainActivity, ForecastDetailActivity ]\n3. User taps \"Share\" -> ShareActivity launches. Stack: [ MainActivity, ForecastDetailActivity, ShareActivity ]\n4. ShareActivity calls finish() after sharing completes.",
+    "question": "After step 4, what does the back stack look like, and which Activity is now visible?",
+    "choices": [
+      "[ MainActivity ] — MainActivity is visible, because finish() always returns all the way to the first activity",
+      "[ MainActivity, ForecastDetailActivity ] — ForecastDetailActivity is now visible, since finish() only pops the single top activity that called it",
+      "[ MainActivity, ForecastDetailActivity, ShareActivity ] — nothing changes, since finish() only affects background processes",
+      "The stack is empty and the app closes entirely"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This combines two relationships from this chapter: launching pushes onto the stack, and finish() pops exactly one activity off — revealing whatever is now on top, not jumping all the way back to the bottom.",
+      "lineByLine": [
+        "Step 1-3 built the stack up: `[MainActivity, ForecastDetailActivity, ShareActivity]`, with ShareActivity on top and visible.",
+        "Step 4: ShareActivity calls `finish()`, popping only itself off the stack.",
+        "Resulting stack: `[MainActivity, ForecastDetailActivity]`, with ForecastDetailActivity now on top and visible again.",
+        "MainActivity remains further down the stack, still not visible, unless ForecastDetailActivity is later finished too."
+      ],
+      "tip": "The stack always unwinds one layer at a time, in the exact reverse order it was built — this LIFO (last-in, first-out) relationship is the same principle behind the call stack in any programming language, just applied to screens instead of function calls."
+    }
+  },
+  {
+    "id": "ch03-q11",
+    "topic": "launch expecting a result vs fire-and-forget",
+    "difficulty": "difficult",
+    "chapter": "ch-03",
+    "snippetLang": "markup",
+    "snippet": "Scenario A (fire-and-forget):\nMainActivity launches SettingsActivity.\nMainActivity does not expect anything back — it just waits for SettingsActivity to eventually finish.\n\nScenario B (expecting a result):\nMainActivity launches PhotoPickerActivity SPECIFICALLY to receive a chosen photo back.\nWhen PhotoPickerActivity finishes, it hands data back to MainActivity.",
+    "question": "What's the key relational difference between Scenario A and Scenario B?",
+    "choices": [
+      "There is no real difference — every launched activity always sends data back to its caller automatically",
+      "In Scenario B, MainActivity and PhotoPickerActivity have a two-way relationship: MainActivity is waiting to receive something specific back, whereas in Scenario A the relationship is one-directional — launch and move on",
+      "Scenario B is impossible; only the OS can pass data between activities, never one activity directly to another",
+      "Scenario A can only happen with activities from the same app, while Scenario B only works across different apps"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Not every activity launch is the same kind of relationship. Sometimes the caller only cares that the other screen was shown (fire-and-forget). Other times, the caller specifically depends on getting something back — a chosen photo, a confirmed setting, a scanned code — turning it into a genuine two-way relationship rather than a one-way handoff.",
+      "lineByLine": [
+        "Scenario A: MainActivity → launch → SettingsActivity. MainActivity moves on without expecting anything specific in return.",
+        "Scenario B: MainActivity → launch (expecting a result) → PhotoPickerActivity. MainActivity is effectively paused, waiting.",
+        "When PhotoPickerActivity finishes, it hands a result back specifically to MainActivity — completing the two-way relationship MainActivity initiated."
+      ],
+      "tip": "Recognizing which kind of relationship a launch represents helps you read app behavior correctly: does the calling screen appear to 'wait' for something (a result relationship), or does it move on freely (fire-and-forget)? Common examples of the result relationship: picking a photo, scanning a barcode, or confirming a permission choice."
+    }
+  },
+  {
+    "id": "ch03-q12",
+    "topic": "Activity vs Dialog overlay",
+    "difficulty": "moderate",
+    "chapter": "ch-03",
+    "snippetLang": "markup",
+    "snippet": "MainActivity shows a confirmation Dialog: \"Delete this forecast?\"\n\nBack stack before Dialog appears: [ MainActivity ]\nBack stack while Dialog is showing:  [ MainActivity ]  <- unchanged, still just one entry",
+    "question": "A confirmation dialog appears on screen, visually on top of everything else. What's its relationship to the Activity back stack discussed earlier in this chapter?",
+    "choices": [
+      "The Dialog is a separate Activity, so it gets pushed onto the back stack just like ForecastDetailActivity did earlier",
+      "The Dialog is not a separate Activity at all — it's an overlay drawn on top of MainActivity's existing content, so the back stack is unaffected and still shows just one entry",
+      "The Dialog replaces MainActivity in the back stack until it's dismissed",
+      "Every visible UI element, including dialogs, must correspond to its own manifest-declared Activity"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Not everything that visually appears on screen represents a new entry in the Activity back stack. A Dialog is drawn on top of the current Activity's existing window — it doesn't require its own manifest declaration and doesn't add a new stack entry.",
+      "lineByLine": [
+        "Before the Dialog: `[MainActivity]` — one stack entry.",
+        "Dialog appears: still `[MainActivity]` — the same single entry, just with an overlay drawn above its content.",
+        "Dismissing the Dialog doesn't 'pop' anything from the back stack, because nothing was pushed onto it in the first place."
+      ],
+      "tip": "This distinction matters for reading app behavior correctly: if pressing 'back' simply dismisses something without revealing a different screen underneath, it was likely an overlay (Dialog, BottomSheet, Snackbar) rather than a separate Activity. True back-stack navigation always reveals a different full screen when popped."
+    }
+  }
+]

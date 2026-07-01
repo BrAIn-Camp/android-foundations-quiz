@@ -1,0 +1,298 @@
+[
+  {
+    "id": "ch11-q1",
+    "topic": "persistence survives process death, unlike in-memory state",
+    "difficulty": "moderate",
+    "chapter": "ch-11",
+    "snippetLang": "markup",
+    "snippet": "Recall Chapter 5, Q6 and Q10: in-memory Activity state\n(like tapCount) can survive rotation via savedInstanceState,\nbut is genuinely lost forever if the process is killed\nand the user simply reopens the app fresh much later.\n\nA user's saved settings (dark mode preference, preferred\ncity) are still there weeks later, even after the device\nhas been restarted multiple times in between.",
+    "question": "What's the relationship between these saved settings and the in-memory state discussed in Chapter 5?",
+    "choices": [
+      "They behave identically — both are equally vulnerable to being lost on process death or device restart",
+      "Persisted data (this chapter) has a fundamentally different relationship with the app's lifetime than in-memory state (Chapter 5) — it's written to actual disk storage, so it survives not just configuration changes and process death, but even full device restarts, entirely independent of any Activity, ViewModel, or process being alive",
+      "Persisted data only survives configuration changes, exactly like savedInstanceState, but not process death",
+      "Settings can only ever be preserved by keeping the app process running permanently in the background"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This establishes the chapter's foundational relationship: persistence exists specifically because in-memory solutions (Chapter 5's savedInstanceState, ViewModels) have limits — they don't survive full process death and reopening, let alone a device restart. Writing to actual disk storage removes that dependency on any particular process being alive at all.",
+      "lineByLine": [
+        "Chapter 5's tools: survive rotation (savedInstanceState) or configuration changes broadly (ViewModel) — but ultimately tied to SOME process staying alive or being quickly recreated.",
+        "This chapter's tools (DataStore, Room): write data to disk, which exists independently of any running process.",
+        "A device restart, an app being force-closed, or weeks passing between opens — none of these matter to genuinely persisted data, unlike every in-memory tool covered in Chapter 5."
+      ],
+      "tip": "A simple test for which category something belongs to: if data needs to still be there after the user closes the app, restarts their phone, and reopens the app a week later, it needs genuine persistence (this chapter) — no in-memory tool from Chapter 5 is sufit for that job, no matter how it's scoped."
+    }
+  },
+  {
+    "id": "ch11-q2",
+    "topic": "persistence operations are coroutine-native, tying to ch7",
+    "difficulty": "moderate",
+    "chapter": "ch-11",
+    "snippet": "suspend fun saveCityPreference(city: String) {\n    dataStore.edit { prefs -> prefs[CITY_KEY] = city }\n}",
+    "question": "Why is this persistence function marked `suspend`, connecting back to Chapter 7?",
+    "choices": [
+      "It's just a stylistic convention with no real technical reasoning behind it",
+      "Writing to disk storage is inherently a slow, blocking-style operation — exactly the kind of work Chapter 7 established needs to happen without freezing the main thread (Q1); marking this suspend means it must be called from within a coroutine, which can run it on an appropriate dispatcher like Dispatchers.IO without blocking anything",
+      "suspend here means the function pauses the entire app until it completes",
+      "This function can only ever be called once per app session because it's suspend"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This directly applies Chapter 7's whole framework to a new kind of slow operation: disk I/O. Just like a network call (Chapter 7's running example), writing to storage takes real time and shouldn't block the main thread — so persistence APIs are built as suspend functions from the ground up.",
+      "lineByLine": [
+        "`suspend fun saveCityPreference(...)` — signals this can pause without blocking (Chapter 7, Q2's relationship).",
+        "`dataStore.edit { ... }` — the actual disk write, which takes measurable time.",
+        "Calling this correctly requires a coroutine (Chapter 7, Q3), typically dispatched to Dispatchers.IO (Chapter 7, Q5) since it's the same kind of blocking-style work as a network call."
+      ],
+      "tip": "This is exactly why the book description called DataStore and Room 'coroutine-native' — their APIs are built entirely around suspend functions and Flows from the start, rather than offering old-style synchronous methods that would risk Chapter 7, Q1's frozen-UI problem if called directly on the main thread."
+    }
+  },
+  {
+    "id": "ch11-q3",
+    "topic": "DataStore for key-value vs Room for structured data",
+    "difficulty": "moderate",
+    "chapter": "ch-11",
+    "snippetLang": "markup",
+    "snippet": "Need A: remember a single \"preferred temperature unit\"\nsetting (Celsius or Fahrenheit) — one simple value.\n\nNeed B: store hundreds of individual forecast records,\neach with a city, date, high/low temp, and condition —\nstructured, related data that needs to be queried and\nfiltered later.",
+    "question": "What's the relationship between the SHAPE of each need and which persistence tool fits it best?",
+    "choices": [
+      "Both needs are equally well served by either tool — the choice is arbitrary",
+      "Need A — a single simple value — fits DataStore's key-value relationship well; Need B — many structured, related records that need querying — fits Room's relational-database relationship much better, since Room is built specifically for organizing and querying structured data at scale",
+      "DataStore should be used for Need B, and Room for Need A — the reverse of the correct mapping",
+      "Room can only ever store a single value at a time, exactly like DataStore"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This establishes the core decision relationship for the whole chapter: the SHAPE of the data you need to store determines which tool is the natural fit. Simple, individual settings relate well to a key-value store; larger amounts of structured, queryable data relate well to a proper database.",
+      "lineByLine": [
+        "Need A: one value, one key ('preferred_unit') → DataStore's simple key-value relationship is a natural, lightweight fit.",
+        "Need B: many records, each with multiple related fields, needing to be filtered/sorted/queried later → Room's relational-database relationship (tables, queries) is built for exactly this.",
+        "Using DataStore for Need B would be awkward (no real querying capability); using Room for a single Boolean setting would be unnecessary overhead."
+      ],
+      "tip": "A quick relational test: if you're storing a handful of individual named settings, think DataStore. If you're storing many records of the same shape that you'll need to search, filter, or sort through later, think Room."
+    }
+  },
+  {
+    "id": "ch11-q4",
+    "topic": "annotated data class corresponds declaratively to a database table",
+    "difficulty": "moderate",
+    "chapter": "ch-11",
+    "snippet": "@Entity\ndata class ForecastRecord(\n    @PrimaryKey val id: Int,\n    val city: String,\n    val date: String,\n    val highTemp: Int\n)",
+    "question": "What's the relationship between this annotated data class and an actual database table?",
+    "choices": [
+      "There's no real relationship — this is just a regular Kotlin class with decorative annotations that Room ignores",
+      "This class DECLARES the shape of a database table — @Entity marks it as corresponding to one table, and each property becomes a column; Room reads these annotations to understand and create the actual underlying table structure, rather than the developer writing raw table-creation instructions directly",
+      "This class must be manually converted into a separate table-definition file before Room can use it",
+      "@PrimaryKey means this property's value is randomly generated and cannot be controlled"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This shows a declarative relationship, fitting the book's emphasis on understanding relationships rather than writing implementation code by hand: the data class, decorated with annotations, describes WHAT the table should look like; Room is responsible for translating that description into the actual underlying storage structure.",
+      "lineByLine": [
+        "`data class ForecastRecord(...)` — recall Chapter 12 (Kotlin book)'s data class relationship: structured data with named properties.",
+        "`@Entity` — declares that this class's shape corresponds to one database table.",
+        "`@PrimaryKey val id: Int` — declares which property uniquely identifies each row.",
+        "Each remaining property (`city`, `date`, `highTemp`) becomes a column in that same table, by virtue of simply being declared here."
+      ],
+      "tip": "This declarative relationship — describe the shape, let the tool handle the mechanics — is the same spirit as Chapter 1's resource system (declare a string in XML, the R class handles the reference) and Chapter 2's manifest (declare a component, the OS handles the lifecycle). Room extends that same declarative pattern to structured data storage."
+    }
+  },
+  {
+    "id": "ch11-q5",
+    "topic": "DAO as an intermediary between app code and the database",
+    "difficulty": "moderate",
+    "chapter": "ch-11",
+    "snippet": "@Dao\ninterface ForecastDao {\n    @Query(\"SELECT * FROM ForecastRecord WHERE city = :cityName\")\n    suspend fun getForecastsForCity(cityName: String): List<ForecastRecord>\n}",
+    "question": "What's the relationship between the app's own code and the actual database, given this DAO interface?",
+    "choices": [
+      "The app's code talks to the raw database file directly, with the DAO being purely optional decoration",
+      "The DAO acts as an intermediary layer — the app's code calls a clearly-named function like getForecastsForCity(), and the DAO (with Room's help) is responsible for translating that into the actual underlying query against the ForecastRecord table declared in Q4, returning results as typed ForecastRecord objects rather than raw data",
+      "DAO stands for \"Data Almost Obsolete\" and represents a deprecated pattern no longer used",
+      "Every property in the app must have its own separate DAO interface"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This establishes the DAO's specific role as a boundary between the app's own code and the database's internal details: the rest of the app interacts with clean, typed function calls, never needing to deal with raw storage mechanics directly.",
+      "lineByLine": [
+        "`@Dao interface ForecastDao` — declares this as a Data Access Object, the go-between layer.",
+        "`getForecastsForCity(cityName: String): List<ForecastRecord>` — the app's own code calls this function by name, receiving back a list of the same typed data class declared in Q4.",
+        "The `@Query(...)` annotation is what actually connects this function to the underlying table — but the CALLER never needs to think about that; it just calls a suspend function (Q2's relationship) and gets typed objects back."
+      ],
+      "tip": "This intermediary relationship is valuable because it keeps the rest of the app decoupled from database specifics — if the underlying query logic needed to change, the calling code elsewhere in the app (ViewModel, Q7) wouldn't need to change at all, as long as the DAO's function signature stays the same."
+    }
+  },
+  {
+    "id": "ch11-q6",
+    "topic": "Flow keeps observers in sync with stored data changes",
+    "difficulty": "difficult",
+    "chapter": "ch-11",
+    "snippet": "@Dao\ninterface ForecastDao {\n    @Query(\"SELECT * FROM ForecastRecord\")\n    fun observeAllForecasts(): Flow<List<ForecastRecord>>\n}",
+    "question": "Recall Chapter 4, Q5's recomposition relationship (UI stays in sync with changing data). How does returning a Flow here relate to that same idea?",
+    "choices": [
+      "Flow has no relationship to Chapter 4's concept at all — it's a completely unrelated tool",
+      "Just as Chapter 4 established that Compose UI can automatically stay in sync with changing data, a Flow returned from the database automatically emits a new updated list whenever the underlying stored records change — any code observing this Flow (including UI, through further tools) stays continuously up to date, rather than needing to manually re-query",
+      "Flow<List<ForecastRecord>> only emits a value one single time, ever, and then stops",
+      "Returning a Flow here means this function can no longer be called from inside a coroutine"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects two chapters' 'stay in sync automatically' relationships: Chapter 4 established Compose keeping UI in sync with data; here, a Flow keeps an observer in sync with the actual persisted data in the database, automatically emitting fresh results whenever the underlying table changes.",
+      "lineByLine": [
+        "`fun observeAllForecasts(): Flow<List<ForecastRecord>>` — notice this isn't marked suspend; instead of returning one value once, it returns an ongoing stream.",
+        "Whenever the ForecastRecord table's contents change (a new record inserted, one updated or deleted), this Flow automatically emits a fresh, updated list.",
+        "Something observing this Flow — eventually connecting up to a Composable via further tools — stays continuously current, echoing exactly the automatic-sync relationship from Chapter 4, Q5, just sourced from the database instead of simple in-memory state."
+      ],
+      "tip": "The relationship to hold onto: a one-time suspend function (Q2, Q5) is for a single read-or-write action; a Flow-returning function is for ongoing observation, where you want to be notified automatically every time the underlying data changes, without manually re-querying yourself."
+    }
+  },
+  {
+    "id": "ch11-q7",
+    "topic": "ViewModel loads from persistence but doesn't itself persist",
+    "difficulty": "difficult",
+    "chapter": "ch-11",
+    "snippetLang": "markup",
+    "snippet": "Recall Chapter 5, Q11: a ViewModel survives configuration\nchanges (like rotation) because the OS deliberately\nretains it.\n\nA ViewModel loads forecast data from Room once when\nit's created, holding it in memory for the UI to use.\nThe device is then fully restarted.",
+    "question": "After the full device restart, what's the relationship between the ViewModel's in-memory data and Room's persisted data?",
+    "choices": [
+      "Both are equally lost after a full device restart, since neither ViewModel nor Room can survive that",
+      "The ViewModel's in-memory copy is gone — a device restart goes well beyond the configuration-change survival Chapter 5, Q11 described, and a brand new ViewModel will be created afterward; Room's actual persisted data, however, is unaffected by the restart entirely, so the new ViewModel can simply re-load the same still-there data as before",
+      "The ViewModel itself gets written to disk automatically and survives the restart directly",
+      "Room's data is also lost, since it depends on the ViewModel remaining alive to access it"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This draws a precise boundary between Chapter 5's ViewModel-survives-configuration-changes relationship and this chapter's persistence-survives-everything relationship. A device restart is a scenario ViewModel was never meant to survive — but it has zero effect on Room's actual stored data, which the next ViewModel instance can simply reload.",
+      "lineByLine": [
+        "Chapter 5, Q11: ViewModel survives ROTATION specifically, because the OS deliberately retains that one instance across that one kind of event.",
+        "A full device restart goes well beyond that — every process, including any ViewModel instance, is gone.",
+        "Room's actual data, written to disk (Q1's relationship), is entirely unaffected by the restart.",
+        "When the app is reopened, a brand new ViewModel is created, and it simply loads the same forecast data from Room again — the ViewModel is a temporary in-memory cache of persisted data, not the source of truth itself."
+      ],
+      "tip": "This relationship clarifies a common point of confusion: ViewModel and persistence solve DIFFERENT problems. ViewModel avoids needlessly reloading data on every rotation; genuine persistence (Room, DataStore) is what actually makes data durable across app restarts and device reboots. Real apps use both together, each for its own specific relationship to the data's lifetime."
+    }
+  },
+  {
+    "id": "ch11-q8",
+    "topic": "schema changes require reconciling old stored data with a new shape",
+    "difficulty": "difficult",
+    "chapter": "ch-11",
+    "snippet": "// Version 1 of the app\n@Entity\ndata class ForecastRecord(@PrimaryKey val id: Int, val city: String, val highTemp: Int)\n\n// Version 2 adds a new required field\n@Entity\ndata class ForecastRecord(@PrimaryKey val id: Int, val city: String, val highTemp: Int, val humidity: Int)",
+    "question": "A user has Version 1 installed, with existing stored records. They update to Version 2. What relationship exists between their OLD stored data and the NEW schema?",
+    "choices": [
+      "There's no conflict at all — Room automatically guesses reasonable values for any new fields with zero configuration needed",
+      "A genuine mismatch exists: old records were stored without a humidity value at all, but Version 2's schema now expects one — Room requires an explicit migration to define how existing data should be reconciled with the new shape, or the update will fail or clear existing data",
+      "The app simply ignores all old data and starts completely fresh automatically, silently, with no consequence",
+      "Room refuses to allow entities to ever change their shape between app versions"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This introduces the relationship between evolving data needs over time and already-persisted data: a schema (Q4's declared table shape) isn't fixed forever, but changing it creates a genuine reconciliation problem for whatever data already exists in that old shape.",
+      "lineByLine": [
+        "Version 1's ForecastRecord — no `humidity` field; existing rows on a user's device reflect this older shape.",
+        "Version 2's ForecastRecord — adds `humidity` as a new field, changing what a valid row should look like.",
+        "Without an explicit migration path telling Room how to handle this transition (e.g., filling in a default humidity value for old rows), old data and the new expected shape are in direct conflict — Room needs guidance on reconciling them, since it can't safely guess what the missing values should be."
+      ],
+      "tip": "This is a light introduction to a genuinely important real-world relationship: as an app evolves and its data needs change, already-persisted data on users' devices doesn't automatically update itself to match — bridging that gap (a 'migration') is an explicit responsibility, not something that happens for free."
+    }
+  },
+  {
+    "id": "ch11-q9",
+    "topic": "why DataStore replaced an older, non-coroutine tool",
+    "difficulty": "moderate",
+    "chapter": "ch-11",
+    "snippetLang": "markup",
+    "snippet": "Older approach (SharedPreferences): reading a saved\nvalue happens synchronously, directly on whatever\nthread calls it — including the main thread, if\ncalled from there.\n\nDataStore (this chapter's tool): every read and write\nis built around suspend functions and Flow from the\nstart.",
+    "question": "Connecting back to Chapter 7, why does DataStore's coroutine-native design represent a meaningful improvement over the older synchronous approach?",
+    "choices": [
+      "There's no meaningful difference; both approaches are equally safe to call from anywhere",
+      "The older synchronous approach risks Chapter 7, Q1's exact problem — a disk read called directly on the main thread can momentarily block it, even if the app developer isn't thinking of it as \"a slow operation\"; DataStore's suspend-based design makes it structurally impossible to accidentally block the main thread this way, since every operation is coroutine-native by design",
+      "DataStore is slower than the older approach in every single case",
+      "The older approach could only ever store numbers, while DataStore can store any type"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This ties the chapter's tooling choice directly back to Chapter 7's central concern: disk I/O, even for something as small as a single saved setting, is still technically a blocking-style operation — and a tool that doesn't force asynchronous handling makes it easy to accidentally recreate Chapter 7, Q1's frozen-UI problem without realizing it.",
+      "lineByLine": [
+        "Older synchronous approach — a read call could be made directly from the main thread, with nothing structurally preventing that mistake, risking a brief but real UI freeze under the wrong conditions (e.g., a slow storage device).",
+        "DataStore — every operation is a suspend function or Flow (Q2, Q6's relationships) from the ground up, meaning the coroutine machinery from Chapter 7 is baked in, not optional.",
+        "This design makes it much harder to accidentally block the main thread with a persistence operation, compared to a tool that allows a direct synchronous call from anywhere."
+      ],
+      "tip": "This is a good example of how a tool's API design can enforce a good relationship (always asynchronous, never blocking) rather than simply hoping developers remember to wrap every call correctly themselves — DataStore's suspend-first design makes the safe choice the only choice."
+    }
+  },
+  {
+    "id": "ch11-q10",
+    "topic": "full scenario synthesis",
+    "difficulty": "difficult",
+    "chapter": "ch-11",
+    "snippetLang": "markup",
+    "snippet": "1. User toggles \"Dark Mode\" on in Settings.\n2. The app calls a suspend function to write this\n   preference via DataStore, on Dispatchers.IO.\n3. The user completely force-closes the app, and the\n   OS eventually kills the process entirely.\n4. Days later, the user reopens the app.\n5. The app reads the Dark Mode preference back out\n   via DataStore, and the UI reflects it correctly.",
+    "question": "Which statement correctly weaves together the relationships established across this chapter?",
+    "choices": [
+      "This scenario is impossible, since Chapter 5 established that all app state is lost on process death",
+      "Step 2 reflects DataStore's coroutine-native design (Q2, Q9), correctly dispatched off the main thread (Chapter 7, Q5); step 3's process death has no bearing on this specific data, unlike Chapter 5's in-memory examples, because it was genuinely persisted to disk (Q1); step 5 confirms that persisted data remains available regardless of how much time passed or how many process lifecycles occurred in between",
+      "Step 2 is unnecessary — DataStore automatically saves every app variable without being explicitly told to",
+      "Step 5 requires the exact same ViewModel instance from step 1 to still be alive for the read to succeed"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This scenario threads together the chapter's central relationships: coroutine-native persistence operations (avoiding Chapter 7's main-thread problem), and genuine survival across process death (Chapter 5's boundary that in-memory tools can't cross).",
+      "lineByLine": [
+        "Step 2: the write is a suspend function (Q2), properly dispatched (Chapter 7, Q5) — consistent with DataStore's coroutine-native design (Q9).",
+        "Step 3: process death — the exact kind of event that erases Chapter 5's in-memory tools (tapCount, non-persisted ViewModel data) — has no effect on this specific piece of data, precisely because Q1 established that genuine persistence doesn't depend on any process staying alive.",
+        "Step 4-5: any amount of time can pass, any number of process restarts can occur — the persisted value is simply still there, read back out through the same DataStore relationship used to write it."
+      ],
+      "tip": "The throughline across this entire chapter: whenever data genuinely needs to outlive the app's own process — not just survive a rotation, but survive being fully closed, killed, and reopened much later — persistence (DataStore or Room) is the only category of tool from this book actually built for that specific relationship."
+    }
+  },
+  {
+    "id": "ch11-q11",
+    "topic": "Flow connects all the way to Compose UI via collectAsState",
+    "difficulty": "difficult",
+    "chapter": "ch-11",
+    "snippet": "// Inside a ViewModel\nval forecasts: Flow<List<ForecastRecord>> = dao.observeAllForecasts()\n\n// Inside a Composable\nval forecastList by viewModel.forecasts.collectAsState(initial = emptyList())\nLazyColumn {\n    items(forecastList) { record -> ForecastRow(record) }\n}",
+    "question": "Q6 showed the database side of this Flow automatically emitting updates. What completes the relationship all the way to the LazyColumn from Chapter 4?",
+    "choices": [
+      "LazyColumn automatically detects Room database changes on its own, with no code connecting them",
+      "collectAsState() is the bridge — it observes the Flow (Q6) and converts its ongoing emissions into Compose state that a Composable can read; whenever the database changes and the Flow emits a new list, collectAsState() updates that state, which triggers Chapter 4, Q5's recomposition relationship, refreshing the LazyColumn automatically",
+      "The Flow must be manually converted into a plain List before LazyColumn can ever use it",
+      "This pattern only works if the ViewModel and the Composable are defined in the exact same file"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This closes the full loop first opened in Q6: a database change → Flow emission → collectAsState() updates Compose state → recomposition (Chapter 4, Q5) refreshes the UI. Every link in that chain was introduced separately across chapters, and this is where they connect end to end.",
+      "lineByLine": [
+        "`dao.observeAllForecasts()` — the Flow from Q5/Q6, sourced from the actual database.",
+        "`viewModel.forecasts` — the ViewModel (Chapter 5, Q11) simply exposes that same Flow, acting as a pass-through.",
+        "`collectAsState(initial = emptyList())` — bridges the Flow into Compose's world, giving back a value Compose can track.",
+        "Whenever the underlying data changes, this state updates, and Chapter 4, Q5's automatic UI-sync relationship takes over from there — the LazyColumn simply reflects whatever the current state is."
+      ],
+      "tip": "This end-to-end chain — Room table change → DAO's Flow → ViewModel exposes it → collectAsState() → recomposition — is one of the most common real-world patterns in Android apps. Recognizing each individual link (spread across Chapters 4, 5, 7, and 11) is what makes the whole chain readable."
+    }
+  },
+  {
+    "id": "ch11-q12",
+    "topic": "a Database class ties entities and DAOs together into one usable database",
+    "difficulty": "moderate",
+    "chapter": "ch-11",
+    "snippet": "@Database(entities = [ForecastRecord::class], version = 1)\nabstract class AppDatabase : RoomDatabase() {\n    abstract fun forecastDao(): ForecastDao\n}",
+    "question": "Q4 declared an @Entity and Q5 declared a @Dao. What relationship does THIS class have to those two pieces?",
+    "choices": [
+      "It's an unrelated, optional class that has no real connection to the entity or DAO",
+      "This is the piece that ties everything together into one actual, usable database — it declares WHICH entities (tables) belong to this database and provides access to the DAOs used to query them; without this class, the individually-declared @Entity and @Dao pieces have no actual database to belong to",
+      "A separate AppDatabase class must be created for every individual @Entity in the app",
+      "This class replaces the need for a DAO entirely"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This introduces the third piece needed to complete Room's relational structure: the @Entity (Q4) declares a table's shape, the @Dao (Q5) declares how to query it, and this @Database class is what ties a specific set of entities and DAOs together into one coherent, actual database.",
+      "lineByLine": [
+        "`@Database(entities = [ForecastRecord::class], version = 1)` — declares that this database contains the ForecastRecord table (Q4), and tracks a version number (relevant to Q8's migration discussion).",
+        "`abstract class AppDatabase : RoomDatabase()` — Room generates the real implementation behind this declaration.",
+        "`abstract fun forecastDao(): ForecastDao` — provides access to the DAO (Q5) used to actually interact with that entity's table."
+      ],
+      "tip": "Think of these three pieces as forming one complete relationship: @Entity defines a table's shape, @Dao defines how to query a table, and @Database is the container that declares which tables exist together and hands out the DAOs used to access them — all three exist to serve each other, not independently."
+    }
+  }
+]

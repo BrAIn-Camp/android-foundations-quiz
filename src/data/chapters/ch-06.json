@@ -1,0 +1,296 @@
+[
+  {
+    "id": "ch06-q1",
+    "topic": "Intent as a request object, not code",
+    "difficulty": "easy",
+    "chapter": "ch-06",
+    "snippet": "val intent = Intent(this, SettingsActivity::class.java)\nstartActivity(intent)",
+    "question": "What is the relationship between the `intent` object here and the actual work of opening SettingsActivity?",
+    "choices": [
+      "The intent object IS the SettingsActivity — creating it directly runs SettingsActivity's code",
+      "The intent is just a description of a request — \"please start SettingsActivity\" — that gets handed to the OS via startActivity(); the OS is the one that actually locates and launches the target component",
+      "startActivity() only works if SettingsActivity has already been launched once before",
+      "Creating the intent object has no effect at all until the app is restarted"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Intent is best understood as a messenger, not as executable code itself. It packages up what you want to happen, then hands that request to the OS — which is the one actually responsible for finding and launching the target.",
+      "lineByLine": [
+        "`Intent(this, SettingsActivity::class.java)` — builds a request: 'the target is specifically SettingsActivity.'",
+        "`startActivity(intent)` — hands that request over to the OS.",
+        "The OS receives the request, confirms SettingsActivity is a declared component (Chapter 2), and only then actually launches it, pushing it onto the back stack (Chapter 3)."
+      ],
+      "tip": "This messenger relationship is the key mental model for the entire chapter: your code never launches another component directly — it always goes through the OS via an Intent, which is why the manifest declaration (Chapter 2) matters so much. The OS won't act on a request for a component it doesn't know about."
+    }
+  },
+  {
+    "id": "ch06-q2",
+    "topic": "explicit intent — direct addressing",
+    "difficulty": "easy",
+    "chapter": "ch-06",
+    "snippet": "// Explicit Intent: names the exact target class\nval intent = Intent(this, ForecastDetailActivity::class.java)",
+    "question": "Chapter 3 established that MainActivity can launch ForecastDetailActivity. What specific relationship does this explicit Intent express to make that happen?",
+    "choices": [
+      "It expresses a vague request that could be fulfilled by any activity that seems similar",
+      "It expresses a direct, specific relationship — \"I want exactly THIS component, by name, and no other\" — leaving no ambiguity for the OS to resolve",
+      "It only works between activities that share the exact same class name",
+      "It requires the target activity to also create a matching Intent pointing back"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An explicit Intent names its target directly and unambiguously — this is the exact mechanism behind the Activity-to-Activity relationship first introduced conceptually in Chapter 3.",
+      "lineByLine": [
+        "`Intent(this, ForecastDetailActivity::class.java)` — the second argument names the target class precisely.",
+        "There's no searching or matching involved — the OS knows exactly which declared component to launch.",
+        "This is why Chapter 3's Q5 was true: if ForecastDetailActivity isn't declared in the manifest, this specific, named request still fails at runtime — naming a target doesn't bypass the requirement that it be declared."
+      ],
+      "tip": "Explicit Intents are used constantly for navigation WITHIN your own app, where you already know exactly which of your own Activities should handle the request — there's no ambiguity to resolve."
+    }
+  },
+  {
+    "id": "ch06-q3",
+    "topic": "implicit intent — OS resolves the target",
+    "difficulty": "moderate",
+    "chapter": "ch-06",
+    "snippet": "// Implicit Intent: describes an ACTION, not a specific class\nval intent = Intent(Intent.ACTION_VIEW).apply {\n    data = Uri.parse(\"https://weathernow.example.com/forecast/today\")\n}\nstartActivity(intent)",
+    "question": "Unlike the explicit Intent in Q2, this Intent never names a specific class. What relationship does the OS have to fulfilling this request?",
+    "choices": [
+      "The request fails immediately since no class was named",
+      "The OS acts as a matchmaker: it looks across every installed app's declared intent-filters to find one that matches this action and data, then launches whichever component (possibly from a completely different app) is the best match",
+      "This can only ever launch an Activity within the exact same app that created the Intent",
+      "The user must manually type the target Activity's class name before this can work"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the defining relationship of an implicit Intent: instead of naming a target, it describes WHAT should happen (an action) and WHAT it concerns (data). The OS takes on the job of resolving that description into an actual component, by checking every app's declared intent-filters for a match.",
+      "lineByLine": [
+        "`Intent.ACTION_VIEW` — describes the action: 'display this content.'",
+        "`data = Uri.parse(\"https://...\")` — describes what the content is.",
+        "The OS searches every installed app's manifest for an `<intent-filter>` whose `action` and `data` attributes match this description — recall Chapter 2's deep-link filter example, which was built to match exactly this kind of request."
+      ],
+      "tip": "This is a direct callback to Chapter 2, Q13's deep-link intent-filter: that filter existed specifically so an implicit Intent like this one — coming from anywhere, even a text message or another app entirely — could be resolved to your app's ForecastDetailActivity."
+    }
+  },
+  {
+    "id": "ch06-q4",
+    "topic": "multiple matches trigger a chooser",
+    "difficulty": "moderate",
+    "chapter": "ch-06",
+    "snippetLang": "markup",
+    "snippet": "An implicit Intent requests: \"share this text with any app that can handle sharing.\"\n\nInstalled apps with a matching intent-filter for this action:\n- Messages\n- Email\n- WeatherNow (has its own share feature)\n- A note-taking app",
+    "question": "With four different apps all declaring a matching intent-filter for this same implicit Intent, what does the OS do?",
+    "choices": [
+      "It picks one arbitrarily with no user input",
+      "It presents a chooser dialog, letting the user pick which of the matching apps should actually handle the request — since multiple valid matches exist, resolving \"the one target\" becomes the user's decision, not the OS's alone",
+      "It launches all four apps simultaneously",
+      "It fails, since an implicit Intent can only ever match exactly one app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This extends the matchmaker relationship from Q3: when more than one component's intent-filter matches equally well, the OS doesn't guess — it surfaces the decision to the user via a chooser (sometimes called a disambiguation dialog), letting them pick the actual recipient of the request.",
+      "lineByLine": [
+        "Four apps, four matching intent-filters for the same share action.",
+        "The OS recognizes multiple valid candidates rather than one unambiguous match.",
+        "A chooser UI appears, and whichever app the user taps becomes the one the Intent is actually delivered to."
+      ],
+      "tip": "This relationship — one implicit request, multiple possible fulfillers, user picks — is exactly the mechanism behind the familiar Android 'Share' menu. It only appears because implicit Intents are inherently open-ended about which specific component should handle them."
+    }
+  },
+  {
+    "id": "ch06-q5",
+    "topic": "no matching component crashes, like ch3's undeclared component",
+    "difficulty": "moderate",
+    "chapter": "ch-06",
+    "snippet": "val intent = Intent(Intent.ACTION_VIEW).apply {\n    data = Uri.parse(\"somecustomscheme://rareaction\")\n}\nstartActivity(intent)\n\n// No installed app declares an intent-filter matching this scheme",
+    "question": "Compare this to Chapter 3, Q5 (launching an undeclared explicit target). What's the relationship between these two failure scenarios?",
+    "choices": [
+      "They're unrelated — implicit Intents can never fail this way",
+      "Both share the same underlying relationship: a request was made for a component that doesn't have a valid, matching declaration — Chapter 3's case was an explicit target missing its manifest entry, while this case is an implicit request with zero matching intent-filters anywhere on the device — both result in the same kind of runtime failure (ActivityNotFoundException)",
+      "This scenario silently does nothing, while Chapter 3's scenario always crashes",
+      "This can only fail if the device has no internet connection"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This draws a direct parallel across the chapter boundary: whether a request is explicit (naming an undeclared target) or implicit (describing an action nothing can fulfill), the underlying relationship is the same — a request for a component-that-doesn't-exist-in-a-usable-form fails at runtime the same way.",
+      "lineByLine": [
+        "Chapter 3, Q5: explicit Intent names ForecastDetailActivity, which isn't declared → crash.",
+        "Here: implicit Intent describes an action/data combination that matches zero declared intent-filters on the entire device → crash.",
+        "Both surface the same exception, `ActivityNotFoundException`, because both ultimately boil down to 'the OS could not resolve this request to any valid, declared component.'"
+      ],
+      "tip": "Whether explicit or implicit, every Intent request depends on the target actually being properly declared and discoverable — this is the same manifest-dependency relationship from Chapter 2, just reached via two different paths (naming vs. describing)."
+    }
+  },
+  {
+    "id": "ch06-q6",
+    "topic": "extras carry a data payload alongside the request",
+    "difficulty": "moderate",
+    "chapter": "ch-06",
+    "snippet": "val intent = Intent(this, ForecastDetailActivity::class.java).apply {\n    putExtra(\"city_name\", \"Seattle\")\n    putExtra(\"forecast_day\", \"Monday\")\n}\nstartActivity(intent)",
+    "question": "Beyond just naming ForecastDetailActivity as the target, what additional relationship do the two putExtra() calls establish?",
+    "choices": [
+      "They have no effect — extras are purely for internal logging purposes",
+      "They attach a small data payload to the request — information the caller (MainActivity) wants to hand over to the target (ForecastDetailActivity) so it knows which specific city and day to display, rather than the target having to guess or hardcode a value",
+      "They determine which Activity gets launched, overriding the class named in the Intent constructor",
+      "They permanently change ForecastDetailActivity's default behavior for all future launches"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "An Intent isn't just an address — it can also carry a payload of data alongside that address. Extras represent a caller-to-target data relationship: information the launching component wants to make available to whatever it's launching.",
+      "lineByLine": [
+        "`Intent(this, ForecastDetailActivity::class.java)` — establishes WHO the target is (explicit, per Q2).",
+        "`putExtra(\"city_name\", \"Seattle\")` and `putExtra(\"forecast_day\", \"Monday\")` — attach additional data alongside that addressing information.",
+        "When ForecastDetailActivity is launched, it can read these same values back out, now knowing specifically which city and day to display, rather than needing that information hardcoded or guessed."
+      ],
+      "tip": "Think of an Intent as an envelope: the addressing (explicit class name, or implicit action/data) is like the address on the front, while extras are like a letter placed inside — additional information for the recipient, carried along with the request itself."
+    }
+  },
+  {
+    "id": "ch06-q7",
+    "topic": "result data flows back to the caller",
+    "difficulty": "difficult",
+    "chapter": "ch-06",
+    "snippetLang": "markup",
+    "snippet": "Recall Chapter 3, Q11's distinction: fire-and-forget vs.\nlaunching an activity while expecting a result back.\n\nMainActivity launches PhotoPickerActivity, specifically\nwaiting for a result.\n\nWhen the user picks a photo, PhotoPickerActivity packages\nthe chosen photo's information into an Intent and finishes,\nhanding that Intent back to MainActivity.",
+    "question": "How does this scenario relate the Intent object to the two-way relationship described back in Chapter 3, Q11?",
+    "choices": [
+      "The Intent is only ever used for the original launch — no Intent is involved in returning the result",
+      "An Intent is used in BOTH directions: one to launch PhotoPickerActivity in the first place, and then another (returned by PhotoPickerActivity) to carry the chosen photo's data back to MainActivity — the same request-and-payload relationship from Q6, just flowing in reverse on the way back",
+      "PhotoPickerActivity must relaunch MainActivity from scratch to hand back the result",
+      "Results can only be returned between activities in completely different apps"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects Chapter 3's conceptual two-way relationship directly to the concrete mechanism: an Intent isn't just used to launch something — a (typically different) Intent, carrying its own payload of extras, is what actually delivers a result back to the original caller.",
+      "lineByLine": [
+        "MainActivity → launches, expecting a result → PhotoPickerActivity (Chapter 3, Q11's scenario B).",
+        "PhotoPickerActivity packages the chosen photo's details as extras (Q6's relationship) inside a NEW Intent.",
+        "That Intent is handed back to MainActivity as PhotoPickerActivity finishes — completing the two-way relationship using the exact same Intent-as-messenger-with-payload mechanism, just running in the return direction."
+      ],
+      "tip": "Recognizing this pattern helps you read result-based flows in real code: launching for a result and returning a result both fundamentally use the same tool — an Intent carrying a payload — just at two different points in the same interaction."
+    }
+  },
+  {
+    "id": "ch06-q8",
+    "topic": "which filter attributes make an implicit intent match",
+    "difficulty": "difficult",
+    "chapter": "ch-06",
+    "snippetLang": "xml",
+    "snippet": "<!-- Declared in the manifest (from Chapter 2) -->\n<intent-filter>\n    <action android:name=\"android.intent.action.VIEW\" />\n    <category android:name=\"android.intent.category.BROWSABLE\" />\n    <data android:scheme=\"https\" android:host=\"weathernow.example.com\" />\n</intent-filter>\n\n<!-- An implicit Intent created elsewhere -->\nIntent(ACTION_VIEW, Uri.parse(\"https://weathernow.example.com/forecast\"))",
+    "question": "What's the relationship between the attributes inside this `<intent-filter>` and the implicit Intent shown below it?",
+    "choices": [
+      "There's no real relationship — the OS matches purely at random",
+      "Each attribute in the filter represents a criterion the incoming Intent must satisfy to match; here, the Intent's action (VIEW) and its data's scheme+host (https + weathernow.example.com) line up with what the filter declares, which is precisely why the OS resolves this implicit Intent to this component",
+      "Only the <action> tag matters; <data> and <category> have no effect on matching",
+      "The filter only matches Intents created within the exact same file"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This makes the abstract 'OS resolves implicit intents by matching filters' idea from Q3 concrete: matching happens attribute by attribute. The Intent's action must correspond to a declared `<action>`, and its data must correspond to a declared `<data>` pattern, for the filter to actually match.",
+      "lineByLine": [
+        "`<action android:name=\"...VIEW\" />` in the filter matches the Intent's `ACTION_VIEW`.",
+        "`<data android:scheme=\"https\" android:host=\"weathernow.example.com\" />` matches the Intent's URI, which uses the https scheme and that same host.",
+        "Because both the action and the data pattern line up, the OS considers this a valid match and can route the implicit Intent to this specific declared component."
+      ],
+      "tip": "Reading an intent-filter is a matter of checking each piece against a hypothetical incoming Intent: does the action match? Does the data pattern match? A filter with several `<data>` attributes (scheme, host, path, etc.) is narrowing down exactly which URLs it's willing to claim, versus a broader filter that might match more requests."
+    }
+  },
+  {
+    "id": "ch06-q9",
+    "topic": "choosing explicit vs implicit based on what you know",
+    "difficulty": "moderate",
+    "chapter": "ch-06",
+    "snippetLang": "markup",
+    "snippet": "Case A: MainActivity wants to open its own SettingsActivity.\nCase B: WeatherNow wants to let the user share a forecast\n         summary with whatever app they prefer.",
+    "question": "What relationship determines whether Case A and Case B should use an explicit or implicit Intent?",
+    "choices": [
+      "It's arbitrary — either kind of Intent works equally well for both cases",
+      "Case A knows exactly which specific, known component it wants (its own SettingsActivity) — an explicit Intent fits; Case B doesn't know or care which specific app should handle it, only that SOME app capable of sharing should — an implicit Intent fits, letting the OS (and possibly the user) resolve the target",
+      "Explicit Intents can only launch activities in other apps; implicit Intents can only launch activities in the same app",
+      "Case B is impossible without first manually listing every app capable of sharing"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the core decision relationship of the whole chapter: explicit Intents fit when you know precisely which component you want (typically your own app's components, per Q2). Implicit Intents fit when you only know what KIND of action you want performed, and are fine with the OS (or the user, per Q4) determining who actually performs it.",
+      "lineByLine": [
+        "Case A: MainActivity already knows SettingsActivity by name — there's no ambiguity to resolve, so an explicit Intent (Q2's relationship) is the natural fit.",
+        "Case B: WeatherNow doesn't know or care which specific app handles sharing — it just wants 'anything capable of sharing text' — so an implicit Intent (Q3's relationship) correctly hands that resolution job to the OS."
+      ],
+      "tip": "A quick test when reading Intent code: if it's built with a specific class reference (`SettingsActivity::class.java`), it's explicit. If it's built with just an action and data, with no named class, it's implicit — and you should expect the OS (Q3) or a user-facing chooser (Q4) to be involved in figuring out the actual target."
+    }
+  },
+  {
+    "id": "ch06-q10",
+    "topic": "full scenario synthesis",
+    "difficulty": "difficult",
+    "chapter": "ch-06",
+    "snippetLang": "markup",
+    "snippet": "1. MainActivity launches ForecastDetailActivity explicitly,\n   passing along the selected city name as an extra.\n2. On that screen, the user taps \"Share Forecast.\"\n3. An implicit Intent is created describing a text-share action.\n4. Two apps on the device have matching intent-filters for sharing.\n5. The user picks one from the resulting chooser.\n6. Later, the user backs out of the share flow entirely, returning\n   to ForecastDetailActivity, then presses back again to return\n   to MainActivity.",
+    "question": "Which statement correctly identifies the DIFFERENT kinds of Intent-based relationships at play across this whole scenario?",
+    "choices": [
+      "Only one kind of Intent relationship is used throughout — they're all identical",
+      "Step 1 uses an explicit Intent with an extras payload (Q2 + Q6); step 3 uses an implicit Intent (Q3); step 4-5 shows the OS/chooser resolving multiple matches (Q4); step 6 is unrelated to Intents at all — it's purely the back-stack/lifecycle relationship from Chapters 3 and 5",
+      "Every step in this scenario relies on an explicit Intent, since the app already knows what it wants to happen",
+      "Step 6 requires launching a brand new implicit Intent to navigate backward"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This scenario deliberately weaves together every relationship from the chapter, plus a reminder that backward navigation (Chapter 3's back stack, Chapter 5's lifecycle) is an entirely separate mechanism from Intents — pressing back doesn't involve creating any new Intent at all.",
+      "lineByLine": [
+        "Step 1: explicit Intent (Q2), naming ForecastDetailActivity directly, carrying the city name as an extra (Q6).",
+        "Step 3: implicit Intent (Q3), describing 'share this text' without naming a specific target app.",
+        "Steps 4-5: multiple matching intent-filters trigger the OS's chooser (Q4), and the user resolves the ambiguity.",
+        "Step 6: backing out relies entirely on the back-stack pop / lifecycle relationships already established in Chapters 3 and 5 — no Intent is created or needed to simply navigate backward through screens already on the stack."
+      ],
+      "tip": "A key reading skill this reinforces: Intents are for INITIATING a new component or requesting an action — they are not the mechanism for backward navigation. Once a screen exists on the back stack, returning to it via the system back button is governed by the stack and lifecycle rules, not by any new Intent being built."
+    }
+  },
+  {
+    "id": "ch06-q11",
+    "topic": "broadcast intents are one-to-many, not one-to-one",
+    "difficulty": "difficult",
+    "chapter": "ch-06",
+    "snippetLang": "markup",
+    "snippet": "Every Intent seen so far in this chapter: one sender,\none resolved receiver (either a named Activity, or one\napp chosen via a chooser).\n\nA different kind of Intent: the OS broadcasts \"the device\nhas finished booting.\" Multiple, entirely unrelated apps\ncan all independently notice and react to this same\nannouncement, with none of them being \"launched\" as a\nvisible screen at all.",
+    "question": "What's the structural difference between this broadcast relationship and every Intent relationship covered so far in this chapter?",
+    "choices": [
+      "There's no real difference — broadcasts still resolve to exactly one target, just like explicit and implicit intents",
+      "Every prior example was fundamentally one-to-one (a request resolved to a single receiving component); a broadcast is one-to-many — it's an announcement that any number of independently interested components can react to simultaneously, without any single one of them being \"the\" resolved target",
+      "Broadcasts can only be sent by a single specially-designated app on the device",
+      "Broadcasts always open a visible screen, just like explicit intents do"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This introduces a genuinely different shape of relationship than anything else in this chapter. Explicit Intents (Q2) resolve to exactly one named target. Implicit Intents (Q3) resolve to exactly one target too — even with multiple candidates, a chooser (Q4) narrows it down to one. A broadcast breaks that one-to-one pattern entirely: it's a public announcement that many separate components can each notice and act on independently.",
+      "lineByLine": [
+        "Every earlier example: sender → (resolution process) → exactly one receiving component.",
+        "Broadcast example: 'device finished booting' → potentially many apps, each with their own interest in that event, react independently.",
+        "None of those reacting components are \"launched\" as a visible foreground screen the way an Activity is — they're simply notified that something happened."
+      ],
+      "tip": "This is a preview of Chapter 9 (BroadcastReceiver), which covers exactly this one-to-many relationship in depth. For now, the key relational takeaway is that Intents serve two structurally different purposes: directed requests (this chapter's main focus) and public announcements (broadcasts) — don't assume every Intent has exactly one resolved recipient."
+    }
+  },
+  {
+    "id": "ch06-q12",
+    "topic": "intents can target services too, not just activities",
+    "difficulty": "moderate",
+    "chapter": "ch-06",
+    "snippet": "// Starting an Activity (covered throughout this chapter)\nstartActivity(Intent(this, ForecastDetailActivity::class.java))\n\n// Starting a Service — same Intent mechanism, different\n// kind of component, no visible screen involved\nstartService(Intent(this, WeatherSyncService::class.java))",
+    "question": "What does this reveal about the relationship between Intents and the kinds of components they can address?",
+    "choices": [
+      "Intents are exclusively for Activities; this second example is not actually a real pattern",
+      "The same Intent-as-messenger relationship established throughout this chapter isn't limited to Activities — it's a general-purpose way to address ANY declared component, including Services (covered in Chapter 8), which don't show a visible screen at all",
+      "startService() secretly creates a hidden Activity behind the scenes",
+      "Only implicit Intents can be used to start a Service; explicit Intents only work for Activities"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Everything this chapter has established about Intents — explicit addressing (Q2), the manifest-dependency requirement (Q5), carrying extras (Q6) — applies beyond just Activities. The same messenger relationship is how you address other kinds of declared components entirely.",
+      "lineByLine": [
+        "`Intent(this, ForecastDetailActivity::class.java)` — targets an Activity, and `startActivity()` is the corresponding call that puts it on the back stack (Chapter 3).",
+        "`Intent(this, WeatherSyncService::class.java)` — the exact same explicit-addressing pattern, but naming a Service instead.",
+        "`startService()` is the corresponding call for THIS kind of component — no screen appears, no back-stack entry is created, because a Service isn't a visible UI component at all."
+      ],
+      "tip": "This is a preview of Chapter 8 (Services), which explores what these background, non-visual components actually do. For now, the relational takeaway is: 'Intent' is a general-purpose addressing mechanism across several different kinds of declared components (Activities, Services, and more) — it's not exclusively tied to launching screens."
+    }
+  }
+]

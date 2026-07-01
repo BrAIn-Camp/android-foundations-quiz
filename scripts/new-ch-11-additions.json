@@ -1,0 +1,51 @@
+[
+  {
+    "id": "ch11-q11",
+    "topic": "Flow connects all the way to Compose UI via collectAsState",
+    "difficulty": "difficult",
+    "chapter": "ch-11",
+    "snippet": "// Inside a ViewModel\nval forecasts: Flow<List<ForecastRecord>> = dao.observeAllForecasts()\n\n// Inside a Composable\nval forecastList by viewModel.forecasts.collectAsState(initial = emptyList())\nLazyColumn {\n    items(forecastList) { record -> ForecastRow(record) }\n}",
+    "question": "Q6 showed the database side of this Flow automatically emitting updates. What completes the relationship all the way to the LazyColumn from Chapter 4?",
+    "choices": [
+      "LazyColumn automatically detects Room database changes on its own, with no code connecting them",
+      "collectAsState() is the bridge — it observes the Flow (Q6) and converts its ongoing emissions into Compose state that a Composable can read; whenever the database changes and the Flow emits a new list, collectAsState() updates that state, which triggers Chapter 4, Q5's recomposition relationship, refreshing the LazyColumn automatically",
+      "The Flow must be manually converted into a plain List before LazyColumn can ever use it",
+      "This pattern only works if the ViewModel and the Composable are defined in the exact same file"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This closes the full loop first opened in Q6: a database change → Flow emission → collectAsState() updates Compose state → recomposition (Chapter 4, Q5) refreshes the UI. Every link in that chain was introduced separately across chapters, and this is where they connect end to end.",
+      "lineByLine": [
+        "`dao.observeAllForecasts()` — the Flow from Q5/Q6, sourced from the actual database.",
+        "`viewModel.forecasts` — the ViewModel (Chapter 5, Q11) simply exposes that same Flow, acting as a pass-through.",
+        "`collectAsState(initial = emptyList())` — bridges the Flow into Compose's world, giving back a value Compose can track.",
+        "Whenever the underlying data changes, this state updates, and Chapter 4, Q5's automatic UI-sync relationship takes over from there — the LazyColumn simply reflects whatever the current state is."
+      ],
+      "tip": "This end-to-end chain — Room table change → DAO's Flow → ViewModel exposes it → collectAsState() → recomposition — is one of the most common real-world patterns in Android apps. Recognizing each individual link (spread across Chapters 4, 5, 7, and 11) is what makes the whole chain readable."
+    }
+  },
+  {
+    "id": "ch11-q12",
+    "topic": "a Database class ties entities and DAOs together into one usable database",
+    "difficulty": "moderate",
+    "chapter": "ch-11",
+    "snippet": "@Database(entities = [ForecastRecord::class], version = 1)\nabstract class AppDatabase : RoomDatabase() {\n    abstract fun forecastDao(): ForecastDao\n}",
+    "question": "Q4 declared an @Entity and Q5 declared a @Dao. What relationship does THIS class have to those two pieces?",
+    "choices": [
+      "It's an unrelated, optional class that has no real connection to the entity or DAO",
+      "This is the piece that ties everything together into one actual, usable database — it declares WHICH entities (tables) belong to this database and provides access to the DAOs used to query them; without this class, the individually-declared @Entity and @Dao pieces have no actual database to belong to",
+      "A separate AppDatabase class must be created for every individual @Entity in the app",
+      "This class replaces the need for a DAO entirely"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This introduces the third piece needed to complete Room's relational structure: the @Entity (Q4) declares a table's shape, the @Dao (Q5) declares how to query it, and this @Database class is what ties a specific set of entities and DAOs together into one coherent, actual database.",
+      "lineByLine": [
+        "`@Database(entities = [ForecastRecord::class], version = 1)` — declares that this database contains the ForecastRecord table (Q4), and tracks a version number (relevant to Q8's migration discussion).",
+        "`abstract class AppDatabase : RoomDatabase()` — Room generates the real implementation behind this declaration.",
+        "`abstract fun forecastDao(): ForecastDao` — provides access to the DAO (Q5) used to actually interact with that entity's table."
+      ],
+      "tip": "Think of these three pieces as forming one complete relationship: @Entity defines a table's shape, @Dao defines how to query a table, and @Database is the container that declares which tables exist together and hands out the DAOs used to access them — all three exist to serve each other, not independently."
+    }
+  }
+]

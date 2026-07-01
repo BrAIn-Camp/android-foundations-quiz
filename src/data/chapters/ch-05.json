@@ -1,0 +1,299 @@
+[
+  {
+    "id": "ch05-q1",
+    "topic": "OS controls the lifecycle, not the developer",
+    "difficulty": "easy",
+    "chapter": "ch-05",
+    "snippet": "class MainActivity : ComponentActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) { ... }\n    override fun onPause() { ... }\n    override fun onDestroy() { ... }\n}",
+    "question": "Who decides WHEN onPause() or onDestroy() actually get called during normal use of the app?",
+    "choices": [
+      "The developer, by calling these functions directly whenever needed in the code",
+      "The Android OS decides — it calls these methods on the Activity in response to external events (user pressing home, another app opening, low memory), not because the developer's code invokes them",
+      "These methods run on a fixed timer regardless of what the user does",
+      "They only run once, immediately after the app is installed"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the foundational relationship of the entire chapter: lifecycle callbacks are not things your code calls — they're things the OS calls ON your Activity, in response to what's happening around it. Your job is to override them and react appropriately, not to invoke them yourself.",
+      "lineByLine": [
+        "`override fun onCreate(...)` — the keyword override signals this method is being provided TO the OS to call, not called BY your own code.",
+        "`onPause()` — triggered by the OS the moment something else partially obscures this Activity.",
+        "`onDestroy()` — triggered by the OS when this Activity instance is being permanently removed."
+      ],
+      "tip": "This flips the usual mental model of 'my code decides when things happen.' With lifecycle callbacks, the OS is in the driver's seat — your Activity is reacting to a sequence of events entirely outside its own control, similar to how Chapter 3 established that the OS (not your code) manages the back stack."
+    }
+  },
+  {
+    "id": "ch05-q2",
+    "topic": "onPause vs onStop — partial vs full invisibility",
+    "difficulty": "moderate",
+    "chapter": "ch-05",
+    "snippetLang": "markup",
+    "snippet": "Scenario A: A small transparent confirmation dialog\nappears on top of MainActivity. MainActivity is\nstill partially visible behind it.\n\nScenario B: The user presses the Home button.\nMainActivity is now completely off-screen.",
+    "question": "What's the relationship between how much of MainActivity remains visible and which lifecycle callback fires?",
+    "choices": [
+      "Both scenarios trigger the exact same callbacks, since MainActivity isn't in the foreground in either case",
+      "Scenario A (still partially visible) triggers only onPause(); Scenario B (fully hidden) goes further and also triggers onStop() — the degree of visibility determines how far the Activity moves down the lifecycle",
+      "Scenario A triggers onDestroy() since something is now on top of it",
+      "Scenario B never triggers any callback because pressing Home is a system-level action"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "onPause and onStop aren't interchangeable — they represent different degrees of losing visibility. Partial obstruction (still able to see some of the Activity) only pauses it. Complete disappearance from the screen goes a step further and stops it.",
+      "lineByLine": [
+        "Scenario A: dialog on top, MainActivity partially visible → only `onPause()` fires. MainActivity is paused but still technically on screen.",
+        "Scenario B: Home pressed, MainActivity fully off-screen → `onPause()` fires first (it's always the first step away from the foreground), immediately followed by `onStop()` since it's now completely hidden."
+      ],
+      "tip": "A useful relationship to remember: onPause always happens whenever ANY visibility is lost, even partial. onStop only happens once NO visibility remains at all. Every onStop is preceded by an onPause, but not every onPause leads to an onStop."
+    }
+  },
+  {
+    "id": "ch05-q3",
+    "topic": "rotation triggers destroy and recreate",
+    "difficulty": "difficult",
+    "chapter": "ch-05",
+    "snippet": "class MainActivity : ComponentActivity() {\n    var tapCount = 0  // increases by 1 each time a button is tapped\n}\n\n// User taps the button 5 times -> tapCount = 5\n// User then rotates the device from portrait to landscape\n// User checks tapCount again",
+    "question": "After rotating the device, what has actually happened to this specific MainActivity instance and its `tapCount` variable?",
+    "choices": [
+      "Nothing — rotation just resizes the same running Activity instance, so tapCount is still 5",
+      "The OS actually destroyed this entire Activity instance and created a brand new one to handle the new screen orientation — tapCount resets to 0 on the new instance because it's not the same object anymore",
+      "tapCount is automatically saved and restored to 5 by default with no extra work",
+      "Rotation pauses the Activity indefinitely until the device is rotated back"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is one of the most important — and most surprising — relationships in the whole lifecycle system: a configuration change like rotation doesn't just resize the existing Activity. By default, the OS destroys the entire instance and creates a completely new one from scratch to handle the new configuration.",
+      "lineByLine": [
+        "Before rotation: one MainActivity instance exists, with `tapCount = 5` in memory.",
+        "Rotation occurs — the OS runs this instance through `onPause → onStop → onDestroy`.",
+        "A brand new MainActivity instance is created via `onCreate → onStart → onResume`.",
+        "This new instance has its own fresh `tapCount`, initialized back to 0 — it has no memory of the old instance's state unless something explicitly carried that value across."
+      ],
+      "tip": "This relationship — configuration change equals full destroy-and-recreate, not a resize — is the reason `savedInstanceState` exists at all. Without some mechanism to carry small pieces of data across that boundary, every rotation would silently wipe out in-progress state."
+    }
+  },
+  {
+    "id": "ch05-q4",
+    "topic": "savedInstanceState carries data across the destroy boundary",
+    "difficulty": "difficult",
+    "chapter": "ch-05",
+    "snippet": "override fun onSaveInstanceState(outState: Bundle) {\n    super.onSaveInstanceState(outState)\n    outState.putInt(\"tapCount\", tapCount)\n}\n\noverride fun onCreate(savedInstanceState: Bundle?) {\n    super.onCreate(savedInstanceState)\n    tapCount = savedInstanceState?.getInt(\"tapCount\") ?: 0\n}",
+    "question": "Given the destroy-and-recreate relationship from the previous question, what role does the `Bundle` play here?",
+    "choices": [
+      "It prevents the Activity from being destroyed at all during rotation",
+      "It acts as a small carrier that survives the boundary between the OLD instance (about to be destroyed) and the NEW instance (about to be created) — the old instance packs values into it just before destruction, and the new instance can unpack them just after creation",
+      "It permanently stores tapCount to disk so it's remembered even after the app is fully closed and relaunched",
+      "It has no real relationship to the destroy/recreate cycle — it just runs on a separate timer"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The Bundle is the bridge across the exact gap identified in the previous question. The OLD instance is given one last chance to pack small values into it right before being destroyed; the NEW instance receives that same Bundle as a parameter and can pull those values back out.",
+      "lineByLine": [
+        "`onSaveInstanceState(outState: Bundle)` — called on the OLD instance just before destruction; `outState.putInt(\"tapCount\", tapCount)` packs the current value in.",
+        "The OS destroys the old instance and creates a new one.",
+        "`onCreate(savedInstanceState: Bundle?)` — the NEW instance receives that same Bundle as a parameter; `savedInstanceState?.getInt(\"tapCount\") ?: 0` retrieves the packed value (or falls back to 0 if there wasn't one, such as on a true fresh launch)."
+      ],
+      "tip": "This relationship is temporary and lightweight by design — the Bundle is meant for small amounts of UI state (like a tap count, scroll position, or selected tab), not for persisting significant data long-term. For anything that needs to survive beyond a single session, Chapter 11 (Data Persistence) is the appropriate relationship to reach for instead."
+    }
+  },
+  {
+    "id": "ch05-q5",
+    "topic": "resource acquire and release pairing",
+    "difficulty": "moderate",
+    "chapter": "ch-05",
+    "snippet": "override fun onResume() {\n    super.onResume()\n    startListeningToSensor()  // begins using battery and CPU\n}\n\noverride fun onPause() {\n    super.onPause()\n    stopListeningToSensor()  // must match the start above\n}",
+    "question": "Why is `stopListeningToSensor()` specifically paired with onPause() rather than, say, onDestroy()?",
+    "choices": [
+      "The pairing is arbitrary; any lifecycle method would work equally well",
+      "Because the sensor was started as soon as the Activity became visible (onResume) — it should stop being used the moment the Activity is no longer the foreground focus (onPause), rather than continuing to drain battery/CPU while some other screen has the user's attention",
+      "onDestroy() never actually gets called, so pairing with it wouldn't work",
+      "Sensors can only be stopped in onPause(), never in any other method"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a symmetry relationship: whatever lifecycle method ACQUIRES a resource should be matched with the corresponding method that RELEASES it, based on when that resource is actually needed. A sensor only needs to be active while the Activity has the user's attention — which starts at onResume and ends at onPause, not later.",
+      "lineByLine": [
+        "`onResume()` — the Activity is now fully in the foreground; starting the sensor here means it's only active while truly needed.",
+        "`onPause()` — the moment ANY visibility is lost (recall Q2), the sensor is stopped immediately, before the Activity potentially goes further into onStop or onDestroy.",
+        "If this were instead paired with onDestroy(), the sensor would keep running the entire time the Activity sits paused or stopped in the background — wasting battery for no benefit to the user."
+      ],
+      "tip": "This acquire/release symmetry is a general pattern that repeats throughout Android development: match the lifecycle callback where a resource starts being needed with the callback where that same need ends. Getting this pairing wrong is one of the most common sources of battery drain and memory leak bugs in real apps."
+    }
+  },
+  {
+    "id": "ch05-q6",
+    "topic": "stopped process can be killed by the OS",
+    "difficulty": "difficult",
+    "chapter": "ch-05",
+    "snippet": "User opens WeatherNow, then switches to a different app\nand uses their phone normally for the next hour.\n\nWeatherNow's MainActivity is now in the \"Stopped\" state\n(onStop() has been called, nothing visible on screen).",
+    "question": "An hour later, the OS is running low on memory. What's the relationship between MainActivity being \"stopped\" and what might happen to the entire WeatherNow app?",
+    "choices": [
+      "Nothing can happen to a stopped app; only the active foreground app is ever at risk",
+      "Because WeatherNow's Activity is stopped (not visible, not actively being used), the OS may kill its entire process to reclaim memory for whatever app the user is currently using — the stopped state makes the app a candidate for this kind of reclaiming",
+      "The OS is legally required to keep every installed app's process running indefinitely",
+      "WeatherNow will automatically move itself to the foreground to avoid being killed"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This extends the lifecycle relationship one level further, connecting an Activity's state to the OS's memory-management system as a whole. A stopped Activity isn't just invisible — it signals to the OS 'this isn't currently important to the user,' making its entire process a reasonable candidate to kill if memory is needed elsewhere.",
+      "lineByLine": [
+        "MainActivity's state: stopped — not visible, not interacting with the user.",
+        "OS memory pressure — the currently foregrounded app needs more memory than is available.",
+        "The OS can choose to kill WeatherNow's entire process (not just pause the Activity further) to free that memory up.",
+        "If the user later switches back to WeatherNow, the OS relaunches it as if from a fresh start — running through onCreate again, using savedInstanceState (Q4) to restore whatever small state was packed before the process was killed."
+      ],
+      "tip": "This is precisely why `savedInstanceState` matters even beyond simple rotation — it's the same mechanism that helps an app recover gracefully after being killed by the system for memory reasons and then relaunched by the user, not just after a screen rotation."
+    }
+  },
+  {
+    "id": "ch05-q7",
+    "topic": "overlapping lifecycle during activity-to-activity transition",
+    "difficulty": "difficult",
+    "chapter": "ch-05",
+    "snippetLang": "markup",
+    "snippet": "MainActivity is visible. User taps a forecast row,\nlaunching ForecastDetailActivity.\n\nActual order of events:\n1. MainActivity.onPause()\n2. ForecastDetailActivity.onCreate()\n3. ForecastDetailActivity.onStart()\n4. ForecastDetailActivity.onResume()   <- now visible\n5. MainActivity.onStop()",
+    "question": "What does this exact ordering reveal about the relationship between the two activities during the transition?",
+    "choices": [
+      "MainActivity fully stops before ForecastDetailActivity begins being created — the two never overlap",
+      "There's a brief overlap: MainActivity is only paused (not yet stopped) while ForecastDetailActivity is being created and brought to the foreground; MainActivity doesn't fully stop until AFTER the new Activity is already resumed and visible",
+      "ForecastDetailActivity must finish its entire lifecycle before MainActivity is even paused",
+      "The order shown here is random and varies unpredictably each time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This reveals a subtle but important relationship: during a transition between two activities, there's a real window of overlap. The outgoing Activity is only paused — not yet stopped — while the incoming one goes through its own startup sequence. Only after the new Activity is fully resumed does the outgoing one finally get stopped.",
+      "lineByLine": [
+        "`MainActivity.onPause()` — happens FIRST, the instant focus starts shifting away, even though ForecastDetailActivity doesn't exist yet.",
+        "`ForecastDetailActivity.onCreate() → onStart() → onResume()` — the new Activity's full startup sequence runs while MainActivity sits in the paused (not stopped) state.",
+        "`MainActivity.onStop()` — only fires LAST, after ForecastDetailActivity is already fully visible and interactive."
+      ],
+      "tip": "This ordering exists so the outgoing screen is never left in an ambiguous state — it's always definitively paused before the new one even starts appearing, guaranteeing a smooth visual handoff. This same relationship applies to Chapter 3's back stack: the activity being pushed underneath doesn't fully stop until the one on top is completely ready."
+    }
+  },
+  {
+    "id": "ch05-q8",
+    "topic": "trigger determines which transition occurs",
+    "difficulty": "moderate",
+    "chapter": "ch-05",
+    "snippetLang": "markup",
+    "snippet": "Event 1: A small non-fullscreen dialog appears on top of MainActivity\nEvent 2: The user navigates completely away to a different app\nEvent 3: The user rotates the device",
+    "question": "Which of these three events shares the SAME relationship with the lifecycle as the other two, versus being fundamentally different?",
+    "choices": [
+      "All three trigger the exact same sequence of lifecycle callbacks",
+      "Event 3 (rotation) is fundamentally different — unlike Events 1 and 2 (which only move the Activity through pause/stop while the SAME instance survives), rotation destroys the instance entirely and creates a new one",
+      "Event 1 (dialog) is the only one that has any effect on the lifecycle at all",
+      "Event 2 (navigating away) never actually pauses or stops the Activity"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This question tests whether the different lifecycle-triggering events are correctly sorted into 'same instance, different visibility' versus 'entirely new instance.' Events 1 and 2 both keep the SAME Activity object alive, just moving it along the pause/stop spectrum based on visibility (as established in Q2). Event 3 is categorically different — it destroys and replaces the instance itself (as established in Q3).",
+      "lineByLine": [
+        "Event 1 — partial visibility lost → onPause() only, same instance continues to exist.",
+        "Event 2 — full visibility lost → onPause() then onStop(), but still the same instance, ready to resume if the user comes back.",
+        "Event 3 — configuration change → onPause(), onStop(), onDestroy() of the OLD instance, followed by a fresh onCreate(), onStart(), onResume() of a NEW instance."
+      ],
+      "tip": "Grouping lifecycle-triggering events this way — 'does the instance survive, just with reduced visibility?' versus 'is the instance destroyed and replaced?' — is a more useful mental model than memorizing an abstract list of method names. It tells you immediately whether in-memory state like `tapCount` is at risk."
+    }
+  },
+  {
+    "id": "ch05-q9",
+    "topic": "lifecycle relationship to Chapter 3's back stack",
+    "difficulty": "moderate",
+    "chapter": "ch-05",
+    "snippetLang": "markup",
+    "snippet": "From Chapter 3: launching ForecastDetailActivity from\nMainActivity pushes it onto the back stack. MainActivity\nis still in the stack, just not visible.\n\nFrom this chapter: MainActivity goes through\nonPause() and onStop() during that same event.",
+    "question": "How do these two descriptions of the same event — Chapter 3's back-stack view and this chapter's lifecycle view — relate to each other?",
+    "choices": [
+      "They describe two unrelated, independent systems that happen to occur at the same time by coincidence",
+      "They're two different lenses on the exact same event: being pushed below the top of the back stack (Chapter 3's model) is precisely what causes an Activity to move through onPause and onStop (this chapter's model) — position in the stack and lifecycle state move together",
+      "The back stack determines lifecycle state only for the very first Activity launched, never for subsequent ones",
+      "Lifecycle callbacks only apply to activities that are NOT on the back stack"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This ties the two chapters together directly: they're not separate topics that happen to overlap — they're two complementary ways of describing the exact same underlying event. Whenever an Activity's position relative to the top of the back stack changes, its lifecycle state changes correspondingly.",
+      "lineByLine": [
+        "Chapter 3's framing: MainActivity gets pushed below the top of the stack when ForecastDetailActivity launches on top of it.",
+        "This chapter's framing: that exact same event is what triggers MainActivity's onPause() and onStop().",
+        "If ForecastDetailActivity later finishes (popping it off the stack, per Chapter 3), MainActivity returns to the top of the stack — and correspondingly moves back through onRestart(), onStart(), and onResume() in this chapter's model."
+      ],
+      "tip": "Whenever you're trying to reason about an Activity's lifecycle state at some point in time, Chapter 3's back-stack position is often the fastest way to figure it out: top of the stack means resumed; anywhere else in the stack means at least paused, likely stopped."
+    }
+  },
+  {
+    "id": "ch05-q10",
+    "topic": "full multi-step lifecycle scenario",
+    "difficulty": "difficult",
+    "chapter": "ch-05",
+    "snippetLang": "markup",
+    "snippet": "1. App launches. MainActivity: onCreate -> onStart -> onResume. tapCount = 0.\n2. User taps the button 3 times. tapCount = 3.\n3. User rotates the device.\n4. User presses the Home button afterward.\n5. An hour later, the OS kills the process due to low memory.\n6. User reopens WeatherNow from the app drawer.",
+    "question": "Assuming savedInstanceState correctly saves and restores tapCount at every relevant step, what is tapCount's value immediately after step 6?",
+    "choices": [
+      "0 — savedInstanceState only works for rotation, not for recovering from a process kill",
+      "3 — even though the Activity instance was destroyed and recreated at step 3 (rotation) AND the entire process was killed and relaunched at step 5, savedInstanceState carried the value across each of those boundaries",
+      "3 after step 3, but it's permanently lost and becomes 0 after step 5's process kill",
+      "The app crashes at step 6 and cannot be reopened"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This combines every relationship covered in this chapter into one sequence: rotation as destroy-and-recreate, a stopped Activity as a candidate for process death, and savedInstanceState as the consistent bridge across BOTH kinds of boundaries — not just rotation specifically.",
+      "lineByLine": [
+        "Step 1-2: tapCount reaches 3 in the original instance.",
+        "Step 3: rotation destroys this instance; onSaveInstanceState packs tapCount=3 into a Bundle; the new instance's onCreate reads it back out. tapCount is still 3.",
+        "Step 4: Home pressed — onPause, onStop. The Activity instance itself still exists in memory, tapCount unchanged at 3.",
+        "Step 5: OS kills the entire process for memory — but critically, the OS also retains the most recent saved Bundle for this task, to be handed to a fresh instance later.",
+        "Step 6: reopening relaunches the app as a brand new process; onCreate receives that retained Bundle, restoring tapCount back to 3."
+      ],
+      "tip": "The consistent thread across this entire scenario: savedInstanceState isn't a rotation-specific trick — it's a general-purpose bridge across ANY event that destroys the current Activity instance, whether that's a configuration change or the OS reclaiming memory. Small, essential pieces of UI state should always be considered for this treatment."
+    }
+  },
+  {
+    "id": "ch05-q11",
+    "topic": "ViewModel survives configuration changes",
+    "difficulty": "difficult",
+    "chapter": "ch-05",
+    "snippet": "class MainActivity : ComponentActivity() {\n    val viewModel: WeatherViewModel by viewModels()\n}\n\n// WeatherViewModel holds forecast data in memory.\n// The device is then rotated.",
+    "question": "Recall from Q3 that rotation destroys the Activity instance and creates a new one. What happens to `viewModel` and the forecast data it holds during that same rotation?",
+    "choices": [
+      "The ViewModel is destroyed right along with the old Activity instance, and all its data is lost, just like tapCount was in Q3",
+      "The same ViewModel instance is deliberately retained by the OS across the rotation — the NEW Activity instance reconnects to that same still-alive ViewModel, so the forecast data survives without needing to be manually packed into a Bundle",
+      "A ViewModel can only be used by one Activity ever, so rotation makes it permanently unusable",
+      "ViewModels prevent rotation from destroying the Activity at all"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the key relationship that makes ViewModel special: unlike ordinary properties on an Activity (like Q3's tapCount), a ViewModel is specifically designed by the OS to be RETAINED across a configuration-change destroy/recreate cycle. The Activity instance is replaced, but the ViewModel instance is not.",
+      "lineByLine": [
+        "Before rotation: MainActivity (instance A) is connected to a WeatherViewModel holding forecast data.",
+        "Rotation triggers destroy/recreate — but this time, specifically for the ViewModel, the OS keeps that same ViewModel instance alive rather than destroying it.",
+        "MainActivity (instance B, the new one) reconnects to that SAME retained ViewModel — not a fresh one — so the forecast data is still there, with zero manual save/restore code needed."
+      ],
+      "tip": "This relationship is why ViewModel exists: it's a purpose-built answer to Q3 and Q4's problem, for cases where manually packing everything into a savedInstanceState Bundle would be impractical (e.g., a large list of fetched data, not just a simple tap count). Bundle-based saving remains useful for small values; ViewModel is the better fit for anything larger or more complex."
+    }
+  },
+  {
+    "id": "ch05-q12",
+    "topic": "onCreate runs once per instance, onStart/onResume can repeat",
+    "difficulty": "moderate",
+    "chapter": "ch-05",
+    "snippetLang": "markup",
+    "snippet": "1. App launches. MainActivity (instance A): onCreate -> onStart -> onResume\n2. User briefly switches to another app, then comes right back (no rotation, no process kill).\n3. MainActivity (still instance A): onRestart -> onStart -> onResume",
+    "question": "Comparing steps 1 and 3, what's true about onCreate's relationship to this Activity instance versus onStart/onResume's relationship to it?",
+    "choices": [
+      "onCreate, onStart, and onResume all ran again identically in both steps",
+      "onCreate ran only once, in step 1, because it's tied to the CREATION of this specific instance; onStart and onResume can repeat multiple times over that same instance's life, since they're tied to VISIBILITY, which can be gained and lost repeatedly without the instance ever being recreated",
+      "None of these methods ran again in step 3, since instance A never really left memory",
+      "onCreate must run again every time onResume runs"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This distinguishes callbacks by how often they can fire relative to a single instance's lifetime. onCreate is a one-time event, tied to the instance coming into existence. onStart/onResume (and their counterparts onPause/onStop) can cycle repeatedly on that SAME instance, since visibility can be lost and regained many times without the instance itself ever being destroyed.",
+      "lineByLine": [
+        "Step 1: instance A is created — onCreate fires (this only ever happens once for instance A), then onStart and onResume as it becomes visible.",
+        "Step 2: switching away — onPause, onStop fire on instance A (still alive, just not visible).",
+        "Step 3: coming back — since no destroy occurred, the OS calls onRestart (specifically signals 'a stopped instance is becoming visible again'), then onStart and onResume again — but critically, onCreate does NOT run again, because instance A already exists."
+      ],
+      "tip": "A reliable way to tell instance identity apart from repeated visibility cycles: if onCreate fires, you know for certain you're looking at a brand new instance (tying back to Q3's rotation scenario). If only onStart/onResume (or onPause/onStop) fire without a preceding onCreate, the same instance is simply becoming visible or invisible again — nothing was destroyed or recreated."
+    }
+  }
+]

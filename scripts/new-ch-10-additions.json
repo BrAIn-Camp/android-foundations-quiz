@@ -1,0 +1,51 @@
+[
+  {
+    "id": "ch10-q11",
+    "topic": "requesting multiple permissions together produces one combined callback",
+    "difficulty": "difficult",
+    "chapter": "ch-10",
+    "snippet": "requestPermissions(\n    arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),\n    requestCode\n)\n\n// The callback later reports back a result for BOTH\n// permissions together, not as two separate callbacks",
+    "question": "What's the relationship between requesting these two permissions together, versus requesting CAMERA and RECORD_AUDIO as two entirely separate calls?",
+    "choices": [
+      "There's no difference — this is functionally identical to two completely separate, unrelated requests",
+      "Batching them together shows the user a single combined flow addressing both permissions, and the app receives one callback describing the outcome for each — but critically, Q7's lesson still applies: each permission's actual grant status remains independent, and the user could still approve one while denying the other within that same combined flow",
+      "Batching guarantees that if one permission is granted, the other is automatically granted too",
+      "Only one permission from the array can ever actually be requested at a time; the array is just for documentation"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This shows a genuinely different flow shape — one combined request producing one combined callback — while confirming that Q7's core lesson (each permission's grant status is independent) still holds even when requests are batched together for convenience.",
+      "lineByLine": [
+        "`arrayOf(CAMERA, RECORD_AUDIO)` — both permissions are requested as part of the same call.",
+        "The user sees prompts addressing both (exact presentation can vary), but ultimately makes an independent decision for each.",
+        "The single callback that follows reports results for both — but as Q7 established, being bundled together in one request doesn't create any dependency between their actual grant outcomes; checking each one's status afterward (Q2) is still necessary."
+      ],
+      "tip": "Batching related permission requests together (like CAMERA and RECORD_AUDIO for a video-recording feature) is often better UX than several separate back-to-back prompts — but the code handling the result still needs to check each permission's outcome individually, exactly as Q7's location example showed."
+    }
+  },
+  {
+    "id": "ch10-q12",
+    "topic": "permission requests require a foreground activity, echoing ch8's restriction theme",
+    "difficulty": "difficult",
+    "chapter": "ch-10",
+    "snippetLang": "markup",
+    "snippet": "Recall Chapter 8, Q12: starting a new background\nService from an app already running invisibly in\nthe background is restricted on modern Android.\n\nSimilarly: requesting a dangerous permission's dialog\n(Q3) can only be initiated from a currently visible,\nforeground Activity — not from a Service or\nBroadcastReceiver running with no visible screen.",
+    "question": "What's the relationship between this restriction and Chapter 8, Q12's background-Service restriction?",
+    "choices": [
+      "They're entirely unrelated coincidences with no shared reasoning",
+      "Both reflect the same underlying principle: sensitive, user-facing actions (starting new background work, or asking for a dangerous permission) require an app to already have the user's active attention (a foreground Activity) — preventing apps from silently trying to gain new capabilities or spawn work while invisible to the user",
+      "This restriction means dangerous permissions can never actually be requested by any app",
+      "Only BroadcastReceivers are subject to this restriction; Services can request permissions freely"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects back to a pattern already established in Chapter 8: modern Android consistently ties certain sensitive capabilities to requiring the user's active, foreground attention, rather than allowing them to happen invisibly.",
+      "lineByLine": [
+        "Chapter 8, Q12: starting new background Services requires the app to already be in the foreground.",
+        "This chapter: requesting a dangerous permission's dialog (Q3) similarly requires a foreground Activity — a Service or BroadcastReceiver (Chapter 9) cannot pop up that dialog on its own.",
+        "Both restrictions share the same motivation: the user should be actively engaged with the app at the moment it asks for something significant, whether that's new background work or an expanded permission."
+      ],
+      "tip": "This is a good example of recognizing a recurring DESIGN PHILOSOPHY across seemingly separate restrictions in different chapters — once you notice 'sensitive actions require foreground presence' as a theme, several individually-memorized rules (Chapter 8's Service restriction, this chapter's permission-request requirement) click into place as expressions of the same underlying idea."
+    }
+  }
+]

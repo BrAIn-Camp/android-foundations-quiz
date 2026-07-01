@@ -1,0 +1,51 @@
+[
+  {
+    "id": "ch05-q11",
+    "topic": "ViewModel survives configuration changes",
+    "difficulty": "difficult",
+    "chapter": "ch-05",
+    "snippet": "class MainActivity : ComponentActivity() {\n    val viewModel: WeatherViewModel by viewModels()\n}\n\n// WeatherViewModel holds forecast data in memory.\n// The device is then rotated.",
+    "question": "Recall from Q3 that rotation destroys the Activity instance and creates a new one. What happens to `viewModel` and the forecast data it holds during that same rotation?",
+    "choices": [
+      "The ViewModel is destroyed right along with the old Activity instance, and all its data is lost, just like tapCount was in Q3",
+      "The same ViewModel instance is deliberately retained by the OS across the rotation — the NEW Activity instance reconnects to that same still-alive ViewModel, so the forecast data survives without needing to be manually packed into a Bundle",
+      "A ViewModel can only be used by one Activity ever, so rotation makes it permanently unusable",
+      "ViewModels prevent rotation from destroying the Activity at all"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the key relationship that makes ViewModel special: unlike ordinary properties on an Activity (like Q3's tapCount), a ViewModel is specifically designed by the OS to be RETAINED across a configuration-change destroy/recreate cycle. The Activity instance is replaced, but the ViewModel instance is not.",
+      "lineByLine": [
+        "Before rotation: MainActivity (instance A) is connected to a WeatherViewModel holding forecast data.",
+        "Rotation triggers destroy/recreate — but this time, specifically for the ViewModel, the OS keeps that same ViewModel instance alive rather than destroying it.",
+        "MainActivity (instance B, the new one) reconnects to that SAME retained ViewModel — not a fresh one — so the forecast data is still there, with zero manual save/restore code needed."
+      ],
+      "tip": "This relationship is why ViewModel exists: it's a purpose-built answer to Q3 and Q4's problem, for cases where manually packing everything into a savedInstanceState Bundle would be impractical (e.g., a large list of fetched data, not just a simple tap count). Bundle-based saving remains useful for small values; ViewModel is the better fit for anything larger or more complex."
+    }
+  },
+  {
+    "id": "ch05-q12",
+    "topic": "onCreate runs once per instance, onStart/onResume can repeat",
+    "difficulty": "moderate",
+    "chapter": "ch-05",
+    "snippetLang": "markup",
+    "snippet": "1. App launches. MainActivity (instance A): onCreate -> onStart -> onResume\n2. User briefly switches to another app, then comes right back (no rotation, no process kill).\n3. MainActivity (still instance A): onRestart -> onStart -> onResume",
+    "question": "Comparing steps 1 and 3, what's true about onCreate's relationship to this Activity instance versus onStart/onResume's relationship to it?",
+    "choices": [
+      "onCreate, onStart, and onResume all ran again identically in both steps",
+      "onCreate ran only once, in step 1, because it's tied to the CREATION of this specific instance; onStart and onResume can repeat multiple times over that same instance's life, since they're tied to VISIBILITY, which can be gained and lost repeatedly without the instance ever being recreated",
+      "None of these methods ran again in step 3, since instance A never really left memory",
+      "onCreate must run again every time onResume runs"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This distinguishes callbacks by how often they can fire relative to a single instance's lifetime. onCreate is a one-time event, tied to the instance coming into existence. onStart/onResume (and their counterparts onPause/onStop) can cycle repeatedly on that SAME instance, since visibility can be lost and regained many times without the instance itself ever being destroyed.",
+      "lineByLine": [
+        "Step 1: instance A is created — onCreate fires (this only ever happens once for instance A), then onStart and onResume as it becomes visible.",
+        "Step 2: switching away — onPause, onStop fire on instance A (still alive, just not visible).",
+        "Step 3: coming back — since no destroy occurred, the OS calls onRestart (specifically signals 'a stopped instance is becoming visible again'), then onStart and onResume again — but critically, onCreate does NOT run again, because instance A already exists."
+      ],
+      "tip": "A reliable way to tell instance identity apart from repeated visibility cycles: if onCreate fires, you know for certain you're looking at a brand new instance (tying back to Q3's rotation scenario). If only onStart/onResume (or onPause/onStop) fire without a preceding onCreate, the same instance is simply becoming visible or invisible again — nothing was destroyed or recreated."
+    }
+  }
+]

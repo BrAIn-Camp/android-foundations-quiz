@@ -1,0 +1,318 @@
+[
+  {
+    "id": "ch04-q1",
+    "topic": "setContent bridges Activity to Compose",
+    "difficulty": "easy",
+    "chapter": "ch-04",
+    "snippet": "class MainActivity : ComponentActivity() {\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContent {\n            HomeScreen()\n        }\n    }\n}",
+    "question": "Building on Chapter 3's Activity-hosts-content relationship, what specific role does `setContent { }` play?",
+    "choices": [
+      "It's just a comment with no functional effect",
+      "It's the exact hand-off point where the OS-managed Activity connects to the Compose UI system — everything inside the braces is Compose's responsibility, everything outside is the Activity's",
+      "It permanently transfers ownership of the Activity to HomeScreen()",
+      "It only works if HomeScreen() is declared in the manifest"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "`setContent { }` is the literal boundary line between two different systems: the Activity (OS-managed, declared in the manifest, back-stack aware — Chapter 3) and Compose (a UI toolkit that draws and updates what's on screen). Everything inside the braces belongs to Compose's world.",
+      "lineByLine": [
+        "`class MainActivity : ComponentActivity()` — still the same OS-managed component from Chapter 3.",
+        "`onCreate(...)` — the Activity's own setup point.",
+        "`setContent { HomeScreen() }` — hands control of the visual content over to Compose; HomeScreen() itself never needs a manifest entry, unlike Activities."
+      ],
+      "tip": "Only Activities (and a few other OS components) ever need manifest declarations. Composable functions like `HomeScreen()` never do — they exist entirely inside the world that `setContent` opens up."
+    }
+  },
+  {
+    "id": "ch04-q2",
+    "topic": "composable functions calling composable functions",
+    "difficulty": "easy",
+    "chapter": "ch-04",
+    "snippet": "@Composable\nfun HomeScreen() {\n    WeatherHeader()\n    ForecastList()\n}\n\n@Composable\nfun WeatherHeader() {\n    Text(\"Today's Weather\")\n}",
+    "question": "What is the relationship between `HomeScreen()` and `WeatherHeader()`?",
+    "choices": [
+      "They are unrelated functions that happen to run at the same time",
+      "HomeScreen() composes WeatherHeader() as part of its own content — this nesting relationship (functions containing other functions) is literally what gives \"Compose\" its name",
+      "WeatherHeader() must be declared in the manifest before HomeScreen() can call it",
+      "HomeScreen() replaces WeatherHeader() entirely once it runs"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Composable functions build UI by calling other Composable functions inside them — a nesting relationship. A screen isn't one giant function; it's a tree of smaller functions, each contributing a piece.",
+      "lineByLine": [
+        "`HomeScreen()` — the outer function, calls two others as part of describing what it displays.",
+        "`WeatherHeader()` — a nested piece, itself just displaying a `Text`.",
+        "`ForecastList()` — another nested piece (not shown), likely displaying a list of forecasts.",
+        "This composition of small pieces into a larger screen is exactly what the word 'Compose' refers to."
+      ],
+      "tip": "Reading Compose UI code is like reading an outline: the outer function names the sections, and each section's own function defines what's actually inside it. You can understand a screen's overall shape just by reading which functions call which."
+    }
+  },
+  {
+    "id": "ch04-q3",
+    "topic": "container vs content relationship",
+    "difficulty": "easy",
+    "chapter": "ch-04",
+    "snippet": "@Composable\nfun ForecastRow() {\n    Row {\n        Text(\"Monday\")\n        Text(\"72°F\")\n    }\n}",
+    "question": "What is the relationship between `Row` and the two `Text` calls inside it?",
+    "choices": [
+      "Row is a data type that Text values are converted into",
+      "Row is an arrangement container; the Text calls are its children, placed side-by-side horizontally because that's what Row arranges its children to do",
+      "Row and Text are two names for the exact same thing",
+      "Row deletes one of the Text elements automatically to save space"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Some Composables exist purely to arrange other Composables — this is a parent/child, container/content relationship. `Row` doesn't display anything itself; it just decides how its children are positioned (here, side-by-side).",
+      "lineByLine": [
+        "`Row { ... }` — a container describing horizontal arrangement.",
+        "`Text(\"Monday\")` — first child, placed on the left.",
+        "`Text(\"72°F\")` — second child, placed to its right.",
+        "Swap `Row` for `Column` and the exact same two Text children would instead stack vertically — the container changes the relationship, not the content."
+      ],
+      "tip": "This container/content relationship recurs throughout Compose: `Row`, `Column`, and `Box` are the three basic arrangement containers, and almost everything else you see nested inside them is content being arranged, not more containers."
+    }
+  },
+  {
+    "id": "ch04-q4",
+    "topic": "onClick as a trigger point to other systems",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "@Composable\nfun RefreshButton() {\n    Button(onClick = { /* triggers a network refresh, handled elsewhere */ }) {\n        Text(\"Refresh\")\n    }\n}",
+    "question": "The comment says tapping this button triggers a network refresh. What's the relationship between this Composable and the systems covered in later chapters (Coroutines, Ch 7)?",
+    "choices": [
+      "There is no relationship — Compose UI and background work are entirely separate topics that never interact",
+      "The Button's onClick is a trigger point: the UI layer here simply signals \"the user wants this to happen now\"; the actual asynchronous network work described happens using tools (like coroutines) covered elsewhere",
+      "Button(onClick = ...) automatically becomes a coroutine without any additional code",
+      "Refreshing data always requires launching a brand new Activity"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This chapter is explicitly 'just enough Compose to have a working screen' — the visual trigger (a tapped button) and the actual work it kicks off (a network call) are two different concerns that connect through a relationship, not through Compose itself doing the async work.",
+      "lineByLine": [
+        "`Button(onClick = { ... })` — the Composable's only job is to notice the tap and run whatever code is placed inside onClick.",
+        "The actual comment describes work that would use coroutines (Chapter 7) to run without freezing the UI.",
+        "This chapter deliberately doesn't teach how that async code is written — it only establishes that UI events like onClick are the connection point where user interaction meets the rest of the app's logic."
+      ],
+      "tip": "This is the core reason Chapter 4 exists as 'borrowed scaffolding': it gives you just enough surface-level Compose vocabulary to recognize where user interaction connects to the deeper foundational topics (Intents, Coroutines, Services) that this book actually focuses on teaching."
+    }
+  },
+  {
+    "id": "ch04-q5",
+    "topic": "recomposition concept",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "// Conceptual illustration, not exact syntax\nvar temperature = 72\n\n@Composable\nfun TemperatureDisplay() {\n    Text(\"$temperature°F\")\n}\n\n// When temperature later changes to 75,\n// TemperatureDisplay() automatically re-runs\n// and the screen updates to show 75°F",
+    "question": "What relationship does this illustrate between data and the UI that displays it?",
+    "choices": [
+      "The UI is a one-time snapshot; it never reflects new data unless the app is manually restarted",
+      "Compose keeps the displayed UI in sync with the underlying data — when tracked data changes, the Composable function that depends on it re-runs automatically to reflect the new value",
+      "TemperatureDisplay() must be manually called again from an onClick to ever show a new number",
+      "This relationship only works for Text, not for other Composables"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is Compose's central relationship: it keeps the screen automatically in sync with the data behind it. When the data changes, only the parts of the UI depending on that data are re-run to reflect the update — you don't manually push updates to the screen yourself.",
+      "lineByLine": [
+        "`temperature = 72` — the underlying data.",
+        "`TemperatureDisplay()` — a Composable that depends on that data to know what to show.",
+        "When `temperature` changes to 75, Compose recognizes the dependency and re-runs `TemperatureDisplay()`, producing updated text automatically."
+      ],
+      "tip": "The exact mechanism for tracking this kind of change (`remember`, `mutableStateOf`, and related tools) is taught properly in Book 3. For this book, the important relationship to hold onto is simply: Compose UI stays in sync with its data automatically — you describe what the UI should look like for a given piece of data, and Compose handles keeping it current."
+    }
+  },
+  {
+    "id": "ch04-q6",
+    "topic": "TextField input-to-display relationship",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "// Conceptual illustration\n@Composable\nfun CitySearchField() {\n    TextField(\n        value = currentSearchText,\n        onValueChange = { newText -> currentSearchText = newText }\n    )\n}",
+    "question": "What relationship exists between what the user types and what `TextField` displays?",
+    "choices": [
+      "TextField automatically stores and displays whatever is typed with no additional code required",
+      "TextField only displays whatever value it's given (currentSearchText); onValueChange is the trigger point that lets the surrounding code decide how to update that value based on what the user typed",
+      "TextField ignores user input entirely and only shows a fixed placeholder",
+      "onValueChange runs once when the screen first appears, and never again"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "A TextField doesn't manage its own text internally — it displays whatever `value` it's given, and reports typing activity through `onValueChange`, leaving it up to the surrounding code to decide what to do with that new text (including whether to actually update what's displayed).",
+      "lineByLine": [
+        "`value = currentSearchText` — TextField displays exactly this value, whatever it currently is.",
+        "`onValueChange = { newText -> ... }` — fires every time the user types, handing over the newly typed text.",
+        "For the displayed text to actually update as the user types, something needs to take `newText` and feed it back into `currentSearchText` — that's the same kind of data-to-UI relationship as the previous question."
+      ],
+      "tip": "This value-in / change-event-out pattern is common across many Compose input components. Recognizing it helps you read any input field: look for what it displays (value) and what it reports back (the callback), rather than assuming the field manages its own state invisibly."
+    }
+  },
+  {
+    "id": "ch04-q7",
+    "topic": "LazyColumn vs Column relationship to data",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "// Column: builds ALL rows immediately, even off-screen ones\nColumn {\n    forecastList.forEach { day -> ForecastRow(day) }\n}\n\n// LazyColumn: builds rows only as they scroll into view\nLazyColumn {\n    items(forecastList) { day -> ForecastRow(day) }\n}",
+    "question": "For a list of 1,000 forecast days, what's the practical difference in how `Column` and `LazyColumn` relate to that data?",
+    "choices": [
+      "There is no practical difference — they behave identically regardless of list size",
+      "Column would build all 1,000 ForecastRow instances immediately, even ones far off-screen; LazyColumn only builds the rows currently visible (plus a small buffer), building more only as the user scrolls",
+      "LazyColumn can only display a maximum of 10 items total",
+      "Column is only for text, while LazyColumn is only for images"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a relationship between a UI container and how much of its data it actually holds onto at once. `Column` has an eager relationship with its content — build everything, right now. `LazyColumn` has a lazy relationship — only build what's actually needed to fill the visible screen.",
+      "lineByLine": [
+        "`Column { forecastList.forEach { ... } } ` — every single row is constructed immediately, whether visible or not. For 1,000 items, this means 1,000 rows built up front.",
+        "`LazyColumn { items(forecastList) { ... } }` — only rows within (or near) the visible scroll area are built at any given time.",
+        "As the user scrolls a LazyColumn, rows that scroll out of view can be discarded, and new ones are built just in time to appear."
+      ],
+      "tip": "The word 'Lazy' is the tell: it means 'don't do the work until it's actually needed.' Whenever you see a list of unknown or large size in Compose, `LazyColumn`/`LazyRow` is almost always the appropriate choice over their eager `Column`/`Row` counterparts."
+    }
+  },
+  {
+    "id": "ch04-q8",
+    "topic": "chapter's relationship to Book 3",
+    "difficulty": "easy",
+    "chapter": "ch-04",
+    "snippet": "Book 2 (this book): \"Compose Bootstrap\" — just enough Compose\n                     to have working screens for the rest\n                     of the Android Foundations chapters.\n\nBook 3: \"Jetpack Compose\" — the full, dedicated deep dive\n         into Compose UI: state management, theming,\n         animations, custom layouts, and more.",
+    "question": "Given this explicit relationship between the two books, how should this chapter's content be treated?",
+    "choices": [
+      "As the complete and final word on Compose — nothing more needs to be learned about UI",
+      "As minimal, borrowed scaffolding — just enough vocabulary and structure to give the rest of this book's Activity/Lifecycle/Intents/Services chapters a UI to work with; deep Compose mastery is a separate, later topic",
+      "As an outdated approach that Book 3 will replace entirely",
+      "As optional content that can be skipped without affecting understanding of later chapters"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This chapter openly acknowledges its own limited scope. Its purpose is to make the REST of this book's platform-fundamentals chapters (Lifecycle, Intents, Coroutines, Services, etc.) possible to demonstrate on an actual screen — not to teach Compose comprehensively.",
+      "lineByLine": [
+        "Book 2's Chapter 4 — 'borrowed scaffolding,' intentionally minimal.",
+        "This lets later chapters say things like 'here's a button that starts a Service' without first needing a full UI framework tutorial.",
+        "Book 3 — the dedicated, comprehensive treatment of Compose as its own subject."
+      ],
+      "tip": "Recognizing a chapter's stated scope is itself a valuable reading skill: this book's foundations chapters use just enough Compose to stay concrete and visual, while deliberately deferring the deeper UI-specific concepts to where they belong — a dedicated book that can give them proper attention."
+    }
+  },
+  {
+    "id": "ch04-q9",
+    "topic": "Composable function vs regular function",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "fun calculateAverage(temps: List<Int>): Int {\n    return temps.sum() / temps.size\n}\n\n@Composable\nfun AverageTempLabel(temps: List<Int>) {\n    Text(\"Average: ${calculateAverage(temps)}°\")\n}",
+    "question": "What's the actual relationship between `calculateAverage()` and `AverageTempLabel()` — are they fundamentally different kinds of things?",
+    "choices": [
+      "Yes — @Composable functions run in a completely separate programming language from regular Kotlin functions",
+      "Not fundamentally — both are still ordinary Kotlin functions; @Composable simply marks AverageTempLabel() as one that participates in Compose's UI system and can therefore call other Composables and describe UI, while calculateAverage() is a plain function doing plain computation",
+      "calculateAverage() must always be declared inside a Composable function to work",
+      "@Composable functions cannot call regular, non-Composable functions like calculateAverage()"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "The `@Composable` annotation doesn't create some entirely separate universe of functions — it's a marker that plugs a regular Kotlin function into the Compose runtime, granting it the ability to describe UI and call other Composables. Ordinary functions and Composable functions coexist and call each other constantly.",
+      "lineByLine": [
+        "`calculateAverage()` — a completely ordinary Kotlin function; no relationship to Compose at all.",
+        "`AverageTempLabel()` — marked `@Composable`, which is what allows it to call `Text(...)` (itself a Composable) and participate in recomposition.",
+        "Notice `AverageTempLabel()` freely calls the plain `calculateAverage()` — Composables regularly delegate real computation to ordinary functions, keeping the UI-describing code focused on just describing UI."
+      ],
+      "tip": "A good reading habit: `@Composable` tells you 'this function's job is to describe some UI and it can call other Composables.' Any function without that annotation is just doing regular Kotlin work, even if a Composable calls it to get a value."
+    }
+  },
+  {
+    "id": "ch04-q10",
+    "topic": "reading a nested composable tree",
+    "difficulty": "difficult",
+    "chapter": "ch-04",
+    "snippet": "@Composable\nfun HomeScreen(forecast: List<Day>) {\n    Column {\n        Text(\"This Week\")\n        LazyColumn {\n            items(forecast) { day ->\n                Row {\n                    Text(day.name)\n                    Text(\"${day.temp}°\")\n                }\n                Button(onClick = { /* save as favorite */ }) {\n                    Text(\"Save\")\n                }\n            }\n        }\n    }\n}",
+    "question": "Reading this tree of relationships from outside in, which statement correctly describes the structure?",
+    "choices": [
+      "Column arranges its two children vertically (a title Text, then a LazyColumn); the LazyColumn lazily builds one Row+Button pair per forecast day, and within each Row, two Text elements sit side-by-side",
+      "Every element here is a direct, equal sibling of every other element with no nesting relationship at all",
+      "LazyColumn is nested inside Row, not the other way around",
+      "The Button triggers Column to rebuild its entire content from scratch on every click"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "This combines every relationship from the chapter: Column as a vertical container, LazyColumn's just-in-time relationship to list data, Row as a horizontal container for the two Text elements, and Button's onClick as a trigger point unrelated to the visual arrangement itself.",
+      "lineByLine": [
+        "`Column { ... }` — outermost container, arranges its children (a Text, then a LazyColumn) vertically.",
+        "`Text(\"This Week\")` — first child, a simple title.",
+        "`LazyColumn { items(forecast) { ... } }` — second child; for each `day` in `forecast`, builds one Row+Button pairing, only as needed for scrolling.",
+        "Inside each iteration: `Row { Text(day.name); Text(\"${day.temp}°\") }` — day name and temperature side-by-side.",
+        "`Button(onClick = { ... })` — a sibling to the Row within the same list item, its own separate trigger point unrelated to how anything is visually arranged."
+      ],
+      "tip": "Reading nested Compose code is a matter of tracking indentation as a parent/child map: each container holds its children, and understanding the overall screen means tracing which containers hold which content, one level at a time — exactly like reading the folder structure in Chapter 1."
+    }
+  },
+  {
+    "id": "ch04-q11",
+    "topic": "Modifier decorates self vs container arranges children",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "Row(modifier = Modifier.padding(16.dp)) {\n    Text(\n        \"Monday\",\n        modifier = Modifier.weight(1f)\n    )\n    Text(\"72°F\")\n}",
+    "question": "Row arranges its Text children side-by-side. What's different about the relationship Modifier has, compared to Row's relationship to its children?",
+    "choices": [
+      "Modifier and Row do the exact same job — arranging multiple children",
+      "Modifier describes how a SINGLE Composable behaves or is decorated (its own padding, size, weight) — a self-relationship — while Row's job is arranging its CHILDREN relative to each other — a parent-to-children relationship",
+      "Modifier can only be used inside Text, never on Row or Column",
+      "Modifier replaces the need for Row entirely"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "These are two distinct kinds of relationships that are easy to conflate at first. A container like Row/Column/Box has a relationship with its CHILDREN (how are they arranged relative to each other?). A Modifier has a relationship with the ONE Composable it's attached to (how does this specific element behave — its padding, size, weight, etc.)",
+      "lineByLine": [
+        "`Row(modifier = Modifier.padding(16.dp))` — this padding affects Row itself (space around its own edges), not how its children are arranged relative to each other.",
+        "`Text(\"Monday\", modifier = Modifier.weight(1f))` — this weight affects only this one Text's own sizing within the Row.",
+        "Row's own separate job — putting \"Monday\" and \"72°F\" side by side — happens regardless of what Modifiers are attached to each; that arrangement relationship belongs to Row itself, not to Modifier."
+      ],
+      "tip": "A simple way to keep these straight while reading code: if you see `modifier = ...` attached to a single Composable, ask 'what does this do to THIS element?' If you see children nested inside `Row { }` / `Column { }` / `Box { }`, ask 'how are these children positioned relative to EACH OTHER?' Two different questions, two different relationships."
+    }
+  },
+  {
+    "id": "ch04-q12",
+    "topic": "Preview is independent of Activity and manifest",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "@Preview\n@Composable\nfun ForecastRowPreview() {\n    ForecastRow(day = Day(\"Monday\", 72))\n}\n\n// This can be viewed directly in Android Studio's design pane\n// without installing the app on a device or emulator at all.",
+    "question": "Given everything covered so far about Activities needing manifest declarations to run, what's true about this `@Preview` function's relationship to the app's manifest and MainActivity?",
+    "choices": [
+      "It has none — @Preview functions are a design-time tool for Android Studio only; they don't need a manifest entry, don't run inside any Activity, and never touch setContent",
+      "Every @Preview function must also be declared as an activity in the manifest",
+      "@Preview functions replace MainActivity entirely once added",
+      "@Preview only works if the app has already been installed on a real device first"
+    ],
+    "correctIndex": 0,
+    "explanation": {
+      "summary": "This reinforces, from a new angle, something Chapter 3 established: not everything in an Android project has a relationship with the manifest or the OS's component system. @Preview functions are purely a tool for Android Studio's editor — they render a Composable in isolation, without any Activity, without setContent, and without installing anything on a device.",
+      "lineByLine": [
+        "`@Preview @Composable fun ForecastRowPreview()` — calls a real Composable (ForecastRow) with sample data.",
+        "Android Studio recognizes the `@Preview` annotation and renders just this function's output in its design pane.",
+        "No Activity is involved, no manifest entry is needed, and no app installation happens — this relationship is entirely separate from how the app actually runs on a device."
+      ],
+      "tip": "This is a genuinely useful practical relationship to recognize: Preview functions are a fast feedback loop for checking how a piece of UI looks, completely decoupled from the full Activity-and-manifest machinery needed to actually run the app end-to-end."
+    }
+  },
+  {
+    "id": "ch04-q13",
+    "topic": "parent-to-child parameter passing",
+    "difficulty": "moderate",
+    "chapter": "ch-04",
+    "snippet": "@Composable\nfun HomeScreen(forecast: List<Day>) {\n    ForecastList(days = forecast)\n}\n\n@Composable\nfun ForecastList(days: List<Day>) {\n    // days came from HomeScreen, not fetched independently here\n}",
+    "question": "How does `ForecastList` get access to the forecast data it displays?",
+    "choices": [
+      "ForecastList reaches upward and independently fetches the data itself from wherever HomeScreen originally got it",
+      "HomeScreen passes the data DOWN to ForecastList as a parameter; ForecastList has no independent relationship with the data's original source — it only knows whatever its parent hands it",
+      "ForecastList and HomeScreen share a global variable that either can modify at any time",
+      "The data automatically appears in every Composable in the file without being explicitly passed"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the structural relationship for how data enters a tree of Composables at all: it flows downward, from parent to child, as ordinary function parameters. A child Composable has no built-in way to reach upward or sideways to grab data on its own — it only has what's explicitly handed to it.",
+      "lineByLine": [
+        "`HomeScreen(forecast: List<Day>)` — receives the forecast data from somewhere above it (not shown here — perhaps Chapter 7's coroutines fetched it).",
+        "`ForecastList(days = forecast)` — HomeScreen explicitly passes its own data down as an argument.",
+        "`ForecastList(days: List<Day>)` — has zero awareness of where `days` originally came from; it only knows the parameter it was handed."
+      ],
+      "tip": "This top-down, parameter-passing relationship is sometimes called 'unidirectional data flow.' It's why reading a Composable's parameter list tells you exactly what it depends on — nothing more, nothing hidden. This becomes especially important once you study how state is owned and shared, which is a core focus of Book 3."
+    }
+  }
+]

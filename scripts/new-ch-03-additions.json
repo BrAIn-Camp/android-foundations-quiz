@@ -1,0 +1,52 @@
+[
+  {
+    "id": "ch03-q11",
+    "topic": "launch expecting a result vs fire-and-forget",
+    "difficulty": "difficult",
+    "chapter": "ch-03",
+    "snippetLang": "markup",
+    "snippet": "Scenario A (fire-and-forget):\nMainActivity launches SettingsActivity.\nMainActivity does not expect anything back — it just waits for SettingsActivity to eventually finish.\n\nScenario B (expecting a result):\nMainActivity launches PhotoPickerActivity SPECIFICALLY to receive a chosen photo back.\nWhen PhotoPickerActivity finishes, it hands data back to MainActivity.",
+    "question": "What's the key relational difference between Scenario A and Scenario B?",
+    "choices": [
+      "There is no real difference — every launched activity always sends data back to its caller automatically",
+      "In Scenario B, MainActivity and PhotoPickerActivity have a two-way relationship: MainActivity is waiting to receive something specific back, whereas in Scenario A the relationship is one-directional — launch and move on",
+      "Scenario B is impossible; only the OS can pass data between activities, never one activity directly to another",
+      "Scenario A can only happen with activities from the same app, while Scenario B only works across different apps"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Not every activity launch is the same kind of relationship. Sometimes the caller only cares that the other screen was shown (fire-and-forget). Other times, the caller specifically depends on getting something back — a chosen photo, a confirmed setting, a scanned code — turning it into a genuine two-way relationship rather than a one-way handoff.",
+      "lineByLine": [
+        "Scenario A: MainActivity → launch → SettingsActivity. MainActivity moves on without expecting anything specific in return.",
+        "Scenario B: MainActivity → launch (expecting a result) → PhotoPickerActivity. MainActivity is effectively paused, waiting.",
+        "When PhotoPickerActivity finishes, it hands a result back specifically to MainActivity — completing the two-way relationship MainActivity initiated."
+      ],
+      "tip": "Recognizing which kind of relationship a launch represents helps you read app behavior correctly: does the calling screen appear to 'wait' for something (a result relationship), or does it move on freely (fire-and-forget)? Common examples of the result relationship: picking a photo, scanning a barcode, or confirming a permission choice."
+    }
+  },
+  {
+    "id": "ch03-q12",
+    "topic": "Activity vs Dialog overlay",
+    "difficulty": "moderate",
+    "chapter": "ch-03",
+    "snippetLang": "markup",
+    "snippet": "MainActivity shows a confirmation Dialog: \"Delete this forecast?\"\n\nBack stack before Dialog appears: [ MainActivity ]\nBack stack while Dialog is showing:  [ MainActivity ]  <- unchanged, still just one entry",
+    "question": "A confirmation dialog appears on screen, visually on top of everything else. What's its relationship to the Activity back stack discussed earlier in this chapter?",
+    "choices": [
+      "The Dialog is a separate Activity, so it gets pushed onto the back stack just like ForecastDetailActivity did earlier",
+      "The Dialog is not a separate Activity at all — it's an overlay drawn on top of MainActivity's existing content, so the back stack is unaffected and still shows just one entry",
+      "The Dialog replaces MainActivity in the back stack until it's dismissed",
+      "Every visible UI element, including dialogs, must correspond to its own manifest-declared Activity"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "Not everything that visually appears on screen represents a new entry in the Activity back stack. A Dialog is drawn on top of the current Activity's existing window — it doesn't require its own manifest declaration and doesn't add a new stack entry.",
+      "lineByLine": [
+        "Before the Dialog: `[MainActivity]` — one stack entry.",
+        "Dialog appears: still `[MainActivity]` — the same single entry, just with an overlay drawn above its content.",
+        "Dismissing the Dialog doesn't 'pop' anything from the back stack, because nothing was pushed onto it in the first place."
+      ],
+      "tip": "This distinction matters for reading app behavior correctly: if pressing 'back' simply dismisses something without revealing a different screen underneath, it was likely an overlay (Dialog, BottomSheet, Snackbar) rather than a separate Activity. True back-stack navigation always reveals a different full screen when popped."
+    }
+  }
+]

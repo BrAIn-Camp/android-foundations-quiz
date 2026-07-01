@@ -1,0 +1,300 @@
+[
+  {
+    "id": "ch08-q1",
+    "topic": "Service still needs manifest declaration despite no UI",
+    "difficulty": "easy",
+    "chapter": "ch-08",
+    "snippetLang": "xml",
+    "snippet": "<application>\n    <activity android:name=\".MainActivity\">...</activity>\n\n    <service android:name=\".WeatherSyncService\" />\n</application>",
+    "question": "WeatherSyncService has no screen, no layout, nothing visible at all. What's its relationship to the manifest, compared to an Activity?",
+    "choices": [
+      "Since it has no UI, it doesn't need to be declared — only visible components require a manifest entry",
+      "It still requires its own <service> declaration, just like an Activity requires an <activity> declaration — the OS's component system (Chapter 2) applies to Services too, regardless of whether they have any visible UI",
+      "Services are automatically discovered without any declaration, unlike Activities",
+      "Only one Service total is allowed to be declared per app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This extends Chapter 2's core relationship — 'nothing runs without being declared' — to a component type that has no screen at all. Whether or not something is visible has no bearing on whether the OS needs to know about it.",
+      "lineByLine": [
+        "`<activity android:name=\".MainActivity\">` — familiar from every earlier chapter.",
+        "`<service android:name=\".WeatherSyncService\" />` — the same declaration relationship, just for a different component type.",
+        "Just like Chapter 3, Q5's undeclared-Activity scenario, attempting to start an undeclared Service would fail at runtime, even though the class compiles perfectly."
+      ],
+      "tip": "A useful generalization: the manifest-declaration relationship established in Chapter 2 applies to every OS-managed component — Activities, Services, and (as Chapter 9 will show) BroadcastReceivers too. Visibility is irrelevant to whether the OS needs to know a component exists."
+    }
+  },
+  {
+    "id": "ch08-q2",
+    "topic": "services are started via Intent, like activities",
+    "difficulty": "easy",
+    "chapter": "ch-08",
+    "snippet": "val intent = Intent(this, WeatherSyncService::class.java)\nstartService(intent)",
+    "question": "Chapter 6, Q12 briefly previewed this. What's the relationship between this code and Chapter 6's explicit Intent addressing (Q2)?",
+    "choices": [
+      "This is a completely unrelated mechanism with no connection to Intents at all",
+      "It's the exact same explicit-Intent addressing relationship from Chapter 6 — naming a specific target class directly — just paired with startService() instead of startActivity(), because the target here is a Service rather than an Activity",
+      "startService() ignores whatever class is named in the Intent and starts a default Service instead",
+      "This can only be used with implicit Intents, never explicit ones"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This confirms and builds on Chapter 6's preview: starting a Service uses the identical Intent-as-messenger relationship as starting an Activity — the only difference is which OS-level function receives the Intent and which kind of declared component ends up handling it.",
+      "lineByLine": [
+        "`Intent(this, WeatherSyncService::class.java)` — explicit addressing, exactly like Chapter 6, Q2's ForecastDetailActivity example.",
+        "`startService(intent)` — the Service-specific counterpart to `startActivity()`.",
+        "The OS receives this request, confirms WeatherSyncService is declared (Q1), and starts it — no screen involved, no back-stack entry created."
+      ],
+      "tip": "Recognizing `startService(...)` versus `startActivity(...)` immediately tells you what KIND of component is being targeted, even before checking what class is named — the calling function itself signals the relationship."
+    }
+  },
+  {
+    "id": "ch08-q3",
+    "topic": "service can outlive the Activity that started it",
+    "difficulty": "difficult",
+    "chapter": "ch-08",
+    "snippetLang": "markup",
+    "snippet": "1. MainActivity starts WeatherSyncService (a long-running sync).\n2. The user presses Home, then swipes MainActivity away\n   from Recent Apps entirely — MainActivity is destroyed.\n3. WeatherSyncService is still only halfway through its sync work.",
+    "question": "Contrast this with Chapter 7's lifecycleScope coroutines. What happens to WeatherSyncService at step 2?",
+    "choices": [
+      "WeatherSyncService is automatically destroyed the instant MainActivity is destroyed, exactly like a lifecycleScope-bound coroutine would be (Chapter 7, Q4)",
+      "WeatherSyncService keeps running, independent of MainActivity's destruction — unlike a coroutine deliberately scoped to an Activity's lifecycle, a started Service's lifetime is NOT tied to the component that started it, and it continues until it explicitly stops itself or is stopped",
+      "WeatherSyncService pauses and waits for a new MainActivity instance to be created before continuing",
+      "This scenario is impossible — Services cannot be started from an Activity that might later be destroyed"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the central reason Services exist as their own component, distinct from just launching a coroutine in Chapter 7: a Service's lifetime is deliberately NOT bound to whatever started it. This is the opposite relationship from lifecycleScope, which exists specifically to tie a coroutine's life to its Activity.",
+      "lineByLine": [
+        "Step 1: MainActivity starts WeatherSyncService — establishing a launch relationship, but not an ownership-of-lifetime relationship.",
+        "Step 2: MainActivity is destroyed — but WeatherSyncService has no dependency on MainActivity continuing to exist.",
+        "Step 3: WeatherSyncService simply keeps running, exactly as if nothing had happened to the Activity that originally started it."
+      ],
+      "tip": "This is the key decision point between Chapter 7 and Chapter 8: if work should stop when its screen goes away, a lifecycleScope-bound coroutine is the right relationship. If work should continue independent of any screen's existence, a Service is the right relationship instead."
+    }
+  },
+  {
+    "id": "ch08-q4",
+    "topic": "foreground service requires a persistent notification",
+    "difficulty": "moderate",
+    "chapter": "ch-08",
+    "snippetLang": "markup",
+    "snippet": "A foreground Service is running a long file download.\nWhile it runs, the user's notification shade shows:\n\n\"WeatherNow — Downloading update... 45%\"\n(this notification cannot be swiped away while the\nforeground Service is still active)",
+    "question": "Why does the OS require this persistent, non-dismissible notification specifically for a FOREGROUND Service, rather than letting it run silently and invisibly?",
+    "choices": [
+      "It's purely a marketing opportunity for the app to advertise itself",
+      "Because a foreground Service continues doing meaningful work even without any visible screen (Q3), the OS requires this notification as a transparency mechanism — ensuring the user always knows work is happening on their device and by which app, rather than it running invisibly in the background forever",
+      "The notification is optional and just a stylistic choice by the developer",
+      "Only apps with a paid subscription are allowed to skip this notification requirement"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects Q3's independence relationship to a user-trust relationship: because a foreground Service can keep running invisibly regardless of what's on screen, the OS mandates this notification as the price of that independence — the user must always be able to see that something is actively running.",
+      "lineByLine": [
+        "The Service is doing real, ongoing work (a download) with no screen of its own.",
+        "Because of Q3's independence from any Activity, nothing else would necessarily tell the user this work is happening.",
+        "The OS's requirement for a persistent notification during foreground Service execution closes that gap — transparency in exchange for the elevated priority a foreground Service receives (explored further in Q5)."
+      ],
+      "tip": "This requirement is a direct consequence of the power a foreground Service has (continuing independently of any Activity) — the more independence and priority a component is given, the more the OS requires it to be transparent about its activity to the user."
+    }
+  },
+  {
+    "id": "ch08-q5",
+    "topic": "foreground service reduces likelihood of process death",
+    "difficulty": "difficult",
+    "chapter": "ch-08",
+    "snippet": "Recall Chapter 5, Q6: a stopped Activity (invisible,\nnot in use) is a candidate for the OS to kill its\nprocess under memory pressure.\n\nMainActivity is now stopped, but a foreground Service\nbelonging to the same app is still actively running\nwith its persistent notification visible.",
+    "question": "How does having an active foreground Service change this app's process's relationship to the OS's memory management, compared to Chapter 5 Q6's scenario?",
+    "choices": [
+      "It has no effect — the process is exactly as likely to be killed as it would be with no Service running at all",
+      "An active foreground Service significantly raises the process's priority in the OS's eyes — even though MainActivity itself is stopped and would ordinarily be a kill candidate (Chapter 5, Q6), the running foreground Service signals genuinely important ongoing work, making the OS much less likely to kill this process compared to one with no active Service",
+      "The presence of a foreground Service guarantees the process can never be killed under any circumstances",
+      "A foreground Service makes the process MORE likely to be killed, since it uses more resources"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This directly revisits Chapter 5, Q6's process-death relationship and shows how a foreground Service changes it. A stopped Activity alone makes a process an easy kill candidate — but an active foreground Service in that same process signals to the OS that real, user-visible work is still happening, substantially lowering the chance of that process being reclaimed.",
+      "lineByLine": [
+        "Chapter 5, Q6 alone: stopped Activity, no other activity in the process → high candidate for the OS to kill for memory.",
+        "This scenario: same stopped Activity, BUT a foreground Service (with its visible notification, per Q4) is actively running in that same process.",
+        "The OS weighs the foreground Service's priority heavily, making this process considerably safer from being killed than the equivalent process with no Service running."
+      ],
+      "tip": "This relationship is exactly why foreground Services are the standard tool for work that must reliably continue even while the user isn't looking at the app — like music playback, ongoing navigation, or a large file transfer — despite Chapter 5's general rule about invisible components being kill candidates."
+    }
+  },
+  {
+    "id": "ch08-q6",
+    "topic": "stopSelf mirrors an Activity's finish",
+    "difficulty": "moderate",
+    "chapter": "ch-08",
+    "snippet": "class WeatherSyncService : Service() {\n    fun onSyncComplete() {\n        stopSelf()\n    }\n}",
+    "question": "What's the relationship between `stopSelf()` here and `finish()` from Chapter 3's Activity discussion?",
+    "choices": [
+      "They're unrelated — stopSelf() has nothing to do with ending anything",
+      "They serve a parallel purpose for their respective component types: just as finish() (Chapter 3, Q6) lets an Activity voluntarily remove itself once its job is done, stopSelf() lets a Service voluntarily end itself once its work is complete, rather than continuing to run indefinitely",
+      "stopSelf() destroys the entire app process immediately, unlike finish()",
+      "stopSelf() can only be called by a different component, never by the Service itself"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This draws a direct structural parallel across component types: both Activities and Services have a self-initiated way to end their own lifetime once their purpose has been fulfilled, rather than lingering unnecessarily.",
+      "lineByLine": [
+        "Chapter 3, Q6: `finish()` — an Activity voluntarily removes itself from the back stack.",
+        "Here: `stopSelf()` — a Service voluntarily ends itself once `onSyncComplete()` signals the work is done.",
+        "In both cases, without this explicit call, the component would otherwise keep existing/running longer than necessary — voluntarily stopping is good practice for both."
+      ],
+      "tip": "This parallel is a useful reading shortcut: whenever you see a component explicitly ending itself once some condition is met (work complete, user done with a screen), recognize it as the same underlying pattern, whether it's called finish(), stopSelf(), or something else for a different component type."
+    }
+  },
+  {
+    "id": "ch08-q7",
+    "topic": "bound vs started — two different lifetime relationships",
+    "difficulty": "difficult",
+    "chapter": "ch-08",
+    "snippetLang": "markup",
+    "snippet": "Started Service: MainActivity calls startService(),\nthen finishes. WeatherSyncService keeps running\nindependently (Q3's relationship), with no ongoing\nconnection to any Activity.\n\nBound Service: MainActivity calls bindService(),\nestablishing an active, ongoing connection to\nMusicPlayerService — able to directly call its\nmethods while bound, similar to holding a\nreference to a regular object.",
+    "question": "What's the fundamental difference in relationship between these two ways of using a Service?",
+    "choices": [
+      "There is no real difference — both result in identical behavior",
+      "A started Service (Q3) has a lifetime independent of whoever started it, with no ongoing two-way connection; a bound Service maintains an active, direct connection with its client(s), allowing ongoing interaction — and it stops when its last bound client disconnects, rather than running independently forever",
+      "Bound Services can never be stopped once created, unlike started Services",
+      "Only one of these two approaches is a valid pattern; the other is a common misconception"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This distinguishes two structurally different relationships a component can have with a Service. A started Service (Q3) is fire-and-continue — no ongoing connection required. A bound Service maintains an active client relationship, more like directly holding onto and interacting with an object, and its lifetime is tied to having at least one bound client.",
+      "lineByLine": [
+        "Started: `startService()` establishes a one-time launch relationship (Q2); the Service's continued existence (Q3) has nothing to do with whether MainActivity still exists.",
+        "Bound: `bindService()` establishes an ongoing, two-way connection — MainActivity can directly call methods on MusicPlayerService while bound, unlike the fire-and-forget started relationship.",
+        "A purely bound Service (with no started component) stops once its last bound client unbinds — its lifetime IS tied to having an active connection, unlike a started Service's independence."
+      ],
+      "tip": "A Service can even be both started and bound simultaneously in real apps. The relational takeaway: 'started' means independent lifetime, no ongoing connection required; 'bound' means an active, ongoing connection whose presence is what keeps the Service alive."
+    }
+  },
+  {
+    "id": "ch08-q8",
+    "topic": "runs on main thread by default, ties back to ch7 dispatchers",
+    "difficulty": "difficult",
+    "chapter": "ch-08",
+    "snippet": "class WeatherSyncService : Service() {\n    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {\n        val data = fetchWeatherFromNetwork()  // long blocking call, written directly here\n        return START_STICKY\n    }\n}",
+    "question": "Recall Chapter 7, Q1's main-thread relationship. If this network call runs directly and synchronously inside onStartCommand with no coroutine involved, what's the risk?",
+    "choices": [
+      "There's no risk — Services automatically run all their code on a dedicated background thread by default",
+      "Just like Chapter 7 Q1's Activity example, a Service's callbacks run on the main thread by default too — a long blocking call written directly here would freeze the UI exactly the same way, since 'having no screen of its own' doesn't mean a Service is automatically off the main thread",
+      "This code would only affect WeatherSyncService's own internal state, never the UI",
+      "Services are exempt from Chapter 7's main-thread rules entirely"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a common misconception this question directly corrects: a Service having no visible UI does NOT mean its code automatically runs off the main thread. Chapter 7's main-thread relationship still applies fully — a Service must deliberately use coroutines (or another threading tool) to avoid blocking, exactly like an Activity does.",
+      "lineByLine": [
+        "`onStartCommand(...)` — by default, this callback runs on the main thread, same as an Activity's onCreate.",
+        "`fetchWeatherFromNetwork()` called directly and synchronously here blocks that main thread — and since the main thread is shared app-wide (Chapter 7, Q1), this would freeze the UI even though the Service itself has no screen.",
+        "The correct approach would wrap this in a coroutine (Chapter 7's tools), likely using `Dispatchers.IO` for the network call, exactly as already established."
+      ],
+      "tip": "'No UI of its own' and 'off the main thread' are two entirely separate properties — don't conflate them. A Service still needs the same coroutine/dispatcher discipline from Chapter 7 to avoid blocking the one main thread shared by the whole app, screen or no screen."
+    }
+  },
+  {
+    "id": "ch08-q9",
+    "topic": "one service, potentially multiple activity clients over time",
+    "difficulty": "moderate",
+    "chapter": "ch-08",
+    "snippetLang": "markup",
+    "snippet": "1. MainActivity starts WeatherSyncService, then the user\n   navigates away and MainActivity finishes.\n2. WeatherSyncService is still running independently (Q3).\n3. Later, the user reopens the app — a NEW MainActivity\n   instance is created.\n4. This new instance also wants to check on the sync's progress.",
+    "question": "What's the relationship between the original MainActivity instance, the new one created in step 3, and WeatherSyncService throughout this sequence?",
+    "choices": [
+      "WeatherSyncService only ever has a relationship with the exact original instance that started it — the new instance in step 3 cannot interact with it at all",
+      "WeatherSyncService's existence is independent of any specific Activity instance (Q3); different Activity instances, including a completely new one created later, can each independently start it again or bind to it to check progress — the Service doesn't \"belong\" exclusively to whichever instance happened to start it first",
+      "A new Service instance must be created every time a new Activity instance appears",
+      "This scenario would cause the app to crash since only one Activity instance is allowed to reference a Service at a time"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This extends Q3's independence relationship in a new direction: because a Service's lifetime doesn't depend on any specific Activity instance, it's also not exclusively tied to whichever instance happened to start it — any appropriately permissioned component, including a completely new Activity instance created later, can interact with it.",
+      "lineByLine": [
+        "Step 1-2: the original MainActivity instance starts the Service, then finishes — but per Q3, the Service keeps running regardless.",
+        "Step 3: a brand new MainActivity instance exists, with no direct relationship to the original one (similar to Chapter 5, Q3's rotation scenario producing an entirely new instance).",
+        "Step 4: this new instance can still interact with the same running WeatherSyncService — perhaps by binding to it (Q7) — because the Service's identity and lifetime were never tied to that first specific instance in the first place."
+      ],
+      "tip": "This cardinality relationship — one Service, potentially many different Activity instances interacting with it over its lifetime — is only possible because of Q3's foundational independence. If a Service's lifetime were tied to its starting Activity, this kind of reconnection later wouldn't be meaningful."
+    }
+  },
+  {
+    "id": "ch08-q10",
+    "topic": "full scenario synthesis",
+    "difficulty": "difficult",
+    "chapter": "ch-08",
+    "snippetLang": "markup",
+    "snippet": "1. WeatherSyncService is declared in the manifest.\n2. MainActivity starts it via an explicit Intent to\n   begin a large weather-history download.\n3. The Service promotes itself to a foreground Service,\n   showing a persistent notification.\n4. The user closes MainActivity entirely.\n5. Later, the download completes and the Service calls\n   stopSelf().",
+    "question": "Which statement correctly weaves together the relationships established across this chapter?",
+    "choices": [
+      "Step 1's declaration was unnecessary since the Service has no UI; step 4 should have destroyed the Service along with MainActivity",
+      "Step 1 satisfies the same manifest-declaration requirement as any OS component (Q1); step 2 uses the identical explicit-Intent addressing from Chapter 6 (Q2); step 3's foreground promotion both requires a visible notification (Q4) and raises the process's priority against memory-related killing (Q5); step 4 has no effect on the Service, since its lifetime is independent of MainActivity (Q3); step 5 mirrors an Activity's finish() with the Service's own self-initiated stopSelf() (Q6)",
+      "Every one of these steps is actually about Activities, not Services, since only Activities can show notifications",
+      "Step 5 is impossible — once a Service is promoted to foreground, it can never voluntarily stop itself again"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This scenario deliberately threads together every relationship covered in the chapter: declaration, Intent-based starting, foreground promotion's dual notification/priority effects, independence from the starting Activity, and self-initiated stopping.",
+      "lineByLine": [
+        "Step 1: satisfies Q1's requirement — even a UI-less component needs a manifest declaration.",
+        "Step 2: the same explicit-Intent mechanism from Chapter 6, now targeting a Service via startService() (Q2).",
+        "Step 3: foreground promotion brings BOTH Q4's notification requirement and Q5's elevated process priority.",
+        "Step 4: per Q3, MainActivity's closure has zero effect on the Service's continued existence.",
+        "Step 5: `stopSelf()` mirrors Chapter 3's `finish()` (Q6) — a component voluntarily ending itself once its purpose is fulfilled."
+      ],
+      "tip": "Reading any real-world Service usage is a matter of checking each of these relationships in turn: is it declared? How was it started or bound? Is it foreground, and if so, what does that imply about priority and notification? And finally, what ends its lifetime — self-initiated, or something external?"
+    }
+  },
+  {
+    "id": "ch08-q11",
+    "topic": "WorkManager as the alternative for deferrable work",
+    "difficulty": "difficult",
+    "chapter": "ch-08",
+    "snippetLang": "markup",
+    "snippet": "Task A: Sync weather data RIGHT NOW while the user\nwatches a progress notification (must run immediately\nand continuously).\n\nTask B: Upload analytics logs sometime in the next few\nhours, whenever the device has a stable network\nconnection — the exact timing doesn't matter to the user.",
+    "question": "Task A fits this chapter's Service relationship well. Does Task B have the same relationship to Services, or does it fit better elsewhere?",
+    "choices": [
+      "Both tasks have an identical relationship to Services — there's no reason to treat them differently",
+      "Task A fits a Service's immediate, continuous-execution relationship well; Task B, being flexible on timing and conditions, is a better fit for WorkManager (Chapter 13) — a tool specifically for deferrable, guaranteed-eventually work, rather than something that needs to run right now with a persistent notification",
+      "Task B cannot be accomplished by any Android component at all",
+      "Task A should use WorkManager, and Task B should use a foreground Service"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This previews Chapter 13 by drawing a relational boundary: a Service (this chapter) fits work that needs to happen now, visibly, and continuously. Work that's flexible on exact timing — and just needs to reliably happen eventually, even across app restarts or reboots — has a better relationship with a different tool entirely.",
+      "lineByLine": [
+        "Task A: immediate, continuous, user-relevant right now → Service, with the foreground notification relationship from Q4.",
+        "Task B: flexible timing, condition-dependent (network availability), no immediate user relevance → a poor fit for a Service's 'running right now with a visible notification' relationship.",
+        "Chapter 13 (WorkManager) is built specifically for Task B's kind of relationship: 'make sure this eventually happens, under the right conditions, even if the app isn't running at that moment.'"
+      ],
+      "tip": "A quick relational test: does the work need to happen immediately and does the user benefit from seeing it happen live? Lean Service. Is the exact timing flexible, and does it just need to reliably happen eventually? Lean WorkManager — covered properly in Chapter 13."
+    }
+  },
+  {
+    "id": "ch08-q12",
+    "topic": "starting a service from the background is restricted",
+    "difficulty": "difficult",
+    "chapter": "ch-08",
+    "snippetLang": "markup",
+    "snippet": "Scenario A: MainActivity is currently visible and in the\nforeground. Its code calls startService() to begin a sync.\n\nScenario B: WeatherSyncService itself (already running in\nthe background, with no visible Activity anywhere) tries\nto call startService() to start ANOTHER new Service.",
+    "question": "On modern Android versions, what's different about these two attempts to start a Service?",
+    "choices": [
+      "Both scenarios behave identically — the app's current visibility has no bearing on whether starting a Service succeeds",
+      "Scenario A succeeds normally, since the request originates from a foreground component; Scenario B is restricted on modern Android — an app already running invisibly in the background generally cannot freely start new background Services, specifically to prevent apps from silently spawning ongoing work the user never sees or approved",
+      "Scenario B always succeeds, while Scenario A is the one that's restricted",
+      "Neither scenario is allowed under any circumstances"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This reveals an additional relationship: whether starting a Service succeeds depends not just on manifest declaration and correct Intent addressing (Q1, Q2), but also on the CALLING app's own current state. Modern Android restricts background apps from freely starting new background Services, as a safeguard against invisible, unapproved work.",
+      "lineByLine": [
+        "Scenario A: MainActivity is foreground/visible when it calls startService() — this is generally permitted.",
+        "Scenario B: the calling component (the Service itself) has no visible Activity anywhere — the whole app is effectively in the background — and modern Android restricts this kind of request.",
+        "This restriction exists precisely because of Q3 and Q9's relationships: since a Service can run independently and be interacted with broadly, the OS limits WHEN new ones can be freely spun up, to prevent abuse."
+      ],
+      "tip": "This is part of why foreground Services (Q4, Q5) and WorkManager (Q11) have become the standard tools for background work on modern Android — both come with OS-level guardrails (visible notifications, or scheduled/deferred execution) that a freely-started background Service increasingly lacks."
+    }
+  }
+]

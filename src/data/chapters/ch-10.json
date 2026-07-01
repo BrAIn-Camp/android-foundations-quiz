@@ -1,0 +1,298 @@
+[
+  {
+    "id": "ch10-q1",
+    "topic": "normal vs dangerous — the ch2 preview fully realized",
+    "difficulty": "easy",
+    "chapter": "ch-10",
+    "snippetLang": "xml",
+    "snippet": "<uses-permission android:name=\"android.permission.INTERNET\" />\n<uses-permission android:name=\"android.permission.CAMERA\" />",
+    "question": "Chapter 2, Q3 briefly distinguished these two kinds of permissions. Now that this chapter is fully dedicated to the topic, what's the relationship between declaring INTERNET versus declaring CAMERA?",
+    "choices": [
+      "Both require the exact same additional runtime request step before they can be used",
+      "INTERNET is a normal permission — declaring it here is the entire relationship, fully sufficient on its own; CAMERA is dangerous — this declaration is only step one, and the app must ALSO explicitly ask the user at runtime and receive their approval before actually using the camera",
+      "Neither permission requires any declaration at all on modern Android",
+      "CAMERA only needs to be declared, while INTERNET requires an additional runtime request"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is the full payoff of the relationship first previewed in Chapter 2: normal permissions have a simple, one-step relationship with the manifest (declare it, done). Dangerous permissions have a two-step relationship — declaration is necessary but not sufficient; runtime approval is also required.",
+      "lineByLine": [
+        "`INTERNET` — a normal permission. Declaring it here fully satisfies its relationship with the OS; no further steps needed.",
+        "`CAMERA` — a dangerous permission, specifically because it touches something privacy/safety-sensitive. Declaring it only unlocks the ABILITY to request it — actual usage still depends on the user granting it at runtime, covered throughout the rest of this chapter."
+      ],
+      "tip": "A quick way to tell them apart while reading a manifest: if a permission relates to something a user would reasonably want visibility and control over (location, camera, contacts, microphone), assume it's dangerous and expect an accompanying runtime request somewhere in the app's code."
+    }
+  },
+  {
+    "id": "ch10-q2",
+    "topic": "checking current grant status before assuming access",
+    "difficulty": "moderate",
+    "chapter": "ch-10",
+    "snippet": "val hasCameraAccess =\n    ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==\n    PackageManager.PERMISSION_GRANTED",
+    "question": "Why would an app check this BEFORE attempting to actually use the camera, rather than just trying to use it directly and seeing what happens?",
+    "choices": [
+      "This check is purely optional and has no bearing on whether using the camera would succeed",
+      "This check reflects the CURRENT relationship between the app and this specific dangerous permission at this exact moment — since that relationship can change over time (the user might grant, deny, or later revoke it), the app needs to verify its current status rather than assuming a permission requested once remains permanently granted",
+      "This check permanently grants the permission if it returns false",
+      "This is only necessary for normal permissions, never for dangerous ones"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This establishes that a dangerous permission's grant status isn't a fixed, one-time fact — it's an ongoing relationship that can change. Checking current status before use respects that the relationship might have shifted since the app last checked (or since it was first installed).",
+      "lineByLine": [
+        "`checkSelfPermission(...)` — asks the OS for the CURRENT status of this specific permission for this specific app, right now.",
+        "`PackageManager.PERMISSION_GRANTED` — one possible current state; the other is PERMISSION_DENIED.",
+        "Checking immediately before use (rather than relying on a check from much earlier) matters because — as later questions in this chapter explore — a user can revoke a previously-granted permission at any time via Settings."
+      ],
+      "tip": "Treat a dangerous permission's grant status the way you'd treat any value that can change over time — check it fresh at the point you actually need it, rather than assuming a single check performed once (like at app launch) remains valid forever."
+    }
+  },
+  {
+    "id": "ch10-q3",
+    "topic": "runtime request triggers a callback with the user's decision",
+    "difficulty": "moderate",
+    "chapter": "ch-10",
+    "snippetLang": "markup",
+    "snippet": "1. App calls requestPermissions() for CAMERA.\n2. The OS displays a system dialog: \"Allow WeatherNow\n   to take pictures and record video?\"\n3. The user taps either \"Allow\" or \"Deny.\"\n4. The app receives a callback reporting the user's choice.",
+    "question": "What's the relationship between the app's code and the actual decision made in step 3?",
+    "choices": [
+      "The app's code directly controls whether the permission is granted, and the dialog is purely decorative",
+      "The app can only ask — the actual decision belongs entirely to the user via the system dialog; the app's role afterward is to receive the callback in step 4 and adapt its behavior based on whatever the user decided, not to control or predict that outcome",
+      "requestPermissions() always results in automatic approval on modern Android",
+      "The callback in step 4 only fires if the user chose \"Allow\"; a \"Deny\" produces no callback at all"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This establishes the fundamental power relationship in the runtime permission system: the app can only ask, never decide. The actual decision is entirely the user's, made through a system-controlled dialog the app cannot bypass or influence directly.",
+      "lineByLine": [
+        "`requestPermissions()` — the app's role: asking, nothing more.",
+        "The system dialog — entirely OS-controlled, ensuring the user (not the app) makes the actual call.",
+        "The callback — reports back whatever was decided, whether Allow or Deny; the app's job from here is to branch its own behavior based on that result, which is the focus of the next question."
+      ],
+      "tip": "This user-controls-the-decision relationship is precisely why apps must always be prepared to handle a 'denied' outcome gracefully — since the app has no ability to force a specific answer, denial has to be treated as a fully valid, expected possibility, not an edge case."
+    }
+  },
+  {
+    "id": "ch10-q4",
+    "topic": "unchecked denied access causes a crash, not a silent failure",
+    "difficulty": "difficult",
+    "chapter": "ch-10",
+    "snippet": "// Assume the user just denied CAMERA access\n\nfun takePhoto() {\n    // Attempting to use the camera API directly here,\n    // without checking the current grant status first (Q2)\n    camera.startCapture()\n}",
+    "question": "Given that CAMERA was just denied, what's the likely relationship between calling startCapture() directly here and what actually happens?",
+    "choices": [
+      "The call quietly does nothing, with no visible effect at all",
+      "The call is likely to throw a SecurityException, crashing the app — using a dangerous-permission-gated API without a currently-granted permission is treated as a serious violation by the OS, not a soft failure",
+      "The OS automatically re-prompts the user for permission at this exact moment before proceeding",
+      "This always succeeds regardless of the permission's grant status, as long as it was declared in the manifest (Chapter 2)"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This shows the real consequence of skipping Q2's check-before-use relationship: attempting to use a dangerous-permission-gated capability without current approval isn't a graceful no-op — it's typically an immediate crash, since the OS enforces this boundary strictly.",
+      "lineByLine": [
+        "CAMERA was denied — the app's current relationship with this permission is 'not granted.'",
+        "`camera.startCapture()` called directly, with no check (skipping Q2's guidance).",
+        "The OS detects the missing grant and throws `SecurityException`, which — if not caught — crashes the app immediately, rather than silently failing or degrading."
+      ],
+      "tip": "This is precisely why Q2's check-before-use pattern matters so much in real code: skipping it doesn't just risk a missing feature, it risks an outright crash. Always check current grant status immediately before using any dangerous-permission-gated capability, not just once somewhere earlier in the flow."
+    }
+  },
+  {
+    "id": "ch10-q5",
+    "topic": "shouldShowRationale reflects prior denial history",
+    "difficulty": "difficult",
+    "chapter": "ch-10",
+    "snippet": "if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {\n    // show an explanatory screen: \"We need camera access to scan barcodes\"\n} else {\n    // just request directly, or handle the permanent-denial case (Q6)\n}",
+    "question": "What relationship does `shouldShowRequestPermissionRationale` have with the app's PAST interactions with the user regarding this permission?",
+    "choices": [
+      "It has no relationship to past interactions; it simply returns a random true/false value",
+      "It reflects whether the user has previously denied this exact permission at least once WITHOUT having permanently blocked it (Q6) — true generally means \"a prior denial happened, so more explanation might help before asking again,\" giving the app a way to react differently based on this permission's specific interaction history",
+      "It always returns true on an app's very first launch, before any permission has ever been requested",
+      "It permanently prevents the permission dialog from ever being shown again once it returns true"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This function's relationship with an app is inherently historical — its return value depends specifically on what's already happened with THIS permission for THIS app on THIS device. It's the app's way of tailoring its request approach based on how the user has responded before.",
+      "lineByLine": [
+        "A `true` result generally signals: this permission has been denied before, but the user hasn't reached the point of permanently blocking future requests (that separate state is covered in Q6).",
+        "A `false` result on a genuinely first-ever request simply means there's no denial history yet to react to.",
+        "Showing an explanatory rationale screen when this returns true is a UX courtesy — giving the user more context before asking again, since a bare denial already happened once."
+      ],
+      "tip": "Reading this function correctly requires recognizing it as a lookup into recent interaction history, not a random or purely predictive signal — its entire purpose is to let the app respond intelligently to what the user has already decided about this specific permission before."
+    }
+  },
+  {
+    "id": "ch10-q6",
+    "topic": "permanent denial changes the relationship entirely",
+    "difficulty": "difficult",
+    "chapter": "ch-10",
+    "snippetLang": "markup",
+    "snippet": "1. App requests CAMERA. User denies.\n2. App requests CAMERA again later. User denies again,\n   this time also checking \"Don't ask again.\"\n3. App requests CAMERA a third time.",
+    "question": "What's different about the relationship between the app and the OS at step 3, compared to step 1?",
+    "choices": [
+      "Nothing is different — step 3 behaves identically to step 1, showing the same dialog again",
+      "After the \"Don't ask again\" denial in step 2, the OS will no longer show the permission dialog at all for step 3's request — the app instead receives an immediate denial with no user interaction, and the only remaining path to granting access is the user manually enabling it through the device's app Settings screen",
+      "Step 3 automatically grants the permission, since the user has already been asked twice",
+      "The app crashes immediately upon making a third request for the same permission"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This marks a genuine change in relationship: once a user permanently denies a permission, the OS stops offering the normal ask-and-respond dialog entirely. The app's only path forward shifts from 'ask again' to 'guide the user to Settings manually.'",
+      "lineByLine": [
+        "Steps 1-2: normal dangerous-permission denial flow, with step 2 additionally including the permanent \"Don't ask again\" signal.",
+        "Step 3: the app calls requestPermissions() again, but the OS — recognizing the permanent denial — skips showing any dialog at all, immediately reporting denial without ever involving the user this time.",
+        "From here, the app's own UI needs to detect this state (often by combining Q2's check with Q5's rationale check both returning unhelpful results) and offer to open the device's Settings screen for this app, where the user can manually re-enable the permission if they choose to."
+      ],
+      "tip": "This is why real apps often show a message like 'Camera access is required. Please enable it in Settings' rather than repeatedly calling requestPermissions() — that repeated call becomes pointless once permanent denial has occurred, and the relationship has fundamentally shifted to require manual user action outside the app's direct control."
+    }
+  },
+  {
+    "id": "ch10-q7",
+    "topic": "each specific permission is its own separate relationship",
+    "difficulty": "moderate",
+    "chapter": "ch-10",
+    "snippetLang": "xml",
+    "snippet": "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />\n<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />",
+    "question": "These two permissions both relate to location, but are declared as two separate lines. What does this imply about their relationship to each other?",
+    "choices": [
+      "They're identical in effect; declaring one automatically covers the other",
+      "They represent genuinely distinct levels of capability — coarse (approximate) location versus fine (precise) location — and each has its own independent grant relationship with the user; being granted one does not automatically mean the other is granted too",
+      "ACCESS_FINE_LOCATION can only be declared if ACCESS_COARSE_LOCATION is removed first",
+      "Only one location permission is allowed to be declared per app"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This reinforces a 'declare and request exactly what you need' relationship: even closely related permissions represent distinct capabilities with their own independent grant status, rather than a broader permission automatically implying a narrower (or related) one.",
+      "lineByLine": [
+        "`ACCESS_COARSE_LOCATION` — approximate location (city/neighborhood-level precision).",
+        "`ACCESS_FINE_LOCATION` — precise, GPS-level location.",
+        "A user could grant coarse location while still denying fine location (or vice versa, depending on OS version and flow) — the app must check and request each capability it specifically needs, rather than assuming one covers the other."
+      ],
+      "tip": "This relationship reinforces a good practice covered implicitly throughout this chapter: request only the specific permissions your feature genuinely needs. Requesting fine location when coarse would suffice creates an unnecessarily higher bar for the user to grant, for no real benefit to the app's actual functionality."
+    }
+  },
+  {
+    "id": "ch10-q8",
+    "topic": "some permissions bypass the runtime dialog entirely",
+    "difficulty": "difficult",
+    "chapter": "ch-10",
+    "snippetLang": "markup",
+    "snippet": "Regular dangerous permission (e.g., CAMERA): the\nfamiliar Allow/Deny system dialog appears when requested.\n\nSpecial permission (e.g., \"Modify system settings\"):\nrequesting it does NOT show a simple Allow/Deny dialog\nat all — instead, the app must direct the user to a\ndedicated Settings screen to manually toggle it on.",
+    "question": "What's different about this special permission's relationship to the app, compared to a regular dangerous permission like CAMERA?",
+    "choices": [
+      "There's no real difference; every permission uses the exact same simple dialog flow",
+      "This special permission bypasses the normal Q3 request-and-callback dialog flow entirely; instead, the ONLY path for the app is guiding the user to a dedicated system Settings screen to enable it manually — there's no in-app Allow/Deny prompt to trigger at all",
+      "Special permissions are automatically granted to all apps by default",
+      "Special permissions can only be requested by pre-installed system apps, never third-party apps"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This introduces a third distinct relationship pattern, beyond simply 'normal' (Q1) and 'dangerous with a dialog' (Q3): certain especially sensitive capabilities skip the standard in-app dialog entirely, requiring the user to navigate to a dedicated system Settings screen instead.",
+      "lineByLine": [
+        "Regular dangerous permission: request → system dialog → user taps Allow/Deny → callback (Q3's flow).",
+        "Special permission: no equivalent in-app dialog exists at all — the app can, at most, launch an Intent (Chapter 6) that takes the user directly to the relevant system Settings screen, where they must manually find and enable the toggle themselves.",
+        "This reflects the especially sensitive nature of what these particular permissions allow, warranting more deliberate friction than even a normal dangerous permission's dialog provides."
+      ],
+      "tip": "When reading permission-related code, watch for whether it calls the standard `requestPermissions()` (Q3's normal flow) or instead builds an Intent targeting a specific Settings screen — that difference immediately signals which of these two fundamentally different relationships is being used."
+    }
+  },
+  {
+    "id": "ch10-q9",
+    "topic": "when to ask — upfront vs contextual timing relationship",
+    "difficulty": "moderate",
+    "chapter": "ch-10",
+    "snippetLang": "markup",
+    "snippet": "Approach A: request CAMERA immediately when the app\nfirst launches, before the user has done anything.\n\nApproach B: request CAMERA only when the user actually\ntaps a \"Scan Barcode\" button that specifically needs it.",
+    "question": "What's the relationship between WHEN a permission is requested and how a user is likely to respond?",
+    "choices": [
+      "Timing has no bearing whatsoever on how a user responds to a permission request",
+      "Requesting contextually (Approach B), right when the user has just triggered a feature that clearly needs it, gives them an obvious reason for the request; requesting upfront (Approach A), before any context, often confuses users about why an unfamiliar app suddenly wants access to something, making denial more likely",
+      "Approach A is always technically required and Approach B is not a valid pattern",
+      "The OS forces every app to request all its permissions upfront on first launch, regardless of the developer's preference"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This is a design relationship, not a technical requirement: because the actual grant decision belongs entirely to the user (Q3), the CONTEXT surrounding a request meaningfully affects how likely they are to say yes — and contextual timing generally produces a clearer, more justified relationship between the ask and the reason for it.",
+      "lineByLine": [
+        "Approach A: CAMERA requested at launch, with no visible connection yet to any feature the user has expressed interest in — often reads as suspicious or premature.",
+        "Approach B: CAMERA requested the moment the user taps something that obviously requires it — the reason for the request is self-evident at that exact moment.",
+        "Since Q3 established the user is always the true decision-maker, giving them the clearest possible context (Approach B) tends to produce better outcomes than an unexplained upfront request."
+      ],
+      "tip": "This timing relationship is a recurring theme in real app design: dangerous permissions should generally be requested as close as possible to the moment they're actually needed, not bundled together at launch — respecting that the user's willingness to grant access is heavily influenced by whether the reason is immediately obvious."
+    }
+  },
+  {
+    "id": "ch10-q10",
+    "topic": "full scenario synthesis",
+    "difficulty": "difficult",
+    "chapter": "ch-10",
+    "snippetLang": "markup",
+    "snippet": "1. CAMERA is declared in the manifest (a dangerous permission).\n2. User taps \"Scan Barcode.\" App checks current grant\n   status first — not yet granted.\n3. App checks shouldShowRequestPermissionRationale —\n   false (first time ever asking).\n4. App requests CAMERA. User denies.\n5. User taps \"Scan Barcode\" again later. App checks\n   shouldShowRequestPermissionRationale — now true.\n6. App shows a rationale explanation, then requests again.\n   User denies again, checking \"Don't ask again.\"\n7. User taps \"Scan Barcode\" a third time.",
+    "question": "Which statement correctly traces the relationships across this entire sequence?",
+    "choices": [
+      "This sequence is invalid; a user is only ever allowed to deny a permission exactly once",
+      "Step 1-2 reflect the two-step normal/dangerous relationship (Q1) and check-before-use pattern (Q2); step 3-4 show a first-time request with no prior history (Q5); step 5-6 show the rationale check correctly reflecting the step-4 denial (Q5) and a contextual re-ask (Q9); step 6's permanent denial fundamentally changes the relationship (Q6); step 7 would receive an immediate denial with no dialog, requiring a redirect to Settings instead",
+      "Step 7 will show the exact same dialog as step 4, since permissions can always be re-requested identically",
+      "The rationale check in step 3 should have returned true, since CAMERA is a dangerous permission"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This scenario deliberately chains together nearly every relationship covered in this chapter: the normal/dangerous distinction, check-before-use discipline, rationale history tracking, contextual timing, and the fundamental shift caused by permanent denial.",
+      "lineByLine": [
+        "Steps 1-2: CAMERA's dangerous-permission status (Q1) means declaration alone isn't enough; checking current status (Q2) correctly happens right before the feature is used, respecting Q9's contextual timing.",
+        "Steps 3-4: no prior denial exists yet, so the rationale check correctly returns false (Q5); the first request results in denial.",
+        "Steps 5-6: now that a denial has occurred, the rationale check correctly flips to true (Q5), prompting an explanatory UI before re-asking (Q9) — but this second denial includes the permanent \"don't ask again\" signal (Q6).",
+        "Step 7: per Q6, the relationship has now fundamentally changed — no dialog will appear at all, and the app must pivot to guiding the user toward the device's Settings screen instead."
+      ],
+      "tip": "Tracing a scenario like this is really about tracking ONE evolving relationship — the app's standing with this specific dangerous permission — through each interaction, and recognizing that the correct code behavior (check status, check rationale, show explanation, or redirect to Settings) depends entirely on the current state of that relationship at each point in time."
+    }
+  },
+  {
+    "id": "ch10-q11",
+    "topic": "requesting multiple permissions together produces one combined callback",
+    "difficulty": "difficult",
+    "chapter": "ch-10",
+    "snippet": "requestPermissions(\n    arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),\n    requestCode\n)\n\n// The callback later reports back a result for BOTH\n// permissions together, not as two separate callbacks",
+    "question": "What's the relationship between requesting these two permissions together, versus requesting CAMERA and RECORD_AUDIO as two entirely separate calls?",
+    "choices": [
+      "There's no difference — this is functionally identical to two completely separate, unrelated requests",
+      "Batching them together shows the user a single combined flow addressing both permissions, and the app receives one callback describing the outcome for each — but critically, Q7's lesson still applies: each permission's actual grant status remains independent, and the user could still approve one while denying the other within that same combined flow",
+      "Batching guarantees that if one permission is granted, the other is automatically granted too",
+      "Only one permission from the array can ever actually be requested at a time; the array is just for documentation"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This shows a genuinely different flow shape — one combined request producing one combined callback — while confirming that Q7's core lesson (each permission's grant status is independent) still holds even when requests are batched together for convenience.",
+      "lineByLine": [
+        "`arrayOf(CAMERA, RECORD_AUDIO)` — both permissions are requested as part of the same call.",
+        "The user sees prompts addressing both (exact presentation can vary), but ultimately makes an independent decision for each.",
+        "The single callback that follows reports results for both — but as Q7 established, being bundled together in one request doesn't create any dependency between their actual grant outcomes; checking each one's status afterward (Q2) is still necessary."
+      ],
+      "tip": "Batching related permission requests together (like CAMERA and RECORD_AUDIO for a video-recording feature) is often better UX than several separate back-to-back prompts — but the code handling the result still needs to check each permission's outcome individually, exactly as Q7's location example showed."
+    }
+  },
+  {
+    "id": "ch10-q12",
+    "topic": "permission requests require a foreground activity, echoing ch8's restriction theme",
+    "difficulty": "difficult",
+    "chapter": "ch-10",
+    "snippetLang": "markup",
+    "snippet": "Recall Chapter 8, Q12: starting a new background\nService from an app already running invisibly in\nthe background is restricted on modern Android.\n\nSimilarly: requesting a dangerous permission's dialog\n(Q3) can only be initiated from a currently visible,\nforeground Activity — not from a Service or\nBroadcastReceiver running with no visible screen.",
+    "question": "What's the relationship between this restriction and Chapter 8, Q12's background-Service restriction?",
+    "choices": [
+      "They're entirely unrelated coincidences with no shared reasoning",
+      "Both reflect the same underlying principle: sensitive, user-facing actions (starting new background work, or asking for a dangerous permission) require an app to already have the user's active attention (a foreground Activity) — preventing apps from silently trying to gain new capabilities or spawn work while invisible to the user",
+      "This restriction means dangerous permissions can never actually be requested by any app",
+      "Only BroadcastReceivers are subject to this restriction; Services can request permissions freely"
+    ],
+    "correctIndex": 1,
+    "explanation": {
+      "summary": "This connects back to a pattern already established in Chapter 8: modern Android consistently ties certain sensitive capabilities to requiring the user's active, foreground attention, rather than allowing them to happen invisibly.",
+      "lineByLine": [
+        "Chapter 8, Q12: starting new background Services requires the app to already be in the foreground.",
+        "This chapter: requesting a dangerous permission's dialog (Q3) similarly requires a foreground Activity — a Service or BroadcastReceiver (Chapter 9) cannot pop up that dialog on its own.",
+        "Both restrictions share the same motivation: the user should be actively engaged with the app at the moment it asks for something significant, whether that's new background work or an expanded permission."
+      ],
+      "tip": "This is a good example of recognizing a recurring DESIGN PHILOSOPHY across seemingly separate restrictions in different chapters — once you notice 'sensitive actions require foreground presence' as a theme, several individually-memorized rules (Chapter 8's Service restriction, this chapter's permission-request requirement) click into place as expressions of the same underlying idea."
+    }
+  }
+]
